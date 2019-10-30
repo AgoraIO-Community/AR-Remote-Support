@@ -14,6 +14,7 @@
 		0379DF642369F67B00B20008 /* Agora_Remote_SupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379DF632369F67B00B20008 /* Agora_Remote_SupportTests.swift */; };
 		0379DF6F2369F67B00B20008 /* Agora_Remote_SupportUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379DF6E2369F67B00B20008 /* Agora_Remote_SupportUITests.swift */; };
 		039ABE0B236A021E008A374F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ABE0A236A021E008A374F /* ViewController.swift */; };
+		039ABE4A236A03F8008A374F /* AgoraSupportBroadcasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ABE48236A03F8008A374F /* AgoraSupportBroadcasterViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -47,6 +48,7 @@
 		0379DF6E2369F67B00B20008 /* Agora_Remote_SupportUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Agora_Remote_SupportUITests.swift; sourceTree = "<group>"; };
 		0379DF702369F67B00B20008 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		039ABE0A236A021E008A374F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
+		039ABE48236A03F8008A374F /* AgoraSupportBroadcasterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgoraSupportBroadcasterViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -97,6 +99,7 @@
 		0379DF4B2369F67900B20008 /* Agora Remote Support */ = {
 			isa = PBXGroup;
 			children = (
+				039ABE48236A03F8008A374F /* AgoraSupportBroadcasterViewController.swift */,
 				0379DF4C2369F67900B20008 /* AppDelegate.swift */,
 				0379DF522369F67900B20008 /* Main.storyboard */,
 				0379DF552369F67B00B20008 /* Assets.xcassets */,
@@ -256,6 +259,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				039ABE4A236A03F8008A374F /* AgoraSupportBroadcasterViewController.swift in Sources */,
 				039ABE0B236A021E008A374F /* ViewController.swift in Sources */,
 				0379DF4D2369F67900B20008 /* AppDelegate.swift in Sources */,
 			);

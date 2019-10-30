@@ -17,6 +17,8 @@ class AgoraSupportAudienceViewController: UIViewController {
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        print("AgoraSupportAudience ViewController loaded")
+        self.view.backgroundColor = UIColor.gray
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -25,6 +27,7 @@ class AgoraSupportAudienceViewController: UIViewController {
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
+        print("AgoraSupportAudience ViewController did appear")
     }
     
     override func viewWillDisappear(_ animated: Bool) {

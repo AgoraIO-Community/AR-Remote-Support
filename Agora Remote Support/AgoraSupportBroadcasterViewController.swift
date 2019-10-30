@@ -35,6 +35,7 @@ class AgoraSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate
     }
 
     override func viewWillAppear(_ animated: Bool) {
+        super .viewWillAppear(animated)
         // Configure ARKit Session
         let configuration = ARWorldTrackingConfiguration()
         if #available(iOS 11.3, *) {
@@ -49,6 +50,7 @@ class AgoraSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate
     }
     
     override func viewWillDisappear(_ animated: Bool) {
+        super.viewWillDisappear(animated)
         // Pause the view's session
         self.sceneView.session.pause()
     }

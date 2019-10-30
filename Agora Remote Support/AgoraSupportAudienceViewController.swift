@@ -1,5 +1,5 @@
 //
-//  AgoraRemoteSupportAudienceViewController.swift
+//  AgoraSupportAudienceViewController.swift
 //  Agora Remote Support
 //
 //  Created by digitallysavvy on 10/30/19.
@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AgoraRemoteSupportAudienceViewController: UIViewController {
+class AgoraSupportAudienceViewController: UIViewController {
 
     override func loadView() {
         super.loadView()

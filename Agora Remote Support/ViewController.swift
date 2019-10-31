@@ -81,13 +81,13 @@ class ViewController: UIViewController, UITextFieldDelegate {
     
     // MARK: Button Actions
     @IBAction func joinRemoteSession() {
-        let arSupportVC = AgoraSupportAudienceViewController()
+        let arSupportVC = ARSupportAudienceViewController()
         arSupportVC.modalPresentationStyle = .fullScreen
         self.present(arSupportVC, animated: true, completion: nil)
     }
     
     @IBAction func createSession() {
-        let arBroadcastVC = AgoraSupportBroadcasterViewController()
+        let arBroadcastVC = ARSupportBroadcasterViewController()
         arBroadcastVC.modalPresentationStyle = .fullScreen
         self.present(arBroadcastVC, animated: true, completion: nil)
     }

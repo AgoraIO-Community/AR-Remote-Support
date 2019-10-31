@@ -8,7 +8,7 @@
 
 import UIKit
 
-class AgoraSupportAudienceViewController: UIViewController {
+class ARSupportAudienceViewController: UIViewController {
 
     override func loadView() {
         super.loadView()

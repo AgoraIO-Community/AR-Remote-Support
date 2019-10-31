@@ -10,12 +10,12 @@ import UIKit
 import ARKit
 
 
-class AgoraSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate {
+class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate {
     
     var sceneView : ARSCNView!
     var scnLights : [SCNNode] = []
     
-    let debug : Bool = false
+    let debug : Bool = true
     
     override func loadView() {
         super.loadView()

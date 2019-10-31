@@ -14,8 +14,8 @@
 		0379DF642369F67B00B20008 /* Agora_Remote_SupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379DF632369F67B00B20008 /* Agora_Remote_SupportTests.swift */; };
 		0379DF6F2369F67B00B20008 /* Agora_Remote_SupportUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379DF6E2369F67B00B20008 /* Agora_Remote_SupportUITests.swift */; };
 		039ABE0B236A021E008A374F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ABE0A236A021E008A374F /* ViewController.swift */; };
-		039ABE4A236A03F8008A374F /* AgoraSupportBroadcasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ABE48236A03F8008A374F /* AgoraSupportBroadcasterViewController.swift */; };
-		039ABE4D236A045A008A374F /* AgoraSupportAudienceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ABE4C236A045A008A374F /* AgoraSupportAudienceViewController.swift */; };
+		039ABE4A236A03F8008A374F /* ARSupportBroadcasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ABE48236A03F8008A374F /* ARSupportBroadcasterViewController.swift */; };
+		039ABE4D236A045A008A374F /* ARSupportAudienceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ABE4C236A045A008A374F /* ARSupportAudienceViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -36,7 +36,7 @@
 /* End PBXContainerItemProxy section */
 
 /* Begin PBXFileReference section */
-		0379DF492369F67900B20008 /* Agora Remote Support.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Agora Remote Support.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0379DF492369F67900B20008 /* AR Remote Support.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AR Remote Support.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0379DF4C2369F67900B20008 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0379DF532369F67900B20008 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
 		0379DF552369F67B00B20008 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -49,8 +49,8 @@
 		0379DF6E2369F67B00B20008 /* Agora_Remote_SupportUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Agora_Remote_SupportUITests.swift; sourceTree = "<group>"; };
 		0379DF702369F67B00B20008 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		039ABE0A236A021E008A374F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		039ABE48236A03F8008A374F /* AgoraSupportBroadcasterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AgoraSupportBroadcasterViewController.swift; sourceTree = "<group>"; };
-		039ABE4C236A045A008A374F /* AgoraSupportAudienceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AgoraSupportAudienceViewController.swift; sourceTree = "<group>"; };
+		039ABE48236A03F8008A374F /* ARSupportBroadcasterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARSupportBroadcasterViewController.swift; sourceTree = "<group>"; };
+		039ABE4C236A045A008A374F /* ARSupportAudienceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSupportAudienceViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -91,7 +91,7 @@
 		0379DF4A2369F67900B20008 /* Products */ = {
 			isa = PBXGroup;
 			children = (
-				0379DF492369F67900B20008 /* Agora Remote Support.app */,
+				0379DF492369F67900B20008 /* AR Remote Support.app */,
 				0379DF5F2369F67B00B20008 /* Agora Remote SupportTests.xctest */,
 				0379DF6A2369F67B00B20008 /* Agora Remote SupportUITests.xctest */,
 			);
@@ -106,8 +106,8 @@
 				0379DF552369F67B00B20008 /* Assets.xcassets */,
 				0379DF572369F67B00B20008 /* LaunchScreen.storyboard */,
 				0379DF5A2369F67B00B20008 /* Info.plist */,
-				039ABE48236A03F8008A374F /* AgoraSupportBroadcasterViewController.swift */,
-				039ABE4C236A045A008A374F /* AgoraSupportAudienceViewController.swift */,
+				039ABE48236A03F8008A374F /* ARSupportBroadcasterViewController.swift */,
+				039ABE4C236A045A008A374F /* ARSupportAudienceViewController.swift */,
 				039ABE0A236A021E008A374F /* ViewController.swift */,
 			);
 			path = "Agora Remote Support";
@@ -148,7 +148,7 @@
 			);
 			name = "Agora Remote Support";
 			productName = "Agora Remote Support";
-			productReference = 0379DF492369F67900B20008 /* Agora Remote Support.app */;
+			productReference = 0379DF492369F67900B20008 /* AR Remote Support.app */;
 			productType = "com.apple.product-type.application";
 		};
 		0379DF5E2369F67B00B20008 /* Agora Remote SupportTests */ = {
@@ -262,9 +262,9 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				039ABE4A236A03F8008A374F /* AgoraSupportBroadcasterViewController.swift in Sources */,
+				039ABE4A236A03F8008A374F /* ARSupportBroadcasterViewController.swift in Sources */,
 				039ABE0B236A021E008A374F /* ViewController.swift in Sources */,
-				039ABE4D236A045A008A374F /* AgoraSupportAudienceViewController.swift in Sources */,
+				039ABE4D236A045A008A374F /* ARSupportAudienceViewController.swift in Sources */,
 				0379DF4D2369F67900B20008 /* AppDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -446,8 +446,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "agora.io.Agora-Remote-Support";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "agora.io.AR-Remote-Support";
+				PRODUCT_NAME = "AR Remote Support";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
@@ -465,8 +465,8 @@
 					"$(inherited)",
 					"@executable_path/Frameworks",
 				);
-				PRODUCT_BUNDLE_IDENTIFIER = "agora.io.Agora-Remote-Support";
-				PRODUCT_NAME = "$(TARGET_NAME)";
+				PRODUCT_BUNDLE_IDENTIFIER = "agora.io.AR-Remote-Support";
+				PRODUCT_NAME = "AR Remote Support";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

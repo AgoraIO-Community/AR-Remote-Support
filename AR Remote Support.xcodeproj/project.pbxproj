@@ -42,10 +42,10 @@
 		0379DF552369F67B00B20008 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0379DF582369F67B00B20008 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		0379DF5A2369F67B00B20008 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0379DF5F2369F67B00B20008 /* Agora Remote SupportTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Agora Remote SupportTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0379DF5F2369F67B00B20008 /* AR Remote SupportTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AR Remote SupportTests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0379DF632369F67B00B20008 /* Agora_Remote_SupportTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Agora_Remote_SupportTests.swift; sourceTree = "<group>"; };
 		0379DF652369F67B00B20008 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
-		0379DF6A2369F67B00B20008 /* Agora Remote SupportUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Agora Remote SupportUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
+		0379DF6A2369F67B00B20008 /* AR Remote SupportUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AR Remote SupportUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0379DF6E2369F67B00B20008 /* Agora_Remote_SupportUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Agora_Remote_SupportUITests.swift; sourceTree = "<group>"; };
 		0379DF702369F67B00B20008 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		039ABE0A236A021E008A374F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
@@ -92,8 +92,8 @@
 			isa = PBXGroup;
 			children = (
 				0379DF492369F67900B20008 /* AR Remote Support.app */,
-				0379DF5F2369F67B00B20008 /* Agora Remote SupportTests.xctest */,
-				0379DF6A2369F67B00B20008 /* Agora Remote SupportUITests.xctest */,
+				0379DF5F2369F67B00B20008 /* AR Remote SupportTests.xctest */,
+				0379DF6A2369F67B00B20008 /* AR Remote SupportUITests.xctest */,
 			);
 			name = Products;
 			sourceTree = "<group>";
@@ -134,9 +134,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		0379DF482369F67900B20008 /* Agora Remote Support */ = {
+		0379DF482369F67900B20008 /* AR Remote Support */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0379DF732369F67B00B20008 /* Build configuration list for PBXNativeTarget "Agora Remote Support" */;
+			buildConfigurationList = 0379DF732369F67B00B20008 /* Build configuration list for PBXNativeTarget "AR Remote Support" */;
 			buildPhases = (
 				0379DF452369F67900B20008 /* Sources */,
 				0379DF462369F67900B20008 /* Frameworks */,
@@ -146,14 +146,14 @@
 			);
 			dependencies = (
 			);
-			name = "Agora Remote Support";
+			name = "AR Remote Support";
 			productName = "Agora Remote Support";
 			productReference = 0379DF492369F67900B20008 /* AR Remote Support.app */;
 			productType = "com.apple.product-type.application";
 		};
-		0379DF5E2369F67B00B20008 /* Agora Remote SupportTests */ = {
+		0379DF5E2369F67B00B20008 /* AR Remote SupportTests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0379DF762369F67B00B20008 /* Build configuration list for PBXNativeTarget "Agora Remote SupportTests" */;
+			buildConfigurationList = 0379DF762369F67B00B20008 /* Build configuration list for PBXNativeTarget "AR Remote SupportTests" */;
 			buildPhases = (
 				0379DF5B2369F67B00B20008 /* Sources */,
 				0379DF5C2369F67B00B20008 /* Frameworks */,
@@ -164,14 +164,14 @@
 			dependencies = (
 				0379DF612369F67B00B20008 /* PBXTargetDependency */,
 			);
-			name = "Agora Remote SupportTests";
+			name = "AR Remote SupportTests";
 			productName = "Agora Remote SupportTests";
-			productReference = 0379DF5F2369F67B00B20008 /* Agora Remote SupportTests.xctest */;
+			productReference = 0379DF5F2369F67B00B20008 /* AR Remote SupportTests.xctest */;
 			productType = "com.apple.product-type.bundle.unit-test";
 		};
-		0379DF692369F67B00B20008 /* Agora Remote SupportUITests */ = {
+		0379DF692369F67B00B20008 /* AR Remote SupportUITests */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = 0379DF792369F67B00B20008 /* Build configuration list for PBXNativeTarget "Agora Remote SupportUITests" */;
+			buildConfigurationList = 0379DF792369F67B00B20008 /* Build configuration list for PBXNativeTarget "AR Remote SupportUITests" */;
 			buildPhases = (
 				0379DF662369F67B00B20008 /* Sources */,
 				0379DF672369F67B00B20008 /* Frameworks */,
@@ -182,9 +182,9 @@
 			dependencies = (
 				0379DF6C2369F67B00B20008 /* PBXTargetDependency */,
 			);
-			name = "Agora Remote SupportUITests";
+			name = "AR Remote SupportUITests";
 			productName = "Agora Remote SupportUITests";
-			productReference = 0379DF6A2369F67B00B20008 /* Agora Remote SupportUITests.xctest */;
+			productReference = 0379DF6A2369F67B00B20008 /* AR Remote SupportUITests.xctest */;
 			productType = "com.apple.product-type.bundle.ui-testing";
 		};
 /* End PBXNativeTarget section */
@@ -210,7 +210,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 0379DF442369F67900B20008 /* Build configuration list for PBXProject "Agora Remote Support" */;
+			buildConfigurationList = 0379DF442369F67900B20008 /* Build configuration list for PBXProject "AR Remote Support" */;
 			compatibilityVersion = "Xcode 9.3";
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
@@ -223,9 +223,9 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				0379DF482369F67900B20008 /* Agora Remote Support */,
-				0379DF5E2369F67B00B20008 /* Agora Remote SupportTests */,
-				0379DF692369F67B00B20008 /* Agora Remote SupportUITests */,
+				0379DF482369F67900B20008 /* AR Remote Support */,
+				0379DF5E2369F67B00B20008 /* AR Remote SupportTests */,
+				0379DF692369F67B00B20008 /* AR Remote SupportUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -290,12 +290,12 @@
 /* Begin PBXTargetDependency section */
 		0379DF612369F67B00B20008 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0379DF482369F67900B20008 /* Agora Remote Support */;
+			target = 0379DF482369F67900B20008 /* AR Remote Support */;
 			targetProxy = 0379DF602369F67B00B20008 /* PBXContainerItemProxy */;
 		};
 		0379DF6C2369F67B00B20008 /* PBXTargetDependency */ = {
 			isa = PBXTargetDependency;
-			target = 0379DF482369F67900B20008 /* Agora Remote Support */;
+			target = 0379DF482369F67900B20008 /* AR Remote Support */;
 			targetProxy = 0379DF6B2369F67B00B20008 /* PBXContainerItemProxy */;
 		};
 /* End PBXTargetDependency section */
@@ -490,7 +490,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Agora Remote Support.app/Agora Remote Support";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AR Remote Support.app/AR Remote Support";
 			};
 			name = Debug;
 		};
@@ -512,7 +512,7 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
-				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/Agora Remote Support.app/Agora Remote Support";
+				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/AR Remote Support.app/AR Remote Support";
 			};
 			name = Release;
 		};
@@ -559,7 +559,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		0379DF442369F67900B20008 /* Build configuration list for PBXProject "Agora Remote Support" */ = {
+		0379DF442369F67900B20008 /* Build configuration list for PBXProject "AR Remote Support" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0379DF712369F67B00B20008 /* Debug */,
@@ -568,7 +568,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0379DF732369F67B00B20008 /* Build configuration list for PBXNativeTarget "Agora Remote Support" */ = {
+		0379DF732369F67B00B20008 /* Build configuration list for PBXNativeTarget "AR Remote Support" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0379DF742369F67B00B20008 /* Debug */,
@@ -577,7 +577,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0379DF762369F67B00B20008 /* Build configuration list for PBXNativeTarget "Agora Remote SupportTests" */ = {
+		0379DF762369F67B00B20008 /* Build configuration list for PBXNativeTarget "AR Remote SupportTests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0379DF772369F67B00B20008 /* Debug */,
@@ -586,7 +586,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		0379DF792369F67B00B20008 /* Build configuration list for PBXNativeTarget "Agora Remote SupportUITests" */ = {
+		0379DF792369F67B00B20008 /* Build configuration list for PBXNativeTarget "AR Remote SupportUITests" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				0379DF7A2369F67B00B20008 /* Debug */,

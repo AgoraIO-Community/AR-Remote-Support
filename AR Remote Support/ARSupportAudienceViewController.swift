@@ -11,13 +11,19 @@ import UIKit
 class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDelegate {
 
     var touchStart: CGPoint!
-    let debug: Bool = true
+    var touchPoints: [CGPoint]!
+    let debug: Bool = false
     
     // MARK: VC Events
     override func loadView() {
         super.loadView()
         createUI()
         setupGestures()
+        
+        var frame = self.view.frame
+        frame.origin.x = self.view.center.x
+        frame.origin.y = self.view.center.y
+        self.view.frame = frame
     }
 
     override func viewDidLoad() {
@@ -52,8 +58,9 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
        // get the initial touch event
         if let touch = touches.first {
-            let position = touch.location(in: view)
-            touchStart = position
+            let position = touch.location(in: self.view)
+            self.touchStart = position
+            self.touchPoints = [touchStart]
             if debug {
                  print(position)
             }
@@ -64,8 +71,8 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         if gestureRecognizer.state == .began || gestureRecognizer.state == .changed {
             let translation = gestureRecognizer.translation(in: self.view)
             // calculate touch movement relative to the superview
-            let pixelTranslation = CGPoint(x: touchStart.x + translation.x, y: touchStart.y + translation.y)
-            
+            let pixelTranslation = CGPoint(x: self.touchStart.x + translation.x, y: self.touchStart.y + translation.y)
+            self.touchPoints.append(pixelTranslation)
             // simple draw user touches
             let layer = CAShapeLayer()
             layer.path = UIBezierPath(roundedRect: CGRect(x:  pixelTranslation.x, y: pixelTranslation.y, width: 25, height: 25), cornerRadius: 50).cgPath
@@ -76,6 +83,12 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
                 print(pixelTranslation)
             }
         }
+        if gestureRecognizer.state == .ended {
+            if let touchPointsList = self.touchPoints {
+                print(touchPointsList)
+            }
+        }
+        
     }
     
     // MARK: UI

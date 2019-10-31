@@ -10,6 +10,9 @@ import UIKit
 
 class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDelegate {
 
+    var touchStart: CGPoint!
+    let debug: Bool = true
+    
     // MARK: VC Events
     override func loadView() {
         super.loadView()
@@ -20,7 +23,6 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
-        print("AgoraSupportAudience ViewController loaded")
         self.view.backgroundColor = UIColor.gray
         self.view.isUserInteractionEnabled = true
     }
@@ -31,7 +33,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
-        print("AgoraSupportAudience ViewController did appear")
+        // do something when the view has appeared
     }
     
     override func viewWillDisappear(_ animated: Bool) {
@@ -47,22 +49,32 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     }
     
     // MARK: Touch Capture
-    @IBAction func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
-        if gestureRecognizer.state == .began {
-            print("----------------")
+    override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
+       // get the initial touch event
+        if let touch = touches.first {
+            let position = touch.location(in: view)
+            touchStart = position
+            if debug {
+                 print(position)
+            }
         }
+    }
+    
+    @IBAction func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
         if gestureRecognizer.state == .began || gestureRecognizer.state == .changed {
             let translation = gestureRecognizer.translation(in: self.view)
-            print(translation)
+            // calculate touch movement relative to the superview
+            let pixelTranslation = CGPoint(x: touchStart.x + translation.x, y: touchStart.y + translation.y)
             
-            // simply draw user touches
+            // simple draw user touches
             let layer = CAShapeLayer()
-            layer.path = UIBezierPath(roundedRect: CGRect(x:  translation.x, y: translation.y, width: 25, height: 25), cornerRadius: 50).cgPath
+            layer.path = UIBezierPath(roundedRect: CGRect(x:  pixelTranslation.x, y: pixelTranslation.y, width: 25, height: 25), cornerRadius: 50).cgPath
             layer.fillColor = UIColor.red.cgColor
             self.view.layer.addSublayer(layer)
-        }
-        if gestureRecognizer.state == .ended {
-            print("----------------")
+            
+            if debug {
+                print(pixelTranslation)
+            }
         }
     }
     

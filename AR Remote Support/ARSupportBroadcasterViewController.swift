@@ -21,6 +21,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate {
     override func loadView() {
         super.loadView()
         createUI()
+        self.view.backgroundColor = UIColor.black
     }
 
     override func viewWillAppear(_ animated: Bool) {

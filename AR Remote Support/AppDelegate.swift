@@ -1,6 +1,6 @@
 //
 //  AppDelegate.swift
-//  Agora Remote Support
+//  AR Remote Support
 //
 //  Created by Hermes Frangoudis on 10/30/19.
 //  Copyright © 2019 Agora.io. All rights reserved.

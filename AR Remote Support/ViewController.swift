@@ -1,6 +1,6 @@
 //
 //  ViewController.swift
-//  Agora Remote Support
+//  AR Remote Support
 //
 //  Created by digitallysavvy on 10/30/19.
 //  Copyright © 2019 Agora.io. All rights reserved.

@@ -1,6 +1,6 @@
 //
 //  Agora_Remote_SupportTests.swift
-//  Agora Remote SupportTests
+//  AR Remote SupportTests
 //
 //  Created by Hermes Frangoudis on 10/30/19.
 //  Copyright © 2019 Agora.io. All rights reserved.

@@ -17,21 +17,10 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate {
     
     let debug : Bool = true
     
+    // MARK: VC Events
     override func loadView() {
         super.loadView()
-        
-        // Setup sceneview
-        let sceneView = ARSCNView() //instantiate scene view
-        self.view.insertSubview(sceneView, at: 0)
-        
-        //add sceneView layout contstraints
-        sceneView.translatesAutoresizingMaskIntoConstraints = false
-        sceneView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
-        sceneView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
-        sceneView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
-        sceneView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
-        // set reference to sceneView
-        self.sceneView = sceneView
+        createUI()
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -74,17 +63,33 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate {
         self.scnLights.append(light)
     }
     
-    // hide the status bar
+    // MARK: Create UI
+    func createUI() {
+        // Setup sceneview
+        let sceneView = ARSCNView() //instantiate scene view
+        self.view.insertSubview(sceneView, at: 0)
+        
+        //add sceneView layout contstraints
+        sceneView.translatesAutoresizingMaskIntoConstraints = false
+        sceneView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+        sceneView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
+        sceneView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
+        sceneView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
+        // set reference to sceneView
+        self.sceneView = sceneView
+    }
+    
+    // MARK: Hide status bar
     override var prefersStatusBarHidden: Bool {
         return true
     }
     
-    // render delegate methods
+    // MARK: Render delegate
     func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
         
         // TODO: Add config option to enable/disable real-world lighting
-        // change the .intensity property of scene env light to they respond to the real world env
         guard let currentFrame = self.sceneView.session.currentFrame else { return }
+        // change the .intensity property of scene env light to they respond to the real world env
         let intensity : CGFloat = currentFrame.lightEstimate!.ambientIntensity / 1000.0
         self.sceneView.scene.lightingEnvironment.intensity = intensity
         if scnLights.count > 0 {
@@ -112,6 +117,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate {
         // anchor plane is removed
     }
     
+    // MARK: Lights
     func createLight(withPosition position: SCNVector3, andEulerRotation rotation: SCNVector3) -> SCNNode {
         // Create a directional light node with shadow
         let directionalNode : SCNNode = SCNNode()

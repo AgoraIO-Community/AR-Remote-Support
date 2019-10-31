@@ -69,7 +69,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             // simple draw user touches
             let layer = CAShapeLayer()
             layer.path = UIBezierPath(roundedRect: CGRect(x:  pixelTranslation.x, y: pixelTranslation.y, width: 25, height: 25), cornerRadius: 50).cgPath
-            layer.fillColor = UIColor.red.cgColor
+            layer.fillColor = UIColor.white.cgColor
             self.view.layer.addSublayer(layer)
             
             if debug {

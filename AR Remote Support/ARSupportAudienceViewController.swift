@@ -12,7 +12,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
 
     var touchStart: CGPoint!
     var touchPoints: [CGPoint]!
-    let debug: Bool = false
+    let debug: Bool = true
     
     // MARK: VC Events
     override func loadView() {
@@ -60,19 +60,42 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         if let touch = touches.first {
             let position = touch.location(in: self.view)
             self.touchStart = position
-            self.touchPoints = [touchStart]
+            let layer = CAShapeLayer()
+            layer.path = UIBezierPath(roundedRect: CGRect(x:  position.x, y: position.y, width: 25, height: 25), cornerRadius: 50).cgPath
+            layer.fillColor = UIColor.white.cgColor
+            self.view.layer.addSublayer(layer)
+            self.touchPoints = []
             if debug {
                  print(position)
             }
         }
     }
+//
+//    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
+//        if let touch = touches.first {
+//           let position = touch.location(in: self.view)
+//            self.touchPoints.append(position)
+//            print(position)
+//            let layer = CAShapeLayer()
+//            layer.path = UIBezierPath(roundedRect: CGRect(x:  position.x, y: position.y, width: 25, height: 25), cornerRadius: 50).cgPath
+//            layer.fillColor = UIColor.white.cgColor
+//            self.view.layer.addSublayer(layer)
+//        }
+//    }
     
     @IBAction func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
         if gestureRecognizer.state == .began || gestureRecognizer.state == .changed {
             let translation = gestureRecognizer.translation(in: self.view)
             // calculate touch movement relative to the superview
             let pixelTranslation = CGPoint(x: self.touchStart.x + translation.x, y: self.touchStart.y + translation.y)
+            
+            // normalize the touch point to use view center as the reference point
+//            let translationFromCenter = CGPoint(x: pixelTranslation.x - (0.5 * self.view.frame.width), y: pixelTranslation.y - (0.5 * self.view.frame.height))
+            
+//            let pixelTranslationFromCenter = CGPoint(x: 0.5 * self.view.frame.width + translationFromCenter.x, y: 0.5 * self.view.frame.height + translationFromCenter.y)
+            
             self.touchPoints.append(pixelTranslation)
+            
             // simple draw user touches
             let layer = CAShapeLayer()
             layer.path = UIBezierPath(roundedRect: CGRect(x:  pixelTranslation.x, y: pixelTranslation.y, width: 25, height: 25), cornerRadius: 50).cgPath
@@ -80,12 +103,15 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             self.view.layer.addSublayer(layer)
             
             if debug {
+//                print(translationFromCenter)
                 print(pixelTranslation)
+               
             }
         }
         if gestureRecognizer.state == .ended {
             if let touchPointsList = self.touchPoints {
                 print(touchPointsList)
+                // push touch points list to AR View
             }
         }
         

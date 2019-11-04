@@ -78,6 +78,19 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate {
         sceneView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
         // set reference to sceneView
         self.sceneView = sceneView
+        
+        //  back button
+        let backBtn = UIButton()
+        backBtn.frame = CGRect(x: self.view.frame.maxX-75, y: self.view.frame.minY + 25, width: 50, height: 50)
+        backBtn.layer.cornerRadius = 10
+        backBtn.tintColor = .white
+        backBtn.setTitle("x", for: .normal)
+        backBtn.addTarget(self, action: #selector(popView), for: .touchUpInside)
+        self.view.addSubview(backBtn)
+    }
+    
+    @IBAction func popView() {
+        self.dismiss(animated: true, completion: nil)
     }
     
     // MARK: Hide status bar

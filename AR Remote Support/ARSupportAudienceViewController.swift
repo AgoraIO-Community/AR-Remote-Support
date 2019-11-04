@@ -119,12 +119,12 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     
     // MARK: UI
     func createUI() {
-        //  create button
+        //  back button
         let backBtn = UIButton()
-        backBtn.frame = CGRect(x: self.view.frame.minX+25, y: self.view.frame.minY + 25, width: 50, height: 50)
-        backBtn.backgroundColor = UIColor.systemBlue
+        backBtn.frame = CGRect(x: self.view.frame.maxX-75, y: self.view.frame.minY + 25, width: 50, height: 50)
         backBtn.layer.cornerRadius = 10
-        backBtn.setTitle("back", for: .normal)
+        backBtn.tintColor = .white
+        backBtn.setTitle("x", for: .normal)
         backBtn.addTarget(self, action: #selector(popView), for: .touchUpInside)
         self.view.addSubview(backBtn)
     }

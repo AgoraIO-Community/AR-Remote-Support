@@ -8,6 +8,7 @@
 
 /* Begin PBXBuildFile section */
 		0358E05B2370ADE70041F021 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0358E05A2370ADE70041F021 /* Assets.xcassets */; };
+		0358E05D2370B3170041F021 /* GetValueFromFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0358E05C2370B3170041F021 /* GetValueFromFile.swift */; };
 		0379DF4D2369F67900B20008 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379DF4C2369F67900B20008 /* AppDelegate.swift */; };
 		0379DF542369F67900B20008 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0379DF522369F67900B20008 /* Main.storyboard */; };
 		0379DF592369F67B00B20008 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0379DF572369F67B00B20008 /* LaunchScreen.storyboard */; };
@@ -40,6 +41,7 @@
 
 /* Begin PBXFileReference section */
 		0358E05A2370ADE70041F021 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		0358E05C2370B3170041F021 /* GetValueFromFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetValueFromFile.swift; sourceTree = "<group>"; };
 		0379DF492369F67900B20008 /* AR Remote Support.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AR Remote Support.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0379DF4C2369F67900B20008 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0379DF532369F67900B20008 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -126,6 +128,7 @@
 				039ABE48236A03F8008A374F /* ARSupportBroadcasterViewController.swift */,
 				039ABE4C236A045A008A374F /* ARSupportAudienceViewController.swift */,
 				039ABE0A236A021E008A374F /* ViewController.swift */,
+				0358E05C2370B3170041F021 /* GetValueFromFile.swift */,
 			);
 			path = "AR Remote Support";
 			sourceTree = "<group>";
@@ -158,7 +161,6 @@
 				CB835059E6A2D75DAE14959A /* Pods-AR Remote SupportUITests.debug.xcconfig */,
 				577B6754AF63956668DA6D7A /* Pods-AR Remote SupportUITests.release.xcconfig */,
 			);
-			name = Pods;
 			path = Pods;
 			sourceTree = "<group>";
 		};
@@ -379,6 +381,7 @@
 				039ABE0B236A021E008A374F /* ViewController.swift in Sources */,
 				039ABE4D236A045A008A374F /* ARSupportAudienceViewController.swift in Sources */,
 				0379DF4D2369F67900B20008 /* AppDelegate.swift in Sources */,
+				0358E05D2370B3170041F021 /* GetValueFromFile.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -7,3 +7,10 @@
 //
 
 import Foundation
+
+func getValue(withKey keyId:String, within fileName: String) -> String {
+    let filePath = Bundle.main.path(forResource: fileName, ofType: "plist")
+    let plist = NSDictionary(contentsOfFile: filePath!)
+    let value:String = plist?.object(forKey: keyId) as! String
+    return value
+}

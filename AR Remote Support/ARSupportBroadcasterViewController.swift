@@ -79,12 +79,25 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate {
         // set reference to sceneView
         self.sceneView = sceneView
         
+        // mute button
+        let micBtn = UIButton()
+        micBtn.frame = CGRect(x: self.view.frame.midX-37.5, y: self.view.frame.maxY-100, width: 75, height: 75)
+        if let imageMicBtn = UIImage(named: "mic") {
+            micBtn.setImage(imageMicBtn, for: .normal)
+        } else {
+            micBtn.setTitle("mute", for: .normal)
+        }
+        self.view.addSubview(micBtn)
+        
         //  back button
         let backBtn = UIButton()
-        backBtn.frame = CGRect(x: self.view.frame.maxX-75, y: self.view.frame.minY + 25, width: 50, height: 50)
+        backBtn.frame = CGRect(x: self.view.frame.maxX-55, y: self.view.frame.minY + 20, width: 30, height: 30)
         backBtn.layer.cornerRadius = 10
-        backBtn.tintColor = .white
-        backBtn.setTitle("x", for: .normal)
+        if let imageExitBtn = UIImage(named: "exit") {
+            backBtn.setImage(imageExitBtn, for: .normal)
+        } else {
+            backBtn.setTitle("x", for: .normal)
+        }
         backBtn.addTarget(self, action: #selector(popView), for: .touchUpInside)
         self.view.addSubview(backBtn)
     }

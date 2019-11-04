@@ -93,7 +93,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         if gestureRecognizer.state == .began || gestureRecognizer.state == .changed {
             let translation = gestureRecognizer.translation(in: self.view)
             // calculate touch movement relative to the superview
-            guard let touchStart = self.touchStart else { return }
+            guard let touchStart = self.touchStart else { return } // ignore accidental finger drags
             let pixelTranslation = CGPoint(x: touchStart.x + translation.x, y: touchStart.y + translation.y)
             
             // normalize the touch point to use view center as the reference point
@@ -119,7 +119,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             if let touchPointsList = self.touchPoints {
                 print(touchPointsList)
                 // push touch points list to AR View
-                self.touchStart = nil
+                self.touchStart = nil // clear starting point
             }
         }
         

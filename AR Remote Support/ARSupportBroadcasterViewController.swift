@@ -8,12 +8,15 @@
 
 import UIKit
 import ARKit
+import AgoraRtcEngineKit
 
-
-class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate {
+class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, AgoraRtcEngineDelegate {
     
     var sceneView : ARSCNView!
     var scnLights : [SCNNode] = []
+    
+    // Agora
+    var agoraKit: AgoraRtcEngineKit!
     
     let debug : Bool = true
     
@@ -22,6 +25,8 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate {
         super.loadView()
         createUI()
         self.view.backgroundColor = UIColor.black
+        let appID = getValue(withKey: "AppID", within: "keys")
+        self.agoraKit = AgoraRtcEngineKit.sharedEngine(withAppId: appID, delegate: self)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -105,6 +110,8 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate {
     @IBAction func popView() {
         self.dismiss(animated: true, completion: nil)
     }
+    
+    // MARK: Agora Interface
     
     // MARK: Hide status bar
     override var prefersStatusBarHidden: Bool {

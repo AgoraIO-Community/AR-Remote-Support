@@ -68,4 +68,4 @@ fastlane/screenshots/**/*.png
 fastlane/test_output
 
 # project specific -- disable tracking on the keys file
-keys.plist
+# git update-index --assume-unchanged AR\ Remote\ Support/keys.plist 

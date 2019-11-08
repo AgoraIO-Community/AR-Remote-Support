@@ -82,14 +82,30 @@ class ViewController: UIViewController, UITextFieldDelegate {
     // MARK: Button Actions
     @IBAction func joinRemoteSession() {
         let arSupportVC = ARSupportAudienceViewController()
-        arSupportVC.modalPresentationStyle = .fullScreen
-        self.present(arSupportVC, animated: true, completion: nil)
+        if let channelName = self.channelInput.text {
+            if channelName != "" {
+                arSupportVC.channelName = channelName
+                arSupportVC.modalPresentationStyle = .fullScreen
+                self.present(arSupportVC, animated: true, completion: nil)
+            } else {
+               // TODO: add visible msg to user
+               print("unable to join a broadcast without an empty channelName")
+            }
+        }
     }
     
     @IBAction func createSession() {
         let arBroadcastVC = ARSupportBroadcasterViewController()
-        arBroadcastVC.modalPresentationStyle = .fullScreen
-        self.present(arBroadcastVC, animated: true, completion: nil)
+        if let channelName = self.channelInput.text {
+            if channelName != "" {
+                arBroadcastVC.channelName = channelName
+                arBroadcastVC.modalPresentationStyle = .fullScreen
+                self.present(arBroadcastVC, animated: true, completion: nil)
+            } else {
+               // TODO: add visible msg to user
+               print("unable to launch a broadcast without an empty channelName")
+            }
+        }
     }
     
     // MARK: Textfield Delegates

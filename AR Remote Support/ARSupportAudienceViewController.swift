@@ -17,6 +17,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     let bgColor: UIColor = .white
     
     var drawingView: UIView!
+    var localVideoView: UIView!
     var micBtn: UIButton!
     
     let debug: Bool = true
@@ -40,6 +41,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         let appID = getValue(withKey: "AppID", within: "keys")
         self.agoraKit = AgoraRtcEngineKit.sharedEngine(withAppId: appID, delegate: self)
         self.agoraKit.setClientRole(.audience)
+        setupLocalVideo()
     }
 
     override func viewDidLoad() {
@@ -170,6 +172,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         localView.layer.cornerRadius = 25
         localView.backgroundColor = UIColor.darkGray
         self.view.insertSubview(localView, at: 2)
+        self.localVideoView = localView
         
         // mute button
         let micBtn = UIButton()
@@ -197,6 +200,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         
     }
     
+    // MARK: Button Events
     @IBAction func popView() {
         self.dismiss(animated: true, completion: nil)
     }
@@ -211,6 +215,21 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             print("enable mic")
             self.micBtn.setImage(activeMicImg, for: .normal)
         }
+    }
+    
+    // MARK: Agora
+    func setupLocalVideo() {
+        guard let localVideoView = self.localVideoView else { return }
+        self.agoraKit.enableVideo()
+        let videoCanvas = AgoraRtcVideoCanvas()
+        videoCanvas.uid = 0
+        videoCanvas.view = localVideoView
+        videoCanvas.renderMode = .hidden
+        // Set the local video view.
+        self.agoraKit.setupLocalVideo(videoCanvas)
+        
+        guard let videoView = localVideoView.subviews.first else { return }
+        videoView.layer.cornerRadius = 25
     }
 
 }

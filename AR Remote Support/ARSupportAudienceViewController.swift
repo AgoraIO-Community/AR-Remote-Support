@@ -7,14 +7,23 @@
 //
 
 import UIKit
+import AgoraRtcEngineKit
 
-class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDelegate {
+class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDelegate, AgoraRtcEngineDelegate {
 
     var touchStart: CGPoint!
     var touchPoints: [CGPoint]!
     let lineColor: CGColor = UIColor.gray.cgColor
     let bgColor: UIColor = .white
+    
+    var drawingView: UIView!
+    var micBtn: UIButton!
+    
     let debug: Bool = true
+    
+    // Agora
+    var agoraKit: AgoraRtcEngineKit!
+    var channelName: String!
     
     // MARK: VC Events
     override func loadView() {
@@ -26,6 +35,11 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
 //        frame.origin.x = self.view.center.x
 //        frame.origin.y = self.view.center.y
 //        self.view.frame = frame
+        
+        // Agora setup
+        let appID = getValue(withKey: "AppID", within: "keys")
+        self.agoraKit = AgoraRtcEngineKit.sharedEngine(withAppId: appID, delegate: self)
+        self.agoraKit.setClientRole(.audience)
     }
 
     override func viewDidLoad() {
@@ -33,6 +47,13 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         // Do any additional setup after loading the view.
         self.view.backgroundColor = self.bgColor
         self.view.isUserInteractionEnabled = true
+        
+        // Agora - join the channel
+        let tokenString = getValue(withKey: "token", within: "keys")
+        let token = (tokenString == "") ? nil : tokenString
+        self.agoraKit.joinChannel(byToken: token, channelId: self.channelName, info: nil, uid: 0) { (channel, uintID, timeelapsed) in
+            print("Successfully joined: \(channel), with \(uintID): \(timeelapsed) secongs ago")
+        }
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -69,7 +90,8 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             let layer = CAShapeLayer()
             layer.path = UIBezierPath(roundedRect: CGRect(x:  position.x, y: position.y, width: 25, height: 25), cornerRadius: 50).cgPath
             layer.fillColor = self.lineColor
-            self.view.layer.addSublayer(layer)
+            guard let drawView = self.drawingView else { return }
+            drawView.layer.addSublayer(layer)
             self.touchPoints = []
             if debug {
                  print(position)
@@ -85,7 +107,8 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
 //            let layer = CAShapeLayer()
 //            layer.path = UIBezierPath(roundedRect: CGRect(x:  position.x, y: position.y, width: 25, height: 25), cornerRadius: 50).cgPath
 //            layer.fillColor = UIColor.white.cgColor
-//            self.view.layer.addSublayer(layer)
+//            guard let drawView = self.drawingView else { return }
+//            drawView.layer.addSublayer(layer)
 //        }
 //    }
     
@@ -107,7 +130,8 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             let layer = CAShapeLayer()
             layer.path = UIBezierPath(roundedRect: CGRect(x:  pixelTranslation.x, y: pixelTranslation.y, width: 25, height: 25), cornerRadius: 50).cgPath
             layer.fillColor = self.lineColor
-            self.view.layer.addSublayer(layer)
+            guard let drawView = self.drawingView else { return }
+            drawView.layer.addSublayer(layer)
             
             if debug {
 //                print(translationFromCenter)
@@ -128,6 +152,25 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     // MARK: UI
     func createUI() {
         
+        // add remote video view
+        let remoteView = UIView()
+        remoteView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
+        remoteView.backgroundColor = UIColor.lightGray
+        self.view.insertSubview(remoteView, at: 0)
+        
+        // view that the finger drawings will appear on
+        let drawingView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
+        self.view.insertSubview(drawingView, at: 1)
+        self.drawingView = drawingView
+        
+        // add local video view
+        let localViewScale = self.view.frame.width * 0.33
+        let localView = UIView()
+        localView.frame = CGRect(x: self.view.frame.maxX - (localViewScale+17.5), y: self.view.frame.maxY - (localViewScale+25), width: localViewScale, height: localViewScale)
+        localView.layer.cornerRadius = 25
+        localView.backgroundColor = UIColor.darkGray
+        self.view.insertSubview(localView, at: 2)
+        
         // mute button
         let micBtn = UIButton()
         micBtn.frame = CGRect(x: self.view.frame.midX-37.5, y: self.view.frame.maxY-100, width: 75, height: 75)
@@ -136,7 +179,9 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         } else {
             micBtn.setTitle("mute", for: .normal)
         }
-        self.view.addSubview(micBtn)
+        micBtn.addTarget(self, action: #selector(toggleMic), for: .touchDown)
+        self.view.insertSubview(micBtn, at: 3)
+        self.micBtn = micBtn
         
         //  back button
         let backBtn = UIButton()
@@ -148,11 +193,24 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             backBtn.setTitle("x", for: .normal)
         }
         backBtn.addTarget(self, action: #selector(popView), for: .touchUpInside)
-        self.view.addSubview(backBtn)
+        self.view.insertSubview(backBtn, at: 3)
+        
     }
     
     @IBAction func popView() {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func toggleMic() {
+        guard let activeMicImg = UIImage(named: "mic") else { return }
+        guard let disabledMicImg = UIImage(named: "mute") else { return }
+        if self.micBtn.imageView?.image == activeMicImg {
+            print("disable active mic")
+            self.micBtn.setImage(disabledMicImg, for: .normal)
+        } else {
+            print("enable mic")
+            self.micBtn.setImage(activeMicImg, for: .normal)
+        }
     }
 
 }

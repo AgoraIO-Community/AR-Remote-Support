@@ -15,8 +15,11 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     var sceneView : ARSCNView!
     var scnLights : [SCNNode] = []
     
+    var micBtn: UIButton!
+    
     // Agora
     var agoraKit: AgoraRtcEngineKit!
+    var channelName: String!
     
     let debug : Bool = true
     
@@ -25,8 +28,11 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         super.loadView()
         createUI()
         self.view.backgroundColor = UIColor.black
+        
+        // Agora setup
         let appID = getValue(withKey: "AppID", within: "keys")
         self.agoraKit = AgoraRtcEngineKit.sharedEngine(withAppId: appID, delegate: self)
+        self.agoraKit.setClientRole(.broadcaster)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -60,6 +66,13 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
             self.sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, .showBoundingBoxes, ARSCNDebugOptions.showFeaturePoints]
             self.sceneView.showsStatistics = true
         }
+        
+        // Agora - join the channel
+        let tokenString = getValue(withKey: "token", within: "keys")
+        let token = (tokenString == "") ? nil : tokenString
+        self.agoraKit.joinChannel(byToken: token, channelId: self.channelName, info: nil, uid: 0) { (channel, uintID, timeelapsed) in
+            print("Successfully joined: \(channel), with \(uintID): \(timeelapsed) secongs ago")
+        }
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -84,7 +97,15 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         // set reference to sceneView
         self.sceneView = sceneView
         
-        // mute button
+        // add remote video view
+        let remoteViewScale = self.view.frame.width * 0.33
+        let remoteView = UIView()
+        remoteView.frame = CGRect(x: self.view.frame.maxX - (remoteViewScale+17.5), y: self.view.frame.maxY - (remoteViewScale+25), width: remoteViewScale, height: remoteViewScale)
+        remoteView.backgroundColor = UIColor.lightGray
+        remoteView.layer.cornerRadius = 25
+        self.view.insertSubview(remoteView, at: 0)
+        
+        // mic button
         let micBtn = UIButton()
         micBtn.frame = CGRect(x: self.view.frame.midX-37.5, y: self.view.frame.maxY-100, width: 75, height: 75)
         if let imageMicBtn = UIImage(named: "mic") {
@@ -92,7 +113,9 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         } else {
             micBtn.setTitle("mute", for: .normal)
         }
-        self.view.addSubview(micBtn)
+        micBtn.addTarget(self, action: #selector(toggleMic), for: .touchDown)
+        self.view.insertSubview(micBtn, at: 2)
+        self.micBtn = micBtn
         
         //  back button
         let backBtn = UIButton()
@@ -104,11 +127,23 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
             backBtn.setTitle("x", for: .normal)
         }
         backBtn.addTarget(self, action: #selector(popView), for: .touchUpInside)
-        self.view.addSubview(backBtn)
+        self.view.insertSubview(backBtn, at: 2)
     }
     
     @IBAction func popView() {
         self.dismiss(animated: true, completion: nil)
+    }
+    
+    @IBAction func toggleMic() {
+        guard let activeMicImg = UIImage(named: "mic") else { return }
+        guard let disabledMicImg = UIImage(named: "mute") else { return }
+        if self.micBtn.imageView?.image == activeMicImg {
+            print("disable active mic")
+            self.micBtn.setImage(disabledMicImg, for: .normal)
+        } else {
+            print("enable mic")
+            self.micBtn.setImage(activeMicImg, for: .normal)
+        }
     }
     
     // MARK: Agora Interface

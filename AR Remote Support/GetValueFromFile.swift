@@ -8,9 +8,9 @@
 
 import Foundation
 
-func getValue(withKey keyId:String, within fileName: String) -> String {
+func getValue(withKey keyId:String, within fileName: String) -> String? {
     let filePath = Bundle.main.path(forResource: fileName, ofType: "plist")
     let plist = NSDictionary(contentsOfFile: filePath!)
-    guard let value:String = plist?.object(forKey: keyId) as? String else { return "" }
+    guard let value:String = plist?.object(forKey: keyId) as? String else { return nil }
     return value
 }

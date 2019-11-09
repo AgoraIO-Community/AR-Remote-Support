@@ -100,10 +100,10 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         // add remote video view
         let remoteViewScale = self.view.frame.width * 0.33
         let remoteView = UIView()
-        remoteView.frame = CGRect(x: self.view.frame.maxX - (remoteViewScale+17.5), y: self.view.frame.maxY - (remoteViewScale+25), width: remoteViewScale, height: remoteViewScale)
+        remoteView.frame = CGRect(x: self.view.frame.maxX - (remoteViewScale+15), y: self.view.frame.maxY - (remoteViewScale+25), width: remoteViewScale, height: remoteViewScale)
         remoteView.backgroundColor = UIColor.lightGray
         remoteView.layer.cornerRadius = 25
-        self.view.insertSubview(remoteView, at: 0)
+        self.view.insertSubview(remoteView, at: 1)
         
         // mic button
         let micBtn = UIButton()

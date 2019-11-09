@@ -170,6 +170,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         let localView = UIView()
         localView.frame = CGRect(x: self.view.frame.maxX - (localViewScale+17.5), y: self.view.frame.maxY - (localViewScale+25), width: localViewScale, height: localViewScale)
         localView.layer.cornerRadius = 25
+        localView.layer.masksToBounds = true
         localView.backgroundColor = UIColor.darkGray
         self.view.insertSubview(localView, at: 2)
         self.localVideoView = localView

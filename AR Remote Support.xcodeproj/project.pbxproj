@@ -18,6 +18,8 @@
 		039ABE0B236A021E008A374F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ABE0A236A021E008A374F /* ViewController.swift */; };
 		039ABE4A236A03F8008A374F /* ARSupportBroadcasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ABE48236A03F8008A374F /* ARSupportBroadcasterViewController.swift */; };
 		039ABE4D236A045A008A374F /* ARSupportAudienceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ABE4C236A045A008A374F /* ARSupportAudienceViewController.swift */; };
+		03E1EB9923765DEC0058F088 /* ARVideoSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E1EB9823765DEC0058F088 /* ARVideoSource.swift */; };
+		03E1EB9B237663D30058F088 /* SCNVector3+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E1EB9A237663D30058F088 /* SCNVector3+Extensions.swift */; };
 		9413F486365A3881103BE1C9 /* Pods_AR_Remote_SupportUITests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = EF02611A41C04ADB3DB4BA0A /* Pods_AR_Remote_SupportUITests.framework */; };
 		B62284B9B67997EB3C956414 /* Pods_AR_Remote_SupportTests.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6E833E411D6BD162FE146A76 /* Pods_AR_Remote_SupportTests.framework */; };
 		F843FE46C4F4E6FFF7199CA7 /* Pods_AR_Remote_Support.framework in Frameworks */ = {isa = PBXBuildFile; fileRef = 6C7FED26B9D616B8B95D9371 /* Pods_AR_Remote_Support.framework */; };
@@ -58,6 +60,8 @@
 		039ABE0A236A021E008A374F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		039ABE48236A03F8008A374F /* ARSupportBroadcasterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARSupportBroadcasterViewController.swift; sourceTree = "<group>"; };
 		039ABE4C236A045A008A374F /* ARSupportAudienceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSupportAudienceViewController.swift; sourceTree = "<group>"; };
+		03E1EB9823765DEC0058F088 /* ARVideoSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARVideoSource.swift; sourceTree = "<group>"; };
+		03E1EB9A237663D30058F088 /* SCNVector3+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SCNVector3+Extensions.swift"; sourceTree = "<group>"; };
 		124533CB934525E8027A51B4 /* Pods-AR Remote Support.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AR Remote Support.release.xcconfig"; path = "Target Support Files/Pods-AR Remote Support/Pods-AR Remote Support.release.xcconfig"; sourceTree = "<group>"; };
 		1750F3E4DD53BF3DB351CAC9 /* Pods-AR Remote SupportTests.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AR Remote SupportTests.debug.xcconfig"; path = "Target Support Files/Pods-AR Remote SupportTests/Pods-AR Remote SupportTests.debug.xcconfig"; sourceTree = "<group>"; };
 		577B6754AF63956668DA6D7A /* Pods-AR Remote SupportUITests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-AR Remote SupportUITests.release.xcconfig"; path = "Target Support Files/Pods-AR Remote SupportUITests/Pods-AR Remote SupportUITests.release.xcconfig"; sourceTree = "<group>"; };
@@ -132,6 +136,8 @@
 				039ABE0A236A021E008A374F /* ViewController.swift */,
 				0358E05E2370C2FE0041F021 /* keys.plist */,
 				0358E05C2370B3170041F021 /* GetValueFromFile.swift */,
+				03E1EB9823765DEC0058F088 /* ARVideoSource.swift */,
+				03E1EB9A237663D30058F088 /* SCNVector3+Extensions.swift */,
 			);
 			path = "AR Remote Support";
 			sourceTree = "<group>";
@@ -188,6 +194,7 @@
 				0379DF452369F67900B20008 /* Sources */,
 				0379DF462369F67900B20008 /* Frameworks */,
 				0379DF472369F67900B20008 /* Resources */,
+				30DEB9A87C6A591F97E4AAB1 /* [CP] Embed Pods Frameworks */,
 			);
 			buildRules = (
 			);
@@ -330,6 +337,23 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		30DEB9A87C6A591F97E4AAB1 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AR Remote Support/Pods-AR Remote Support-frameworks-${CONFIGURATION}-input-files.xcfilelist",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputFileListPaths = (
+				"${PODS_ROOT}/Target Support Files/Pods-AR Remote Support/Pods-AR Remote Support-frameworks-${CONFIGURATION}-output-files.xcfilelist",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-AR Remote Support/Pods-AR Remote Support-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
 		A5BA2A4036B50C9195D76B05 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -384,8 +408,10 @@
 				039ABE4A236A03F8008A374F /* ARSupportBroadcasterViewController.swift in Sources */,
 				039ABE0B236A021E008A374F /* ViewController.swift in Sources */,
 				039ABE4D236A045A008A374F /* ARSupportAudienceViewController.swift in Sources */,
+				03E1EB9923765DEC0058F088 /* ARVideoSource.swift in Sources */,
 				0379DF4D2369F67900B20008 /* AppDelegate.swift in Sources */,
 				0358E05D2370B3170041F021 /* GetValueFromFile.swift in Sources */,
+				03E1EB9B237663D30058F088 /* SCNVector3+Extensions.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

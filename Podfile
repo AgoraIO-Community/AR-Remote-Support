@@ -7,6 +7,7 @@ target 'AR Remote Support' do
 
   # Pods for AR Remote Support
   pod 'AgoraRtcEngine_iOS'
+  pod 'ARVideoKit', :git => 'https://github.com/AFathi/ARVideoKit', :branch => 'swift_4_2' # record ARKit session
 
   target 'AR Remote SupportTests' do
     inherit! :search_paths

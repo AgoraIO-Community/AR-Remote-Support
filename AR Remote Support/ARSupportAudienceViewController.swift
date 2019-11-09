@@ -18,7 +18,10 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     
     var drawingView: UIView!
     var localVideoView: UIView!
+    var remoteVideoView: UIView!
     var micBtn: UIButton!
+    
+    var sessionIsActive = false
     
     let debug: Bool = true
     
@@ -31,6 +34,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         super.loadView()
         createUI()
         setupGestures()
+        self.view.isUserInteractionEnabled = false
         
 //        var frame = self.view.frame
 //        frame.origin.x = self.view.center.x
@@ -38,10 +42,10 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
 //        self.view.frame = frame
         
         // Agora setup
-        let appID = getValue(withKey: "AppID", within: "keys")
+        guard let appID = getValue(withKey: "AppID", within: "keys") else { return }
         self.agoraKit = AgoraRtcEngineKit.sharedEngine(withAppId: appID, delegate: self)
-        self.agoraKit.setClientRole(.audience)
-        setupLocalVideo()
+        self.agoraKit.setChannelProfile(.communication)
+//        self.agoraKit.setClientRole(.broadcaster)
     }
 
     override func viewDidLoad() {
@@ -51,11 +55,8 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         self.view.isUserInteractionEnabled = true
         
         // Agora - join the channel
-        let tokenString = getValue(withKey: "token", within: "keys")
-        let token = (tokenString == "") ? nil : tokenString
-        self.agoraKit.joinChannel(byToken: token, channelId: self.channelName, info: nil, uid: 0) { (channel, uintID, timeelapsed) in
-            print("Successfully joined: \(channel), with \(uintID): \(timeelapsed) secongs ago")
-        }
+        setupLocalVideo()
+        joinChannel()
     }
     
     override func viewWillAppear(_ animated: Bool) {
@@ -86,7 +87,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     // MARK: Touch Capture
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
        // get the initial touch event
-        if let touch = touches.first {
+        if self.sessionIsActive, let touch = touches.first {
             let position = touch.location(in: self.view)
             self.touchStart = position
             let layer = CAShapeLayer()
@@ -115,7 +116,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
 //    }
     
     @IBAction func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
-        if gestureRecognizer.state == .began || gestureRecognizer.state == .changed {
+        if self.sessionIsActive && (gestureRecognizer.state == .began || gestureRecognizer.state == .changed) {
             let translation = gestureRecognizer.translation(in: self.view)
             // calculate touch movement relative to the superview
             guard let touchStart = self.touchStart else { return } // ignore accidental finger drags
@@ -159,6 +160,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         remoteView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
         remoteView.backgroundColor = UIColor.lightGray
         self.view.insertSubview(remoteView, at: 0)
+        self.remoteVideoView = remoteView
         
         // view that the finger drawings will appear on
         let drawingView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
@@ -203,6 +205,8 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     
     // MARK: Button Events
     @IBAction func popView() {
+        leaveChannel()
+        self.sessionIsActive = false
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -218,10 +222,17 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         }
     }
     
-    // MARK: Agora
+    // MARK: Agora Implementation
     func setupLocalVideo() {
         guard let localVideoView = self.localVideoView else { return }
+       
+        // enable the local video stream
         self.agoraKit.enableVideo()
+        
+        // Set video configuration
+        let videoConfig = AgoraVideoEncoderConfiguration(size: AgoraVideoDimension360x360, frameRate: .fps15, bitrate: AgoraVideoBitrateStandard, orientationMode: .fixedPortrait)
+        self.agoraKit.setVideoEncoderConfiguration(videoConfig)
+        // set up local video view
         let videoCanvas = AgoraRtcVideoCanvas()
         videoCanvas.uid = 0
         videoCanvas.view = localVideoView
@@ -231,6 +242,62 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         
         guard let videoView = localVideoView.subviews.first else { return }
         videoView.layer.cornerRadius = 25
+    }
+    
+    func joinChannel() {
+        // Set audio route to speaker
+        agoraKit.setDefaultAudioRouteToSpeakerphone(true)
+        
+        let token = getValue(withKey: "token", within: "keys")
+        
+        self.agoraKit.joinChannel(byToken: token, channelId: self.channelName, info: nil, uid: 0) { (channel, uid, elapsed) in
+            print("Successfully joined: \(channel), with \(uid): \(elapsed) secongs ago")
+        }
+        
+        UIApplication.shared.isIdleTimerDisabled = true
+    }
+    
+    func leaveChannel() {
+        // leave channel and end chat
+        self.agoraKit.leaveChannel(nil)
+        UIApplication.shared.isIdleTimerDisabled = false
+    }
+    
+    // MARK: Agora Delegate
+    // first remote video frame
+    func rtcEngine(_ engine: AgoraRtcEngineKit, firstRemoteVideoDecodedOfUid uid:UInt, size:CGSize, elapsed:Int) {
+        guard let remoteView = self.remoteVideoView else { return }
+        let videoCanvas = AgoraRtcVideoCanvas()
+        videoCanvas.uid = uid
+        videoCanvas.view = remoteView
+        videoCanvas.renderMode = .hidden
+        agoraKit.setupRemoteVideo(videoCanvas)
+        
+        self.sessionIsActive = true
+    }
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurError errorCode: AgoraErrorCode) {
+        print("error: \(errorCode.rawValue)")
+    }
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurWarning warningCode: AgoraWarningCode) {
+        print("warning: \(warningCode.rawValue)")
+    }
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinChannel channel: String, withUid uid: UInt, elapsed: Int) {
+        print("did join channel with uid:\(uid)")
+    }
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didRejoinChannel channel: String, withUid uid: UInt, elapsed: Int) {
+        print("did rejoin channel")
+    }
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinedOfUid uid: UInt, elapsed: Int) {
+        print("did joined of uid: \(uid)")
+    }
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didOfflineOfUid uid: UInt, reason: AgoraUserOfflineReason) {
+        print("did offline of uid: \(uid)")
     }
 
 }

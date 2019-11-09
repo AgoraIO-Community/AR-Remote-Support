@@ -1,9 +1,31 @@
 //
 //  ARVideoSource.swift
-//  AR Remote Support
+//  Agora-Video-With-ARKit
 //
-//  Created by Hermes Frangoudis on 11/8/19.
-//  Copyright © 2019 Agora.io. All rights reserved.
+//  Created by GongYuhua on 2018/1/11.
+//  Copyright © 2018 Agora. All rights reserved.
 //
 
-import Foundation
+import UIKit
+import AgoraRtcEngineKit
+
+class ARVideoSource: NSObject, AgoraVideoSourceProtocol {
+    var consumer: AgoraVideoFrameConsumer?
+    
+    func shouldInitialize() -> Bool { return true }
+    
+    func shouldStart() { }
+    
+    func shouldStop() { }
+    
+    func shouldDispose() { }
+    
+    func bufferType() -> AgoraVideoBufferType {
+        return .pixelBuffer
+    }
+    
+    func sendBuffer(_ buffer: CVPixelBuffer, timestamp: TimeInterval) {
+        let time = CMTime(seconds: timestamp, preferredTimescale: 1000)
+        consumer?.consumePixelBuffer(buffer, withTimestamp: time, rotation: .rotation90)
+    }
+}

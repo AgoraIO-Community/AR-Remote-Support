@@ -8,18 +8,24 @@
 
 import UIKit
 import ARKit
+import ARVideoKit
 import AgoraRtcEngineKit
 
-class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, AgoraRtcEngineDelegate {
+class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, RenderARDelegate, AgoraRtcEngineDelegate {
     
     var sceneView : ARSCNView!
     var scnLights : [SCNNode] = []
     
     var micBtn: UIButton!
+    var remoteVideoView: UIView!
     
     // Agora
     var agoraKit: AgoraRtcEngineKit!
     var channelName: String!
+    private let arVideoSource: ARVideoSource = ARVideoSource()
+    
+    // ARVideoKit
+    var recordAR: RecordAR!
     
     let debug : Bool = true
     
@@ -30,30 +36,35 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         self.view.backgroundColor = UIColor.black
         
         // Agora setup
-        let appID = getValue(withKey: "AppID", within: "keys")
+        guard let appID = getValue(withKey: "AppID", within: "keys") else { return }
         self.agoraKit = AgoraRtcEngineKit.sharedEngine(withAppId: appID, delegate: self)
-        self.agoraKit.setClientRole(.broadcaster)
+        self.agoraKit.setChannelProfile(.communication)
+        let videoConfig = AgoraVideoEncoderConfiguration(size: AgoraVideoDimension840x480, frameRate: .fps15, bitrate: AgoraVideoBitrateStandard, orientationMode: .fixedPortrait)
+        self.agoraKit.setVideoEncoderConfiguration(videoConfig)
+        self.agoraKit.enableVideo()
+        self.agoraKit.setVideoSource(self.arVideoSource)
+        self.agoraKit.enableExternalAudioSource(withSampleRate: 44100, channelsPerFrame: 1)
+        
     }
 
     override func viewWillAppear(_ animated: Bool) {
         super .viewWillAppear(animated)
         // Configure ARKit Session
         let configuration = ARWorldTrackingConfiguration()
-        if #available(iOS 11.3, *) {
-            configuration.planeDetection = [.horizontal, .vertical]
-        } else {
-            // Fallback on earlier versions
-            configuration.planeDetection = [.horizontal]
-        }
+        configuration.planeDetection = [.horizontal, .vertical]
+        configuration.providesAudioData = true
         configuration.isLightEstimationEnabled = true
 
         self.sceneView.session.run(configuration)
+        self.recordAR?.prepare(configuration)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         // Pause the view's session
         self.sceneView.session.pause()
+        self.sceneView.removeFromSuperview()
+        self.sceneView = nil
     }
     
     override func viewDidLoad() {
@@ -61,18 +72,26 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         
         // set render delegate
         self.sceneView.delegate = self
+        self.sceneView.session.delegate = self
+        
+        // setup ARViewRecorder
+        self.recordAR = RecordAR(ARSceneKit: self.sceneView)
+        self.recordAR?.renderAR = self // Set the renderer's delegate
+        // Configure the renderer to perform additional image & video processing 👁
+        self.recordAR?.onlyRenderWhileRecording = false
+        // Configure ARKit content mode. Default is .auto
+        self.recordAR?.contentMode = .aspectFit
+        //record or photo add environment light rendering, Default is false
+        self.recordAR?.enableAdjustEnvironmentLighting = true
+        // Set the UIViewController orientations
+        self.recordAR?.inputViewOrientations = [.landscapeLeft]
 
         if debug {
-            self.sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, .showBoundingBoxes, ARSCNDebugOptions.showFeaturePoints]
+            self.sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, ARSCNDebugOptions.showFeaturePoints]
             self.sceneView.showsStatistics = true
         }
         
-        // Agora - join the channel
-        let tokenString = getValue(withKey: "token", within: "keys")
-        let token = (tokenString == "") ? nil : tokenString
-        self.agoraKit.joinChannel(byToken: token, channelId: self.channelName, info: nil, uid: 0) { (channel, uintID, timeelapsed) in
-            print("Successfully joined: \(channel), with \(uintID): \(timeelapsed) secongs ago")
-        }
+        joinChannel() // Agora - join the channel
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -103,7 +122,9 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         remoteView.frame = CGRect(x: self.view.frame.maxX - (remoteViewScale+15), y: self.view.frame.maxY - (remoteViewScale+25), width: remoteViewScale, height: remoteViewScale)
         remoteView.backgroundColor = UIColor.lightGray
         remoteView.layer.cornerRadius = 25
+        remoteView.layer.masksToBounds = true
         self.view.insertSubview(remoteView, at: 1)
+        self.remoteVideoView = remoteView
         
         // mic button
         let micBtn = UIButton()
@@ -130,7 +151,9 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         self.view.insertSubview(backBtn, at: 2)
     }
     
+    // MARK: Button Events
     @IBAction func popView() {
+        leaveChannel()
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -147,10 +170,32 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     }
     
     // MARK: Agora Interface
+    func joinChannel() {
+        // Set audio route to speaker
+        self.agoraKit.setDefaultAudioRouteToSpeakerphone(true)
+        
+        let token = getValue(withKey: "token", within: "keys")
+        self.agoraKit.joinChannel(byToken: token, channelId: self.channelName, info: nil, uid: 0) { (channel, uid, elapsed) in
+            print("Successfully joined: \(channel), with \(uid): \(elapsed) secongs ago")
+        }
+        
+        UIApplication.shared.isIdleTimerDisabled = true
+    }
+    
+    func leaveChannel() {
+        // leave channel and end chat
+        self.agoraKit.leaveChannel(nil)
+        UIApplication.shared.isIdleTimerDisabled = false
+    }
     
     // MARK: Hide status bar
     override var prefersStatusBarHidden: Bool {
         return true
+    }
+    
+    // MARK: ARVidoeKit Renderer
+    func frame(didRender buffer: CVPixelBuffer, with time: CMTime, using rawBuffer: CVPixelBuffer) {
+        self.arVideoSource.sendBuffer(buffer, timestamp: time.seconds)
     }
     
     // MARK: Render delegate
@@ -161,15 +206,38 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         // change the .intensity property of scene env light to they respond to the real world env
         let intensity : CGFloat = currentFrame.lightEstimate!.ambientIntensity / 1000.0
         self.sceneView.scene.lightingEnvironment.intensity = intensity
-        if scnLights.count > 0 {
-            for node in scnLights {
+        if self.scnLights.count > 0 {
+            for node in self.scnLights {
                 node.light?.intensity = intensity
             }
+        }
+        
+        guard let pointOfView = self.sceneView.pointOfView else { return }
+        let transform = pointOfView.transform // transformation matrix
+        let orientation = SCNVector3(-transform.m31, -transform.m32, -transform.m33) // camera rotation
+        let location = SCNVector3(transform.m41, transform.m42, transform.m43) // camera translation
+        
+        let currentPostionOfCamera = orientation + location
+        DispatchQueue.main.async {
+            let sphereNode : SCNNode = SCNNode(geometry: SCNSphere(radius: 0.01))
+            sphereNode.position = currentPostionOfCamera // give the user a visual cue of brush position
+            sphereNode.name = "brushPointer" // set name to differentiate
+//            self.sceneView.scene.rootNode.enumerateChildNodes({ (node, _) in
+//                if node.name == "brushPointer" {
+//                    node.removeFromParentNode() // only remove bursh pointer
+//                }
+//            })
+//            sphereNode.geometry?.firstMaterial?.diffuse.contents = UIColor.lightGray
+            self.sceneView.scene.rootNode.addChildNode(sphereNode)
         }
     }
     
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
         // do something on render update
+    }
+    
+    func renderer(_ renderer: SCNSceneRenderer, didRenderScene scene: SCNScene, atTime time: TimeInterval) {
+        
     }
     
     // plane detection
@@ -184,6 +252,49 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     
     func renderer(_ renderer: SCNSceneRenderer, didRemove node: SCNNode, for anchor: ARAnchor) {
         // anchor plane is removed
+    }
+    
+     // MARK: Session delegate
+    func session(_ session: ARSession, didUpdate frame: ARFrame) {
+//        self.arVideoSource.sendBuffer(frame.capturedImage, timestamp: frame.timestamp)
+    }
+    
+    func session(_ session: ARSession, didOutputAudioSampleBuffer audioSampleBuffer: CMSampleBuffer) {
+        self.agoraKit.pushExternalAudioFrameSampleBuffer(audioSampleBuffer)
+    }
+    
+    // MARK: AGORA DELEGATE
+    func rtcEngine(_ engine: AgoraRtcEngineKit, firstRemoteVideoDecodedOfUid uid:UInt, size:CGSize, elapsed:Int) {
+        guard let remoteView = self.remoteVideoView else { return }
+        let videoCanvas = AgoraRtcVideoCanvas()
+        videoCanvas.uid = uid
+        videoCanvas.view = remoteView
+        videoCanvas.renderMode = .hidden
+        agoraKit.setupRemoteVideo(videoCanvas)
+    }
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurError errorCode: AgoraErrorCode) {
+        print("error: \(errorCode.rawValue)")
+    }
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurWarning warningCode: AgoraWarningCode) {
+        print("warning: \(warningCode.rawValue)")
+    }
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinChannel channel: String, withUid uid: UInt, elapsed: Int) {
+        print("did join channel with uid:\(uid)")
+    }
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didRejoinChannel channel: String, withUid uid: UInt, elapsed: Int) {
+        print("did rejoin channel")
+    }
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinedOfUid uid: UInt, elapsed: Int) {
+        print("did joined of uid: \(uid)")
+    }
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didOfflineOfUid uid: UInt, reason: AgoraUserOfflineReason) {
+        print("did offline of uid: \(uid)")
     }
     
     // MARK: Lights

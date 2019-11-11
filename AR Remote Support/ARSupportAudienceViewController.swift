@@ -216,9 +216,11 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         if self.micBtn.imageView?.image == activeMicImg {
             print("disable active mic")
             self.micBtn.setImage(disabledMicImg, for: .normal)
+            self.agoraKit.muteLocalAudioStream(true)
         } else {
             print("enable mic")
             self.micBtn.setImage(activeMicImg, for: .normal)
+            self.agoraKit.muteLocalAudioStream(false)
         }
     }
     

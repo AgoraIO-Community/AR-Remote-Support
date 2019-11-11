@@ -84,7 +84,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         //record or photo add environment light rendering, Default is false
         self.recordAR?.enableAdjustEnvironmentLighting = true
         // Set the UIViewController orientations
-        self.recordAR?.inputViewOrientations = [.landscapeLeft]
+        self.recordAR?.inputViewOrientations = [.portrait]
 
         if debug {
             self.sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, ARSCNDebugOptions.showFeaturePoints]
@@ -163,9 +163,11 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         if self.micBtn.imageView?.image == activeMicImg {
             print("disable active mic")
             self.micBtn.setImage(disabledMicImg, for: .normal)
+            self.agoraKit.muteLocalAudioStream(true)
         } else {
             print("enable mic")
             self.micBtn.setImage(activeMicImg, for: .normal)
+            self.agoraKit.muteLocalAudioStream(false)
         }
     }
     
@@ -195,7 +197,9 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     
     // MARK: ARVidoeKit Renderer
     func frame(didRender buffer: CVPixelBuffer, with time: CMTime, using rawBuffer: CVPixelBuffer) {
-        self.arVideoSource.sendBuffer(buffer, timestamp: time.seconds)
+        guard let rotatedBuffer = rotate90PixelBuffer(buffer, factor: ) else { return }
+        self.arVideoSource.sendBuffer(rotatedBuffer, timestamp: time.seconds)
+//        self.arVideoSource.sendBuffer(buffer, timestamp: time.seconds)
     }
     
     // MARK: Render delegate
@@ -222,11 +226,6 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
             let sphereNode : SCNNode = SCNNode(geometry: SCNSphere(radius: 0.01))
             sphereNode.position = currentPostionOfCamera // give the user a visual cue of brush position
             sphereNode.name = "brushPointer" // set name to differentiate
-//            self.sceneView.scene.rootNode.enumerateChildNodes({ (node, _) in
-//                if node.name == "brushPointer" {
-//                    node.removeFromParentNode() // only remove bursh pointer
-//                }
-//            })
 //            sphereNode.geometry?.firstMaterial?.diffuse.contents = UIColor.lightGray
             self.sceneView.scene.rootNode.addChildNode(sphereNode)
         }

@@ -197,9 +197,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     
     // MARK: ARVidoeKit Renderer
     func frame(didRender buffer: CVPixelBuffer, with time: CMTime, using rawBuffer: CVPixelBuffer) {
-        guard let rotatedBuffer = rotate90PixelBuffer(buffer, factor: ) else { return }
-        self.arVideoSource.sendBuffer(rotatedBuffer, timestamp: time.seconds)
-//        self.arVideoSource.sendBuffer(buffer, timestamp: time.seconds)
+        self.arVideoSource.sendBuffer(buffer, timestamp: time.seconds)
     }
     
     // MARK: Render delegate

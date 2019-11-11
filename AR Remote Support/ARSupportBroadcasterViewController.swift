@@ -24,8 +24,8 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     var channelName: String!
     private let arVideoSource: ARVideoSource = ARVideoSource()
     
-    // ARVideoKit
-    var recordAR: RecordAR!
+    // ARVideoKit Renderer - used as an off-screen renderer
+    var arvkRenderer: RecordAR!
     
     let debug : Bool = true
     
@@ -56,11 +56,13 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         configuration.isLightEstimationEnabled = true
 
         self.sceneView.session.run(configuration)
-        self.recordAR?.prepare(configuration)
+        self.arvkRenderer?.prepare(configuration)
     }
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        // stop the ARVideoKit renderer
+        arvkRenderer.rest()
         // Pause the view's session
         self.sceneView.session.pause()
         self.sceneView.removeFromSuperview()
@@ -75,16 +77,16 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         self.sceneView.session.delegate = self
         
         // setup ARViewRecorder
-        self.recordAR = RecordAR(ARSceneKit: self.sceneView)
-        self.recordAR?.renderAR = self // Set the renderer's delegate
+        self.arvkRenderer = RecordAR(ARSceneKit: self.sceneView)
+        self.arvkRenderer?.renderAR = self // Set the renderer's delegate
         // Configure the renderer to perform additional image & video processing 👁
-        self.recordAR?.onlyRenderWhileRecording = false
+        self.arvkRenderer?.onlyRenderWhileRecording = false
         // Configure ARKit content mode. Default is .auto
-        self.recordAR?.contentMode = .aspectFit
+        self.arvkRenderer?.contentMode = .aspectFit
         //record or photo add environment light rendering, Default is false
-        self.recordAR?.enableAdjustEnvironmentLighting = true
+        self.arvkRenderer?.enableAdjustEnvironmentLighting = true
         // Set the UIViewController orientations
-        self.recordAR?.inputViewOrientations = [.portrait]
+        self.arvkRenderer?.inputViewOrientations = [.portrait]
 
         if debug {
             self.sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, ARSCNDebugOptions.showFeaturePoints]
@@ -225,7 +227,8 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
             sphereNode.position = currentPostionOfCamera // give the user a visual cue of brush position
             sphereNode.name = "brushPointer" // set name to differentiate
 //            sphereNode.geometry?.firstMaterial?.diffuse.contents = UIColor.lightGray
-            self.sceneView.scene.rootNode.addChildNode(sphereNode)
+            guard let sceneView = self.sceneView else { return }
+            sceneView.scene.rootNode.addChildNode(sphereNode)
         }
     }
     

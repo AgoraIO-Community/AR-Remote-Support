@@ -39,16 +39,10 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         setupGestures()
         self.view.isUserInteractionEnabled = false
         
-//        var frame = self.view.frame
-//        frame.origin.x = self.view.center.x
-//        frame.origin.y = self.view.center.y
-//        self.view.frame = frame
-        
         // Agora setup
         guard let appID = getValue(withKey: "AppID", within: "keys") else { return }
         self.agoraKit = AgoraRtcEngineKit.sharedEngine(withAppId: appID, delegate: self)
         self.agoraKit.setChannelProfile(.communication)
-//        self.agoraKit.setClientRole(.broadcaster)
     }
 
     override func viewDidLoad() {
@@ -105,19 +99,6 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             }
         }
     }
-//
-//    override func touchesMoved(_ touches: Set<UITouch>, with event: UIEvent?) {
-//        if let touch = touches.first {
-//           let position = touch.location(in: self.view)
-//            self.touchPoints.append(position)
-//            print(position)
-//            let layer = CAShapeLayer()
-//            layer.path = UIBezierPath(roundedRect: CGRect(x:  position.x, y: position.y, width: 25, height: 25), cornerRadius: 50).cgPath
-//            layer.fillColor = UIColor.white.cgColor
-//            guard let drawView = self.drawingView else { return }
-//            drawView.layer.addSublayer(layer)
-//        }
-//    }
     
     @IBAction func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
         if self.sessionIsActive && (gestureRecognizer.state == .began || gestureRecognizer.state == .changed) {
@@ -127,15 +108,13 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             let pixelTranslation = CGPoint(x: touchStart.x + translation.x, y: touchStart.y + translation.y)
             
             // normalize the touch point to use view center as the reference point
-//            let translationFromCenter = CGPoint(x: pixelTranslation.x - (0.5 * self.view.frame.width), y: pixelTranslation.y - (0.5 * self.view.frame.height))
-            
-//            let pixelTranslationFromCenter = CGPoint(x: 0.5 * self.view.frame.width + translationFromCenter.x, y: 0.5 * self.view.frame.height + translationFromCenter.y)
+            let translationFromCenter = CGPoint(x: pixelTranslation.x - (0.5 * self.view.frame.width), y: pixelTranslation.y - (0.5 * self.view.frame.height))
             
             self.touchPoints.append(pixelTranslation)
             
             if self.streamIsEnabled == 0 {
                 // send data to remote user
-                let pointToSend = CGPoint(x: pixelTranslation.x, y: pixelTranslation.y)
+                let pointToSend = CGPoint(x: translationFromCenter.x, y: translationFromCenter.y)
                 let cgPointAsString: String = NSCoder.string(for: pointToSend)
                 self.agoraKit.sendStreamMessage(self.dataStreamId, data: cgPointAsString.data(using: String.Encoding.ascii)!)
                 if debug {
@@ -144,7 +123,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             }
             
             if debug {
-//                print(translationFromCenter)
+                print(translationFromCenter)
                 print(pixelTranslation)
                 
                 // simple draw user touches
@@ -158,9 +137,11 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         }
         if gestureRecognizer.state == .ended {
             if let touchPointsList = self.touchPoints {
-                print(touchPointsList)
                 // push touch points list to AR View
                 self.touchStart = nil // clear starting point
+                if debug {
+                    print(touchPointsList)
+                }
             }
         }
         

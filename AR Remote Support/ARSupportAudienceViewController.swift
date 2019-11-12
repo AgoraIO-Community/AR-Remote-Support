@@ -134,11 +134,12 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             
             if self.streamIsEnabled == 0 {
                 // send data to remote user
-                var pointToSend = CGPoint(x: pixelTranslation.x, y: pixelTranslation.y)
-                let cgPointAsData = Data(bytes: &pointToSend, count: MemoryLayout.size(ofValue: CGPoint.self))
-                self.agoraKit.sendStreamMessage(self.dataStreamId, data: cgPointAsData)
-                print("pointToSend: \(pointToSend)")
-                print("streaming data: \(cgPointAsData)")
+                let pointToSend = CGPoint(x: pixelTranslation.x, y: pixelTranslation.y)
+                let cgPointAsString: String = NSCoder.string(for: pointToSend)
+                self.agoraKit.sendStreamMessage(self.dataStreamId, data: cgPointAsString.data(using: String.Encoding.ascii)!)
+                if debug {
+                    print("streaming data: \(pointToSend)\n - STRING: \(cgPointAsString)\n - DATA: \(cgPointAsString.data(using: String.Encoding.ascii)!)")
+                }
             }
             
             // simple draw user touches

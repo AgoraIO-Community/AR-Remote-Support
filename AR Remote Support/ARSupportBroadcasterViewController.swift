@@ -320,12 +320,10 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, receiveStreamMessageFromUid uid: UInt, streamId: Int, data: Data) {
         // successfully received message from user
-        print("STREAMID: \(streamId)\n - DATA: \(data)")
-        if data.count == MemoryLayout.size(ofValue: CGPoint.self) {
-            print("STREAMID: \(streamId)\n - DATA: \(data)")
-//            var receivedPoint = UnsafePointer<CGPoint>(data.bytes).memory
-        } else {
-            // error
+        guard let dataAsString = String(bytes: data, encoding: String.Encoding.ascii) else { return }
+        let cgPointFromString: CGPoint = NSCoder.cgPoint(for: dataAsString)
+        if debug {
+            print("STREAMID: \(streamId)\n - DATA: \(data)\n - STRING: \(dataAsString)\n - CGPOINT: \(cgPointFromString)")
         }
     }
     

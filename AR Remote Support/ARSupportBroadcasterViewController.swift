@@ -45,7 +45,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         guard let appID = getValue(withKey: "AppID", within: "keys") else { return }
         self.agoraKit = AgoraRtcEngineKit.sharedEngine(withAppId: appID, delegate: self)
         self.agoraKit.setChannelProfile(.communication)
-        let videoConfig = AgoraVideoEncoderConfiguration(size: AgoraVideoDimension840x480, frameRate: .fps15, bitrate: AgoraVideoBitrateStandard, orientationMode: .fixedPortrait)
+        let videoConfig = AgoraVideoEncoderConfiguration(size: AgoraVideoDimension1280x720, frameRate: .fps60, bitrate: AgoraVideoBitrateStandard, orientationMode: .fixedPortrait)
         self.agoraKit.setVideoEncoderConfiguration(videoConfig)
         self.agoraKit.enableVideo()
         self.agoraKit.setVideoSource(self.arVideoSource)

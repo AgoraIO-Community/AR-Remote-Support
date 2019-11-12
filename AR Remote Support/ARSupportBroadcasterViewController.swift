@@ -28,11 +28,12 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     var remoteUser: UInt?
     var dataStreamId: Int! = 27
     var streamIsEnabled: Int32 = -1
+    var remotePoints: [CGPoint] = []
     
     // ARVideoKit Renderer - used as an off-screen renderer
     var arvkRenderer: RecordAR!
     
-    let debug : Bool = true
+    let debug : Bool = false
     
     // MARK: VC Events
     override func loadView() {
@@ -56,9 +57,9 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         super .viewWillAppear(animated)
         // Configure ARKit Session
         let configuration = ARWorldTrackingConfiguration()
-        configuration.planeDetection = [.horizontal, .vertical]
+//        configuration.planeDetection = [.horizontal, .vertical]
         configuration.providesAudioData = true
-        configuration.isLightEstimationEnabled = true
+        configuration.isLightEstimationEnabled = false
 
         self.sceneView.session.run(configuration)
         self.arvkRenderer?.prepare(configuration)
@@ -108,7 +109,12 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         self.scnLights.append(light)
     }
     
-    // MARK: Create UI
+    // MARK: Hide status bar
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
+    // MARK: UI
     func createUI() {
         // Setup sceneview
         let sceneView = ARSCNView() //instantiate scene view
@@ -197,11 +203,6 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         UIApplication.shared.isIdleTimerDisabled = false
     }
     
-    // MARK: Hide status bar
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
-    
     // MARK: ARVidoeKit Renderer
     func frame(didRender buffer: CVPixelBuffer, with time: CMTime, using rawBuffer: CVPixelBuffer) {
         self.arVideoSource.sendBuffer(buffer, timestamp: time.seconds)
@@ -209,31 +210,24 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     
     // MARK: Render delegate
     func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
-        
-        // TODO: Add config option to enable/disable real-world lighting
-        guard let currentFrame = self.sceneView.session.currentFrame else { return }
-        // change the .intensity property of scene env light to they respond to the real world env
-        let intensity : CGFloat = currentFrame.lightEstimate!.ambientIntensity / 1000.0
-        self.sceneView.scene.lightingEnvironment.intensity = intensity
-        if self.scnLights.count > 0 {
-            for node in self.scnLights {
-                node.light?.intensity = intensity
+
+        if self.remotePoints.count > 0, let remotePoint: CGPoint = self.remotePoints.first {
+            // add point to World
+            guard let pointOfView = self.sceneView.pointOfView else { return }
+            let transform = pointOfView.transform // transformation matrix
+            let orientation = SCNVector3(-transform.m31, -transform.m32, -transform.m33) // camera rotation
+            let location = SCNVector3(transform.m41 + Float(remotePoint.x/1000), transform.m42 - Float(remotePoint.y/1000), transform.m43) // remote point relative to camera translation
+            
+            let currentPostionOfCamera = orientation + location
+            self.remotePoints.remove(at: 0)
+            DispatchQueue.main.async {
+                let sphereNode : SCNNode = SCNNode(geometry: SCNSphere(radius: 0.025))
+                sphereNode.position = currentPostionOfCamera // give the user a visual cue of brush position
+                sphereNode.name = "brushPointer" // set name to differentiate
+                sphereNode.geometry?.firstMaterial?.diffuse.contents = UIColor.lightGray
+                guard let sceneView = self.sceneView else { return }
+                sceneView.scene.rootNode.addChildNode(sphereNode)
             }
-        }
-        
-        guard let pointOfView = self.sceneView.pointOfView else { return }
-        let transform = pointOfView.transform // transformation matrix
-        let orientation = SCNVector3(-transform.m31, -transform.m32, -transform.m33) // camera rotation
-        let location = SCNVector3(transform.m41, transform.m42, transform.m43) // camera translation
-        
-        let currentPostionOfCamera = orientation + location
-        DispatchQueue.main.async {
-            let sphereNode : SCNNode = SCNNode(geometry: SCNSphere(radius: 0.01))
-            sphereNode.position = currentPostionOfCamera // give the user a visual cue of brush position
-            sphereNode.name = "brushPointer" // set name to differentiate
-//            sphereNode.geometry?.firstMaterial?.diffuse.contents = UIColor.lightGray
-            guard let sceneView = self.sceneView else { return }
-            sceneView.scene.rootNode.addChildNode(sphereNode)
         }
     }
     
@@ -321,10 +315,12 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     func rtcEngine(_ engine: AgoraRtcEngineKit, receiveStreamMessageFromUid uid: UInt, streamId: Int, data: Data) {
         // successfully received message from user
         guard let dataAsString = String(bytes: data, encoding: String.Encoding.ascii) else { return }
-        let cgPointFromString: CGPoint = NSCoder.cgPoint(for: dataAsString)
+        let remotePoint: CGPoint = NSCoder.cgPoint(for: dataAsString)
         if debug {
-            print("STREAMID: \(streamId)\n - DATA: \(data)\n - STRING: \(dataAsString)\n - CGPOINT: \(cgPointFromString)")
+            print("STREAMID: \(streamId)\n - DATA: \(data)\n - STRING: \(dataAsString)\n - CGPOINT: \(remotePoint)")
         }
+        
+        self.remotePoints.append(remotePoint)
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurStreamMessageErrorFromUid uid: UInt, streamId: Int, error: Int, missed: Int, cached: Int) {

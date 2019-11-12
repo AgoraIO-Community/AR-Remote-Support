@@ -26,7 +26,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     var dataStreamId: Int! = 27
     var streamIsEnabled: Int32 = -1
     
-    let debug: Bool = true
+    let debug: Bool = false
     
     // Agora
     var agoraKit: AgoraRtcEngineKit!
@@ -75,16 +75,17 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         super.viewWillDisappear(animated)
     }
     
+    // MARK: Hide status bar
+    override var prefersStatusBarHidden: Bool {
+        return true
+    }
+    
+    // MARK: Gestures
     func setupGestures() {
         // pan gesture
         let panGesture = UIPanGestureRecognizer(target: self, action: #selector(handlePan(_:)))
         panGesture.delegate = self
         self.view.addGestureRecognizer(panGesture)
-    }
-    
-    // MARK: Hide status bar
-    override var prefersStatusBarHidden: Bool {
-        return true
     }
     
     // MARK: Touch Capture
@@ -93,14 +94,14 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         if self.sessionIsActive, let touch = touches.first {
             let position = touch.location(in: self.view)
             self.touchStart = position
-            let layer = CAShapeLayer()
-            layer.path = UIBezierPath(roundedRect: CGRect(x:  position.x, y: position.y, width: 25, height: 25), cornerRadius: 50).cgPath
-            layer.fillColor = self.lineColor
-            guard let drawView = self.drawingView else { return }
-            drawView.layer.addSublayer(layer)
             self.touchPoints = []
             if debug {
-                 print(position)
+                print(position)
+                let layer = CAShapeLayer()
+                layer.path = UIBezierPath(roundedRect: CGRect(x:  position.x, y: position.y, width: 25, height: 25), cornerRadius: 50).cgPath
+                layer.fillColor = self.lineColor
+                guard let drawView = self.drawingView else { return }
+                drawView.layer.addSublayer(layer)
             }
         }
     }
@@ -142,16 +143,16 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
                 }
             }
             
-            // simple draw user touches
-            let layer = CAShapeLayer()
-            layer.path = UIBezierPath(roundedRect: CGRect(x:  pixelTranslation.x, y: pixelTranslation.y, width: 25, height: 25), cornerRadius: 50).cgPath
-            layer.fillColor = self.lineColor
-            guard let drawView = self.drawingView else { return }
-            drawView.layer.addSublayer(layer)
-            
             if debug {
 //                print(translationFromCenter)
                 print(pixelTranslation)
+                
+                // simple draw user touches
+                let layer = CAShapeLayer()
+                layer.path = UIBezierPath(roundedRect: CGRect(x:  pixelTranslation.x, y: pixelTranslation.y, width: 25, height: 25), cornerRadius: 50).cgPath
+                layer.fillColor = self.lineColor
+                guard let drawView = self.drawingView else { return }
+                drawView.layer.addSublayer(layer)
                
             }
         }

@@ -24,6 +24,11 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     var channelName: String!
     private let arVideoSource: ARVideoSource = ARVideoSource()
     
+    var sessionIsActive = false
+    var remoteUser: UInt?
+    var dataStreamId: Int! = 27
+    var streamIsEnabled: Int32 = -1
+    
     // ARVideoKit Renderer - used as an off-screen renderer
     var arvkRenderer: RecordAR!
     
@@ -265,12 +270,21 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     
     // MARK: AGORA DELEGATE
     func rtcEngine(_ engine: AgoraRtcEngineKit, firstRemoteVideoDecodedOfUid uid:UInt, size:CGSize, elapsed:Int) {
-        guard let remoteView = self.remoteVideoView else { return }
-        let videoCanvas = AgoraRtcVideoCanvas()
-        videoCanvas.uid = uid
-        videoCanvas.view = remoteView
-        videoCanvas.renderMode = .hidden
-        agoraKit.setupRemoteVideo(videoCanvas)
+        if uid == self.remoteUser {
+            guard let remoteView = self.remoteVideoView else { return }
+            let videoCanvas = AgoraRtcVideoCanvas()
+            videoCanvas.uid = uid
+            videoCanvas.view = remoteView
+            videoCanvas.renderMode = .hidden
+            agoraKit.setupRemoteVideo(videoCanvas)
+            
+            self.sessionIsActive = true
+            
+            // create the data stream
+            self.streamIsEnabled = self.agoraKit.createDataStream(&self.dataStreamId, reliable: true, ordered: true)
+            print("Data Stream initiated - STATUS: \(self.streamIsEnabled)")
+        }
+
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurError errorCode: AgoraErrorCode) {
@@ -282,19 +296,42 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinChannel channel: String, withUid uid: UInt, elapsed: Int) {
-        print("did join channel with uid:\(uid)")
-    }
-    
-    func rtcEngine(_ engine: AgoraRtcEngineKit, didRejoinChannel channel: String, withUid uid: UInt, elapsed: Int) {
-        print("did rejoin channel")
+        print("local user did join channel with uid:\(uid)")
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinedOfUid uid: UInt, elapsed: Int) {
-        print("did joined of uid: \(uid)")
+        print("remote user did joined of uid: \(uid)")
+        if self.remoteUser == nil {
+            self.remoteUser = uid // keep track of the remote user
+            print("remote host added")
+        }
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOfflineOfUid uid: UInt, reason: AgoraUserOfflineReason) {
-        print("did offline of uid: \(uid)")
+        print("remote user did offline of uid: \(uid)")
+        if uid == self.remoteUser {
+            self.remoteUser = nil
+        }
+    }
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didAudioMuted muted: Bool, byUid uid: UInt) {
+        // add logic to show icon that remote stream is muted
+    }
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, receiveStreamMessageFromUid uid: UInt, streamId: Int, data: Data) {
+        // successfully received message from user
+        print("STREAMID: \(streamId)\n - DATA: \(data)")
+        if data.count == MemoryLayout.size(ofValue: CGPoint.self) {
+            print("STREAMID: \(streamId)\n - DATA: \(data)")
+//            var receivedPoint = UnsafePointer<CGPoint>(data.bytes).memory
+        } else {
+            // error
+        }
+    }
+    
+    func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurStreamMessageErrorFromUid uid: UInt, streamId: Int, error: Int, missed: Int, cached: Int) {
+        // message failed to send(
+        print("STREAMID: \(streamId)\n - ERROR: \(error)")
     }
     
     // MARK: Lights

@@ -29,11 +29,12 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     var dataStreamId: Int! = 27
     var streamIsEnabled: Int32 = -1
     var remotePoints: [CGPoint] = []
+    var camera: ARCamera!
     
     // ARVideoKit Renderer - used as an off-screen renderer
     var arvkRenderer: RecordAR!
     
-    let debug : Bool = false
+    let debug : Bool = true
     
     // MARK: VC Events
     override func loadView() {
@@ -210,15 +211,16 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     
     // MARK: Render delegate
     func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
-
+/*
         if self.remotePoints.count > 0, let remotePoint: CGPoint = self.remotePoints.first {
             // add point to World
             guard let pointOfView = self.sceneView.pointOfView else { return }
             let transform = pointOfView.transform // transformation matrix
             let orientation = SCNVector3(-transform.m31, -transform.m32, -transform.m33) // camera rotation
-            let location = SCNVector3(transform.m41 + Float(remotePoint.x/1000), transform.m42 - Float(remotePoint.y/1000), transform.m43) // remote point relative to camera translation
+//            let location = SCNVector3(transform.m41 + Float(remotePoint.x/1000), transform.m42 - Float(remotePoint.y/1000), transform.m43) // remote point relative to camera translation
+            let location = SCNVector3(transform.m41, transform.m42, transform.m43) //
             
-            let currentPostionOfCamera = orientation + location
+            let currentPostionOfCamera = orientation + location + SCNVector3(Float(remotePoint.x/1000), -1*Float(remotePoint.y/1000), 0)
             self.remotePoints.remove(at: 0)
             DispatchQueue.main.async {
                 let sphereNode : SCNNode = SCNNode(geometry: SCNSphere(radius: 0.025))
@@ -229,6 +231,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
                 sceneView.scene.rootNode.addChildNode(sphereNode)
             }
         }
+ */
     }
     
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
@@ -256,6 +259,29 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
      // MARK: Session delegate
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
 //        self.arVideoSource.sendBuffer(frame.capturedImage, timestamp: frame.timestamp)
+        if self.remotePoints.count > 0, let remotePoint: CGPoint = self.remotePoints.first {
+            // add point to World
+            let transform = frame.camera.transform
+            var translation = matrix_identity_float4x4 // this is the magic sauce here
+            translation.columns.3.z = -1.0
+            let pos = transform * translation
+            let position = SCNVector3(pos.columns.3.x, pos.columns.3.y, pos.columns.3.z)
+            
+            let currentPostionOfCamera = position + SCNVector3(Float(remotePoint.x/1000), -1*Float(remotePoint.y/1000), 0)
+            self.remotePoints.remove(at: 0)
+            
+            DispatchQueue.main.async {
+                let sphereNode : SCNNode = SCNNode(geometry: SCNSphere(radius: 0.025))
+                sphereNode.position = currentPostionOfCamera // give the user a visual cue of brush position
+                sphereNode.name = "brushPointer" // set name to differentiate
+                sphereNode.geometry?.firstMaterial?.diffuse.contents = UIColor.lightGray
+                guard let sceneView = self.sceneView else { return }
+                sceneView.scene.rootNode.addChildNode(sphereNode)
+//                let constraint = SCNLookAtConstraint(target: self.sceneView.pointOfView)
+//                constraint.isGimbalLockEnabled = true
+//                sphereNode.constraints = [constraint]
+            }
+        }
     }
     
     func session(_ session: ARSession, didOutputAudioSampleBuffer audioSampleBuffer: CMSampleBuffer) {
@@ -314,13 +340,39 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, receiveStreamMessageFromUid uid: UInt, streamId: Int, data: Data) {
         // successfully received message from user
-        guard let dataAsString = String(bytes: data, encoding: String.Encoding.ascii) else { return }
-        let remotePoint: CGPoint = NSCoder.cgPoint(for: dataAsString)
+        guard var dataAsString = String(bytes: data, encoding: String.Encoding.ascii) else { return }
+                
         if debug {
-            print("STREAMID: \(streamId)\n - DATA: \(data)\n - STRING: \(dataAsString)\n - CGPOINT: \(remotePoint)")
+            print("STREAMID: \(streamId)\n - DATA: \(data)\n - STRING: \(dataAsString)\n")
         }
+        // remove the [ ] characters from the string
+        if let openBracketIndex = dataAsString.firstIndex(of: "[") {
+            dataAsString.remove(at: openBracketIndex)
+        }
+        if let closeBracketIndex = dataAsString.firstIndex(of: "]") {
+            dataAsString.remove(at: closeBracketIndex)
+        }
+        let arrayOfPoints = dataAsString.components(separatedBy: "), ")
+        print("arrayOfPoints: \(arrayOfPoints)")
         
-        self.remotePoints.append(remotePoint)
+        for pointString in arrayOfPoints {
+            var point: String = pointString
+//            point.append(")")
+            // sanitize the string
+            if let openParenIndex = point.firstIndex(of: "(") {
+                point.remove(at: openParenIndex)
+            }
+            let pointArray: [String] = point.components(separatedBy: ", ")
+            print("POINT - \(point)")
+            if pointArray.count == 2, let x = NumberFormatter().number(from: pointArray[0]), let y = NumberFormatter().number(from: pointArray[1]) {
+                let remotePoint: CGPoint = CGPoint(x: CGFloat(truncating: x), y: CGFloat(truncating: y))
+    //            let remotePoint: CGPoint = CGPoint()
+                if debug {
+                    print("CGPOINT: \(remotePoint)")
+                }
+                self.remotePoints.append(remotePoint)
+            }
+        }
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurStreamMessageErrorFromUid uid: UInt, streamId: Int, error: Int, missed: Int, cached: Int) {

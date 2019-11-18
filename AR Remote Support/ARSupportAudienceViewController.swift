@@ -12,7 +12,7 @@ import AgoraRtcEngineKit
 class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDelegate, AgoraRtcEngineDelegate {
 
     var touchStart: CGPoint!
-    var touchPoints: [CGPoint]!
+    var touchPoints: [CGPoint]! // used for debugging (touches on the screen)
     let lineColor: CGColor = UIColor.gray.cgColor
     let bgColor: UIColor = .white
     
@@ -25,6 +25,8 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     var remoteUser: UInt?
     var dataStreamId: Int! = 27
     var streamIsEnabled: Int32 = -1
+    
+    var dataPointsArray: [CGPoint] = []
     
     let debug: Bool = false
     
@@ -115,10 +117,15 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             if self.streamIsEnabled == 0 {
                 // send data to remote user
                 let pointToSend = CGPoint(x: translationFromCenter.x, y: translationFromCenter.y)
-                let cgPointAsString: String = NSCoder.string(for: pointToSend)
-                self.agoraKit.sendStreamMessage(self.dataStreamId, data: cgPointAsString.data(using: String.Encoding.ascii)!)
+                self.dataPointsArray.append(pointToSend)
+                if self.dataPointsArray.count == 10 {
+                    let pointsAsString:  String = self.dataPointsArray.description
+                    self.agoraKit.sendStreamMessage(self.dataStreamId, data: pointsAsString.data(using: String.Encoding.ascii)!)
+                    self.dataPointsArray = []
+                }
+
                 if debug {
-                    print("streaming data: \(pointToSend)\n - STRING: \(cgPointAsString)\n - DATA: \(cgPointAsString.data(using: String.Encoding.ascii)!)")
+                    print("streaming data: \(pointToSend)\n - STRING: \(self.dataPointsArray)\n - DATA: \(self.dataPointsArray.description.data(using: String.Encoding.ascii)!)")
                 }
             }
             

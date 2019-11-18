@@ -258,7 +258,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     
      // MARK: Session delegate
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-//        self.arVideoSource.sendBuffer(frame.capturedImage, timestamp: frame.timestamp)
+        // if we have points - draw one point per frame
         if self.remotePoints.count > 0, let remotePoint: CGPoint = self.remotePoints.first {
             // add point to World
             let transform = frame.camera.transform
@@ -340,37 +340,25 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, receiveStreamMessageFromUid uid: UInt, streamId: Int, data: Data) {
         // successfully received message from user
-        guard var dataAsString = String(bytes: data, encoding: String.Encoding.ascii) else { return }
+        guard let dataAsString = String(bytes: data, encoding: String.Encoding.ascii) else { return }
                 
         if debug {
             print("STREAMID: \(streamId)\n - DATA: \(data)\n - STRING: \(dataAsString)\n")
         }
-        // remove the [ ] characters from the string
-        if let openBracketIndex = dataAsString.firstIndex(of: "[") {
-            dataAsString.remove(at: openBracketIndex)
-        }
-        if let closeBracketIndex = dataAsString.firstIndex(of: "]") {
-            dataAsString.remove(at: closeBracketIndex)
-        }
-        let arrayOfPoints = dataAsString.components(separatedBy: "), ")
+        // convert data string into an array
+        let arrayOfPoints = dataAsString.components(separatedBy: "), (")
         print("arrayOfPoints: \(arrayOfPoints)")
         
         for pointString in arrayOfPoints {
-            var point: String = pointString
-//            point.append(")")
-            // sanitize the string
-            if let openParenIndex = point.firstIndex(of: "(") {
-                point.remove(at: openParenIndex)
-            }
-            let pointArray: [String] = point.components(separatedBy: ", ")
-            print("POINT - \(point)")
+            let pointArray: [String] = pointString.components(separatedBy: ", ")
+            // make sure we have 2 points and convert them from String to number
             if pointArray.count == 2, let x = NumberFormatter().number(from: pointArray[0]), let y = NumberFormatter().number(from: pointArray[1]) {
                 let remotePoint: CGPoint = CGPoint(x: CGFloat(truncating: x), y: CGFloat(truncating: y))
-    //            let remotePoint: CGPoint = CGPoint()
+                self.remotePoints.append(remotePoint)
                 if debug {
+                    print("POINT - \(pointString)")
                     print("CGPOINT: \(remotePoint)")
                 }
-                self.remotePoints.append(remotePoint)
             }
         }
     }
@@ -393,7 +381,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         directionalNode.light?.shadowRadius = 16
         directionalNode.light?.shadowMode = .deferred
         directionalNode.light?.shadowMapSize = CGSize(width: 1024, height: 1024)
-        directionalNode.light?.shadowColor = UIColor.black.withAlphaComponent(0.75)
+        directionalNode.light?.shadowColor = UIColor.black.withAlphaComponent(0.5)
         directionalNode.position = position
         directionalNode.eulerAngles = rotation
         

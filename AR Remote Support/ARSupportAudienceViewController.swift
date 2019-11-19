@@ -144,7 +144,6 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         }
         if gestureRecognizer.state == .ended {
             if let touchPointsList = self.touchPoints {
-                // push touch points list to AR View
                 self.touchStart = nil // clear starting point
                 if debug {
                     print(touchPointsList)

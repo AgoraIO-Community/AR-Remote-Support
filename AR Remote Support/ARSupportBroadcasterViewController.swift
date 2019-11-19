@@ -29,7 +29,8 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     var dataStreamId: Int! = 27
     var streamIsEnabled: Int32 = -1
     var remotePoints: [CGPoint] = []
-    var camera: ARCamera!
+    
+    var activeTouchRoot: SCNNode!
     
     // ARVideoKit Renderer - used as an off-screen renderer
     var arvkRenderer: RecordAR!
@@ -175,13 +176,17 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         guard let activeMicImg = UIImage(named: "mic") else { return }
         guard let disabledMicImg = UIImage(named: "mute") else { return }
         if self.micBtn.imageView?.image == activeMicImg {
-            print("disable active mic")
             self.micBtn.setImage(disabledMicImg, for: .normal)
             self.agoraKit.muteLocalAudioStream(true)
+            if debug {
+                print("disable active mic")
+            }
         } else {
-            print("enable mic")
             self.micBtn.setImage(activeMicImg, for: .normal)
             self.agoraKit.muteLocalAudioStream(false)
+            if debug {
+                print("enable mic")
+            }
         }
     }
     
@@ -192,7 +197,9 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         
         let token = getValue(withKey: "token", within: "keys")
         self.agoraKit.joinChannel(byToken: token, channelId: self.channelName, info: nil, uid: 0) { (channel, uid, elapsed) in
-            print("Successfully joined: \(channel), with \(uid): \(elapsed) secongs ago")
+            if self.debug {
+                print("Successfully joined: \(channel), with \(uid): \(elapsed) secongs ago")
+            }
         }
         
         UIApplication.shared.isIdleTimerDisabled = true
@@ -211,27 +218,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     
     // MARK: Render delegate
     func renderer(_ renderer: SCNSceneRenderer, willRenderScene scene: SCNScene, atTime time: TimeInterval) {
-/*
-        if self.remotePoints.count > 0, let remotePoint: CGPoint = self.remotePoints.first {
-            // add point to World
-            guard let pointOfView = self.sceneView.pointOfView else { return }
-            let transform = pointOfView.transform // transformation matrix
-            let orientation = SCNVector3(-transform.m31, -transform.m32, -transform.m33) // camera rotation
-//            let location = SCNVector3(transform.m41 + Float(remotePoint.x/1000), transform.m42 - Float(remotePoint.y/1000), transform.m43) // remote point relative to camera translation
-            let location = SCNVector3(transform.m41, transform.m42, transform.m43) //
-            
-            let currentPostionOfCamera = orientation + location + SCNVector3(Float(remotePoint.x/1000), -1*Float(remotePoint.y/1000), 0)
-            self.remotePoints.remove(at: 0)
-            DispatchQueue.main.async {
-                let sphereNode : SCNNode = SCNNode(geometry: SCNSphere(radius: 0.025))
-                sphereNode.position = currentPostionOfCamera // give the user a visual cue of brush position
-                sphereNode.name = "brushPointer" // set name to differentiate
-                sphereNode.geometry?.firstMaterial?.diffuse.contents = UIColor.lightGray
-                guard let sceneView = self.sceneView else { return }
-                sceneView.scene.rootNode.addChildNode(sphereNode)
-            }
-        }
- */
+        // do something when scene will render
     }
     
     func renderer(_ renderer: SCNSceneRenderer, updateAtTime time: TimeInterval) {
@@ -260,26 +247,13 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // if we have points - draw one point per frame
         if self.remotePoints.count > 0, let remotePoint: CGPoint = self.remotePoints.first {
-            // add point to World
-            let transform = frame.camera.transform
-            var translation = matrix_identity_float4x4 // this is the magic sauce here
-            translation.columns.3.z = -1.0
-            let pos = transform * translation
-            let position = SCNVector3(pos.columns.3.x, pos.columns.3.y, pos.columns.3.z)
-            
-            let currentPostionOfCamera = position + SCNVector3(Float(remotePoint.x/1000), -1*Float(remotePoint.y/1000), 0)
-            self.remotePoints.remove(at: 0)
-            
+            self.remotePoints.remove(at: 0) // pop the first node every frame
             DispatchQueue.main.async {
+                guard let touchRootNode = self.activeTouchRoot else { return }
                 let sphereNode : SCNNode = SCNNode(geometry: SCNSphere(radius: 0.025))
-                sphereNode.position = currentPostionOfCamera // give the user a visual cue of brush position
-                sphereNode.name = "brushPointer" // set name to differentiate
+                sphereNode.position = SCNVector3(-1*Float(remotePoint.x/1000), -1*Float(remotePoint.y/1000), 0)
                 sphereNode.geometry?.firstMaterial?.diffuse.contents = UIColor.lightGray
-                guard let sceneView = self.sceneView else { return }
-                sceneView.scene.rootNode.addChildNode(sphereNode)
-//                let constraint = SCNLookAtConstraint(target: self.sceneView.pointOfView)
-//                constraint.isGimbalLockEnabled = true
-//                sphereNode.constraints = [constraint]
+                touchRootNode.addChildNode(sphereNode)  // add point to the active root
             }
         }
     }
@@ -302,33 +276,47 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
             
             // create the data stream
             self.streamIsEnabled = self.agoraKit.createDataStream(&self.dataStreamId, reliable: true, ordered: true)
-            print("Data Stream initiated - STATUS: \(self.streamIsEnabled)")
+            if debug {
+                print("Data Stream initiated - STATUS: \(self.streamIsEnabled)")
+            }
         }
 
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurError errorCode: AgoraErrorCode) {
-        print("error: \(errorCode.rawValue)")
+        if debug {
+            print("error: \(errorCode.rawValue)")
+        }
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurWarning warningCode: AgoraWarningCode) {
-        print("warning: \(warningCode.rawValue)")
+        if debug {
+            print("warning: \(warningCode.rawValue)")
+        }
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinChannel channel: String, withUid uid: UInt, elapsed: Int) {
-        print("local user did join channel with uid:\(uid)")
+        if debug {
+            print("local user did join channel with uid:\(uid)")
+        }
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinedOfUid uid: UInt, elapsed: Int) {
-        print("remote user did joined of uid: \(uid)")
+        if debug {
+            print("remote user did joined of uid: \(uid)")
+        }
         if self.remoteUser == nil {
             self.remoteUser = uid // keep track of the remote user
-            print("remote host added")
+            if debug {
+                print("remote host added")
+            }
         }
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOfflineOfUid uid: UInt, reason: AgoraUserOfflineReason) {
-        print("remote user did offline of uid: \(uid)")
+        if debug {
+            print("remote user did offline of uid: \(uid)")
+        }
         if uid == self.remoteUser {
             self.remoteUser = nil
         }
@@ -341,13 +329,28 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     func rtcEngine(_ engine: AgoraRtcEngineKit, receiveStreamMessageFromUid uid: UInt, streamId: Int, data: Data) {
         // successfully received message from user
         guard let dataAsString = String(bytes: data, encoding: String.Encoding.ascii) else { return }
-                
-        if debug {
-            print("STREAMID: \(streamId)\n - DATA: \(data)\n - STRING: \(dataAsString)\n")
-        }
         // convert data string into an array
         let arrayOfPoints = dataAsString.components(separatedBy: "), (")
-        print("arrayOfPoints: \(arrayOfPoints)")
+        
+        // add root node for points received --
+        // TODO: add logic to check if new touch vs same touch
+        guard let pointOfView = self.sceneView.pointOfView else { return }
+        let transform = pointOfView.transform // transformation matrix
+        let orientation = SCNVector3(-transform.m31, -transform.m32, -transform.m33) // camera rotation
+        let location = SCNVector3(transform.m41, transform.m42, transform.m43) // location of camera frustum
+        let currentPostionOfCamera = orientation + location // center of frustum in world space
+        DispatchQueue.main.async {
+            let touchRootNode : SCNNode = SCNNode() // create an empty node to serve as our root for the incoming points
+            touchRootNode.position = currentPostionOfCamera // place the root node ad the center of the camera's frustum
+            guard let sceneView = self.sceneView else { return }
+            sceneView.scene.rootNode.addChildNode(touchRootNode) // add the root node to the scene
+            let constraint = SCNLookAtConstraint(target: self.sceneView.pointOfView) // force root node to always face the camera
+            constraint.isGimbalLockEnabled = true // enable gimbal locking to avoid issues with rotations from LookAtConstraint
+            touchRootNode.constraints = [constraint] // apply LookAtConstraint
+            
+            self.activeTouchRoot = touchRootNode
+        }
+        
         
         for pointString in arrayOfPoints {
             let pointArray: [String] = pointString.components(separatedBy: ", ")
@@ -361,11 +364,18 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
                 }
             }
         }
+        
+        if debug {
+            print("STREAMID: \(streamId)\n - DATA: \(data)\n - STRING: \(dataAsString)\n")
+            print("arrayOfPoints: \(arrayOfPoints)")
+        }
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurStreamMessageErrorFromUid uid: UInt, streamId: Int, error: Int, missed: Int, cached: Int) {
         // message failed to send(
-        print("STREAMID: \(streamId)\n - ERROR: \(error)")
+        if debug {
+            print("STREAMID: \(streamId)\n - ERROR: \(error)")
+        }
     }
     
     // MARK: Lights

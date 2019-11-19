@@ -93,6 +93,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             self.touchPoints = []
             if debug {
                 print(position)
+                // TODO: Add variable to track sub-layers
                 let layer = CAShapeLayer()
                 layer.path = UIBezierPath(roundedRect: CGRect(x:  position.x, y: position.y, width: 25, height: 25), cornerRadius: 50).cgPath
                 layer.fillColor = self.lineColor
@@ -103,6 +104,11 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     }
     
     @IBAction func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
+        if self.sessionIsActive && gestureRecognizer.state == .began {
+            // send message to remote user that touches have started
+            self.agoraKit.sendStreamMessage(self.dataStreamId, data: "touch-start".data(using: String.Encoding.ascii)!)
+        }
+        
         if self.sessionIsActive && (gestureRecognizer.state == .began || gestureRecognizer.state == .changed) {
             let translation = gestureRecognizer.translation(in: self.view)
             // calculate touch movement relative to the superview
@@ -122,6 +128,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
                     let pointsAsString:  String = self.dataPointsArray.description
                     self.agoraKit.sendStreamMessage(self.dataStreamId, data: pointsAsString.data(using: String.Encoding.ascii)!)
                     self.dataPointsArray = []
+                    // call function to loop through data-points and remove them from the view
                 }
 
                 if debug {
@@ -142,7 +149,11 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
                
             }
         }
+        
         if gestureRecognizer.state == .ended {
+            // send message to remote user that touches have ended
+            self.agoraKit.sendStreamMessage(self.dataStreamId, data: "touch-start".data(using: String.Encoding.ascii)!)
+            // clear list of points
             if let touchPointsList = self.touchPoints {
                 self.touchStart = nil // clear starting point
                 if debug {
@@ -215,13 +226,17 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         guard let activeMicImg = UIImage(named: "mic") else { return }
         guard let disabledMicImg = UIImage(named: "mute") else { return }
         if self.micBtn.imageView?.image == activeMicImg {
-            print("disable active mic")
             self.micBtn.setImage(disabledMicImg, for: .normal)
             self.agoraKit.muteLocalAudioStream(true)
+            if debug {
+                print("disable active mic")
+            }
         } else {
-            print("enable mic")
             self.micBtn.setImage(activeMicImg, for: .normal)
             self.agoraKit.muteLocalAudioStream(false)
+            if debug {
+                print("enable mic")
+            }
         }
     }
     
@@ -250,13 +265,12 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     func joinChannel() {
         // Set audio route to speaker
         agoraKit.setDefaultAudioRouteToSpeakerphone(true)
-        
         let token = getValue(withKey: "token", within: "keys")
-        
         self.agoraKit.joinChannel(byToken: token, channelId: self.channelName, info: nil, uid: 0) { (channel, uid, elapsed) in
-            print("Successfully joined: \(channel), with \(uid): \(elapsed) secongs ago")
+            if self.debug {
+                print("Successfully joined: \(channel), with \(uid): \(elapsed) secongs ago")
+            }
         }
-        
         UIApplication.shared.isIdleTimerDisabled = true
     }
     
@@ -267,8 +281,11 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     }
     
     // MARK: Agora Delegate
-    // first remote video frame
     func rtcEngine(_ engine: AgoraRtcEngineKit, firstRemoteVideoDecodedOfUid uid:UInt, size:CGSize, elapsed:Int) {
+         // first remote video frame
+        if self.debug {
+            print("firstRemoteVideoDecoded for Uid: \(uid)")
+        }
         // limit sessions to two users
         if self.remoteUser == uid {
             guard let remoteView = self.remoteVideoView else { return }
@@ -282,33 +299,47 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             
             // create the data stream
             self.streamIsEnabled = self.agoraKit.createDataStream(&self.dataStreamId, reliable: true, ordered: true)
-            print("Data Stream initiated - STATUS: \(self.streamIsEnabled)")
+            if self.debug {
+                print("Data Stream initiated - STATUS: \(self.streamIsEnabled)")
+            }
         }
 
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurError errorCode: AgoraErrorCode) {
-        print("error: \(errorCode.rawValue)")
+        if self.debug {
+            print("error: \(errorCode.rawValue)")
+        }
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurWarning warningCode: AgoraWarningCode) {
-        print("warning: \(warningCode.rawValue)")
+        if self.debug {
+            print("warning: \(warningCode.rawValue)")
+        }
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinChannel channel: String, withUid uid: UInt, elapsed: Int) {
-        print("local user did join channel with uid:\(uid)")
+        if self.debug {
+            print("local user did join channel with uid:\(uid)")
+        }
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinedOfUid uid: UInt, elapsed: Int) {
-        print("remote user did joined of uid: \(uid)")
+        if self.debug {
+            print("remote user did joined of uid: \(uid)")
+        }
         if self.remoteUser == nil {
             self.remoteUser = uid // keep track of the remote user
-            print("remote host added")
+            if self.debug {
+                print("remote host added")
+            }
         }
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOfflineOfUid uid: UInt, reason: AgoraUserOfflineReason) {
-        print("remote user did offline of uid: \(uid)")
+        if self.debug {
+            print("remote user did offline of uid: \(uid)")
+        }
         if uid == self.remoteUser {
             self.remoteUser = nil
         }
@@ -320,13 +351,17 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, receiveStreamMessageFromUid uid: UInt, streamId: Int, data: Data) {
         // successfully received message from user
-        print("STREAMID: \(streamId)\n - DATA: \(data)")
+        if self.debug {
+            print("STREAMID: \(streamId)\n - DATA: \(data)")
+        }
     }
     
         
     func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurStreamMessageErrorFromUid uid: UInt, streamId: Int, error: Int, missed: Int, cached: Int) {
         // message failed to send(
-        print("STREAMID: \(streamId)\n - ERROR: \(error)")
+        if self.debug {
+            print("STREAMID: \(streamId)\n - ERROR: \(error)")
+        }
     }
 
 }

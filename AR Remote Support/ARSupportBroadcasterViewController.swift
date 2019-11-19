@@ -250,7 +250,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
             self.remotePoints.remove(at: 0) // pop the first node every frame
             DispatchQueue.main.async {
                 guard let touchRootNode = self.activeTouchRoot else { return }
-                let sphereNode : SCNNode = SCNNode(geometry: SCNSphere(radius: 0.025))
+                let sphereNode : SCNNode = SCNNode(geometry: SCNSphere(radius: 0.015))
                 sphereNode.position = SCNVector3(-1*Float(remotePoint.x/1000), -1*Float(remotePoint.y/1000), 0)
                 sphereNode.geometry?.firstMaterial?.diffuse.contents = UIColor.lightGray
                 touchRootNode.addChildNode(sphereNode)  // add point to the active root
@@ -342,6 +342,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         DispatchQueue.main.async {
             let touchRootNode : SCNNode = SCNNode() // create an empty node to serve as our root for the incoming points
             touchRootNode.position = currentPostionOfCamera // place the root node ad the center of the camera's frustum
+            touchRootNode.scale = SCNVector3(1.25, 1.25, 1.25)// touches projected in Z will appear smaller than expected - increase scale of root node to compensate
             guard let sceneView = self.sceneView else { return }
             sceneView.scene.rootNode.addChildNode(touchRootNode) // add the root node to the scene
             let constraint = SCNLookAtConstraint(target: self.sceneView.pointOfView) // force root node to always face the camera

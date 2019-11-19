@@ -194,14 +194,12 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     func joinChannel() {
         // Set audio route to speaker
         self.agoraKit.setDefaultAudioRouteToSpeakerphone(true)
-        
         let token = getValue(withKey: "token", within: "keys")
         self.agoraKit.joinChannel(byToken: token, channelId: self.channelName, info: nil, uid: 0) { (channel, uid, elapsed) in
             if self.debug {
                 print("Successfully joined: \(channel), with \(uid): \(elapsed) secongs ago")
             }
         }
-        
         UIApplication.shared.isIdleTimerDisabled = true
     }
     
@@ -329,46 +327,62 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     func rtcEngine(_ engine: AgoraRtcEngineKit, receiveStreamMessageFromUid uid: UInt, streamId: Int, data: Data) {
         // successfully received message from user
         guard let dataAsString = String(bytes: data, encoding: String.Encoding.ascii) else { return }
-        // convert data string into an array
-        let arrayOfPoints = dataAsString.components(separatedBy: "), (")
-        
-        // add root node for points received --
-        // TODO: add logic to check if new touch vs same touch
-        guard let pointOfView = self.sceneView.pointOfView else { return }
-        let transform = pointOfView.transform // transformation matrix
-        let orientation = SCNVector3(-transform.m31, -transform.m32, -transform.m33) // camera rotation
-        let location = SCNVector3(transform.m41, transform.m42, transform.m43) // location of camera frustum
-        let currentPostionOfCamera = orientation + location // center of frustum in world space
-        DispatchQueue.main.async {
-            let touchRootNode : SCNNode = SCNNode() // create an empty node to serve as our root for the incoming points
-            touchRootNode.position = currentPostionOfCamera // place the root node ad the center of the camera's frustum
-            touchRootNode.scale = SCNVector3(1.25, 1.25, 1.25)// touches projected in Z will appear smaller than expected - increase scale of root node to compensate
-            guard let sceneView = self.sceneView else { return }
-            sceneView.scene.rootNode.addChildNode(touchRootNode) // add the root node to the scene
-            let constraint = SCNLookAtConstraint(target: self.sceneView.pointOfView) // force root node to always face the camera
-            constraint.isGimbalLockEnabled = true // enable gimbal locking to avoid issues with rotations from LookAtConstraint
-            touchRootNode.constraints = [constraint] // apply LookAtConstraint
-            
-            self.activeTouchRoot = touchRootNode
-        }
-        
-        
-        for pointString in arrayOfPoints {
-            let pointArray: [String] = pointString.components(separatedBy: ", ")
-            // make sure we have 2 points and convert them from String to number
-            if pointArray.count == 2, let x = NumberFormatter().number(from: pointArray[0]), let y = NumberFormatter().number(from: pointArray[1]) {
-                let remotePoint: CGPoint = CGPoint(x: CGFloat(truncating: x), y: CGFloat(truncating: y))
-                self.remotePoints.append(remotePoint)
-                if debug {
-                    print("POINT - \(pointString)")
-                    print("CGPOINT: \(remotePoint)")
-                }
-            }
-        }
         
         if debug {
             print("STREAMID: \(streamId)\n - DATA: \(data)\n - STRING: \(dataAsString)\n")
-            print("arrayOfPoints: \(arrayOfPoints)")
+        }
+        
+        // check data message
+        switch dataAsString {
+        case "touch-start":
+            // touch-starts
+            print("touch-start msg recieved")
+            // TODO: add logic to check if new touch vs same touch
+            // add root node for points received --
+            guard let pointOfView = self.sceneView.pointOfView else { return }
+            let transform = pointOfView.transform // transformation matrix
+            let orientation = SCNVector3(-transform.m31, -transform.m32, -transform.m33) // camera rotation
+            let location = SCNVector3(transform.m41, transform.m42, transform.m43) // location of camera frustum
+            let currentPostionOfCamera = orientation + location // center of frustum in world space
+            DispatchQueue.main.async {
+                let touchRootNode : SCNNode = SCNNode() // create an empty node to serve as our root for the incoming points
+                touchRootNode.position = currentPostionOfCamera // place the root node ad the center of the camera's frustum
+                touchRootNode.scale = SCNVector3(1.25, 1.25, 1.25)// touches projected in Z will appear smaller than expected - increase scale of root node to compensate
+                guard let sceneView = self.sceneView else { return }
+                sceneView.scene.rootNode.addChildNode(touchRootNode) // add the root node to the scene
+                let constraint = SCNLookAtConstraint(target: self.sceneView.pointOfView) // force root node to always face the camera
+                constraint.isGimbalLockEnabled = true // enable gimbal locking to avoid issues with rotations from LookAtConstraint
+                touchRootNode.constraints = [constraint] // apply LookAtConstraint
+                
+                self.activeTouchRoot = touchRootNode
+            }
+        case "touch-end":
+            // touch-starts
+            print("touch-end msg recieved")
+            self.activeTouchRoot = nil
+        default:
+            if debug {
+                print("touch points msg recieved")
+            }
+            // convert data string into an array
+            let arrayOfPoints = dataAsString.components(separatedBy: "), (")
+
+            if debug {
+                print("arrayOfPoints: \(arrayOfPoints)")
+            }
+            
+            for pointString in arrayOfPoints {
+                let pointArray: [String] = pointString.components(separatedBy: ", ")
+                // make sure we have 2 points and convert them from String to number
+                if pointArray.count == 2, let x = NumberFormatter().number(from: pointArray[0]), let y = NumberFormatter().number(from: pointArray[1]) {
+                    let remotePoint: CGPoint = CGPoint(x: CGFloat(truncating: x), y: CGFloat(truncating: y))
+                    self.remotePoints.append(remotePoint)
+                    if debug {
+                        print("POINT - \(pointString)")
+                        print("CGPOINT: \(remotePoint)")
+                    }
+                }
+            }
         }
     }
     

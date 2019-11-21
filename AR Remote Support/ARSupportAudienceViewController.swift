@@ -23,7 +23,6 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     var micBtn: UIButton!
     var colorSelectionBtn: UIButton!
     var colorButtons: [UIButton] = []
-    var touchLayers: [CAShapeLayer] = []
     
     var sessionIsActive = false
     var remoteUser: UInt?
@@ -100,6 +99,9 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
                 print(position)
             }
         }
+        if let colorSelectionBtn = self.colorSelectionBtn, colorSelectionBtn.alpha < 1 {
+            toggleColorSelection() // make sure to hide the color menu
+        }
     }
     
     @IBAction func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
@@ -141,7 +143,6 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
                 layer.path = UIBezierPath(roundedRect: CGRect(x:  pixelTranslation.x, y: pixelTranslation.y, width: 25, height: 25), cornerRadius: 50).cgPath
                 layer.fillColor = lineColor.cgColor
                 drawView.layer.addSublayer(layer)
-                self.touchLayers.append(layer)
             }
             
             if debug {
@@ -179,12 +180,12 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     
     func clearSubLayers() {
         DispatchQueue.main.async {
-            // loop through data-points and remove them from the view
-            for layer in self.touchLayers {
+            // loop through layers drawn from touches and remove them from the view
+            guard let sublayers = self.drawingView.layer.sublayers else { return }
+            for layer in sublayers {
                 layer.isHidden = true
                 layer.removeFromSuperlayer()
             }
-            self.touchLayers = []
         }
     }
     
@@ -197,6 +198,13 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         remoteView.backgroundColor = UIColor.lightGray
         self.view.insertSubview(remoteView, at: 0)
         self.remoteVideoView = remoteView
+        
+        // add branded logo to remote view
+        guard let agoraLogo = UIImage(named: "agora-logo") else { return }
+        let remoteViewBagroundImage = UIImageView(image: agoraLogo)
+        remoteViewBagroundImage.frame = CGRect(x: remoteView.frame.midX-56.5, y: remoteView.frame.midY-100, width: 117, height: 126)
+        remoteViewBagroundImage.alpha = 0.25
+        remoteView.insertSubview(remoteViewBagroundImage, at: 1)
         
         // ui view that the finger drawings will appear on
         let drawingView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
@@ -254,7 +262,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         // set up color buttons
         for (index, color) in uiColors.enumerated() {
             let colorBtn = UIButton(type: .custom)
-            colorBtn.frame = CGRect(x: colorSelectionBtn.frame.midX-12.5, y: colorSelectionBtn.frame.minY-CGFloat(35+(index*35)), width: 25, height: 25)
+            colorBtn.frame = CGRect(x: colorSelectionBtn.frame.midX-13.25, y: colorSelectionBtn.frame.minY-CGFloat(35+(index*35)), width: 27.5, height: 27.5)
             colorBtn.layer.cornerRadius = 0.5 * colorBtn.bounds.size.width
             colorBtn.clipsToBounds = true
             colorBtn.backgroundColor = color
@@ -299,7 +307,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         var alpha: CGFloat = 1
         
         if colorSelectionBtn.alpha == 1 {
-            colorSelectionBtn.alpha = 0.75
+            colorSelectionBtn.alpha = 0.65
         } else {
             colorSelectionBtn.alpha = 1
             alpha = 0

@@ -31,7 +31,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     var streamIsEnabled: Int32 = -1
     var remotePoints: [CGPoint] = []
     
-    var activeTouchRoot: SCNNode!
+    var touchRoots: [SCNNode] = []
     
     // ARVideoKit Renderer - used as an off-screen renderer
     var arvkRenderer: RecordAR!
@@ -254,7 +254,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         if self.remotePoints.count > 0, let remotePoint: CGPoint = self.remotePoints.first {
             self.remotePoints.remove(at: 0) // pop the first node every frame
             DispatchQueue.main.async {
-                guard let touchRootNode = self.activeTouchRoot else { return }
+                guard let touchRootNode = self.touchRoots.last else { return }
                 let sphereNode : SCNNode = SCNNode(geometry: SCNSphere(radius: 0.015))
                 sphereNode.position = SCNVector3(-1*Float(remotePoint.x/1000), -1*Float(remotePoint.y/1000), 0)
                 sphereNode.geometry?.firstMaterial?.diffuse.contents = self.lineColor
@@ -378,12 +378,12 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
                     constraint.isGimbalLockEnabled = true // enable gimbal locking to avoid issues with rotations from LookAtConstraint
                     touchRootNode.constraints = [constraint] // apply LookAtConstraint
                     
-                    self.activeTouchRoot = touchRootNode
+                    self.touchRoots.append(touchRootNode)
                 }
             case "touch-end":
-                // touch-starts
-                print("touch-end msg recieved")
-                self.activeTouchRoot = nil
+                if debug {
+                    print("touch-end msg recieved")
+                }
             default:
                 if debug {
                     print("touch points msg recieved")

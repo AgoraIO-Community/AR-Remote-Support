@@ -13,7 +13,8 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
 
     var touchStart: CGPoint!
     var touchPoints: [CGPoint]! // used for debugging (touches on the screen)
-    var lineColor: UIColor = UIColor.gray
+    let uiColors: [UIColor] = [UIColor.systemBlue, UIColor.systemGray, UIColor.systemGreen, UIColor.systemYellow, UIColor.systemRed]
+    var lineColor: UIColor!
     let bgColor: UIColor = .white
     
     var drawingView: UIView!
@@ -22,7 +23,6 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     var micBtn: UIButton!
     var colorSelectionBtn: UIButton!
     var colorButtons: [UIButton] = []
-    let uiColors: [UIColor] = [UIColor.gray, UIColor.blue, UIColor.red, UIColor.green]
     
     var sessionIsActive = false
     var remoteUser: UInt?
@@ -53,6 +53,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     override func viewDidLoad() {
         super.viewDidLoad()
         // Do any additional setup after loading the view.
+        self.lineColor = self.uiColors.first
         self.view.backgroundColor = self.bgColor
         self.view.isUserInteractionEnabled = true
         
@@ -96,11 +97,12 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             self.touchPoints = []
             if debug {
                 print(position)
-                // TODO: Add variable to track sub-layers
+                // TODO: Add variable to track sub-layers -- move out of debug
+                guard let drawView = self.drawingView else { return }
+                guard let lineColor: UIColor = self.lineColor else { return }
                 let layer = CAShapeLayer()
                 layer.path = UIBezierPath(roundedRect: CGRect(x:  position.x, y: position.y, width: 25, height: 25), cornerRadius: 50).cgPath
-                layer.fillColor = self.lineColor.cgColor
-                guard let drawView = self.drawingView else { return }
+                layer.fillColor = lineColor.cgColor
                 drawView.layer.addSublayer(layer)
             }
         }
@@ -144,10 +146,11 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
                 print(pixelTranslation)
                 
                 // simple draw user touches
+                guard let drawView = self.drawingView else { return }
+                guard let lineColor: UIColor = self.lineColor else { return }
                 let layer = CAShapeLayer()
                 layer.path = UIBezierPath(roundedRect: CGRect(x:  pixelTranslation.x, y: pixelTranslation.y, width: 25, height: 25), cornerRadius: 50).cgPath
-                layer.fillColor = self.lineColor.cgColor
-                guard let drawView = self.drawingView else { return }
+                layer.fillColor = lineColor.cgColor
                 drawView.layer.addSublayer(layer)
                
             }
@@ -222,7 +225,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         if let colorSelectionBtnImage = UIImage(named: "color") {
             let tinableImage = colorSelectionBtnImage.withRenderingMode(.alwaysTemplate)
             colorSelectionBtn.setImage(tinableImage, for: .normal)
-            colorSelectionBtn.tintColor = self.lineColor
+            colorSelectionBtn.tintColor = self.uiColors.first
         } else {
            colorSelectionBtn.setTitle("color", for: .normal)
         }
@@ -286,9 +289,17 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         }
         
         for button in self.colorButtons {
+            // highlihgt the selected color
             button.alpha = alpha
             button.isHidden = isHidden
             button.isUserInteractionEnabled = !isHidden
+            // use CGColor in comparison: BackgroundColor and TintColor do not init the same for the same UIColor.
+            if button.backgroundColor?.cgColor == colorSelectionBtn.tintColor.cgColor {
+                button.layer.borderColor = UIColor.white.cgColor
+                button.layer.borderWidth = 2
+            } else {
+                button.layer.borderWidth = 0
+            }
         }
 
     }

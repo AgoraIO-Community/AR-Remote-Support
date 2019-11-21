@@ -359,6 +359,12 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
                 guard let colorAlpha = NumberFormatter().number(from: colorComponentsStringArray[3]) else { return }
                 // set line color to UIColor from remote user
                 self.lineColor = UIColor.init(red: CGFloat(truncating: redColor), green: CGFloat(truncating: greenColor), blue: CGFloat(truncating:blueColor), alpha: CGFloat(truncating:colorAlpha))
+            case "undo":
+                if !self.touchRoots.isEmpty {
+                    let latestTouchRoot: SCNNode = self.touchRoots.removeLast()
+                    latestTouchRoot.isHidden = true
+                    latestTouchRoot.removeFromParentNode()
+                }
             case "touch-start":
                 // touch-starts
                 print("touch-start msg recieved")

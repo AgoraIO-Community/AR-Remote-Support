@@ -12,7 +12,10 @@ This is a POC of how to build a Remote support app (similar to Vuforia Chalk) us
 
 
 ## How To Use
-The AR Support app is meant to be used by two users who are in two seperate physical locations. One user will input a channel name and CREATE the channel. This will launch a back facing AR enable camer. A second user will input the same channel name as the first user and JOIN the channel. Once both users are in the channel, the user taht "JOINED" the channele has the ability to draw on their screen, and the touch input is sent to the other user and displayed in Augmented Reality. Once the touch input is displayed in AR, both users can see the content.
+The AR Support app is meant to be used by two users who are in two seperate physical locations. One user will input a channel name and CREATE the channel. This will launch a back facing AR enable camera. 
+The second user will input the same channel name as the first user and JOIN the channel. Once both users are in the channel, the user taht "JOINED" the channele has the ability to draw on their screen, and the touch input is sent to the other user and displayed in Augmented Reality. 
+
+Once the touch input is displayed in AR, both users can see the content.
 
 
 ## Dependancies

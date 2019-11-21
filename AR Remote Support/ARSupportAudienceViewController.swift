@@ -23,6 +23,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     var micBtn: UIButton!
     var colorSelectionBtn: UIButton!
     var colorButtons: [UIButton] = []
+    var touchLayers: [CAShapeLayer] = []
     
     var sessionIsActive = false
     var remoteUser: UInt?
@@ -97,13 +98,6 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             self.touchPoints = []
             if debug {
                 print(position)
-                // TODO: Add variable to track sub-layers -- move out of debug
-                guard let drawView = self.drawingView else { return }
-                guard let lineColor: UIColor = self.lineColor else { return }
-                let layer = CAShapeLayer()
-                layer.path = UIBezierPath(roundedRect: CGRect(x:  position.x, y: position.y, width: 25, height: 25), cornerRadius: 50).cgPath
-                layer.fillColor = lineColor.cgColor
-                drawView.layer.addSublayer(layer)
             }
         }
     }
@@ -130,10 +124,8 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
                 let pointToSend = CGPoint(x: translationFromCenter.x, y: translationFromCenter.y)
                 self.dataPointsArray.append(pointToSend)
                 if self.dataPointsArray.count == 10 {
-                    let pointsAsString:  String = self.dataPointsArray.description
-                    self.agoraKit.sendStreamMessage(self.dataStreamId, data: pointsAsString.data(using: String.Encoding.ascii)!)
-                    self.dataPointsArray = []
-                    // call function to loop through data-points and remove them from the view
+                    sendTouchPoints() // send touch data to remote user
+                    clearSubLayers() // remove touches drawn to the screen
                 }
 
                 if debug {
@@ -141,24 +133,31 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
                 }
             }
             
-            if debug {
-                print(translationFromCenter)
-                print(pixelTranslation)
-                
-                // simple draw user touches
+            DispatchQueue.main.async {
+                // draw user touches to the DrawView
                 guard let drawView = self.drawingView else { return }
                 guard let lineColor: UIColor = self.lineColor else { return }
                 let layer = CAShapeLayer()
                 layer.path = UIBezierPath(roundedRect: CGRect(x:  pixelTranslation.x, y: pixelTranslation.y, width: 25, height: 25), cornerRadius: 50).cgPath
                 layer.fillColor = lineColor.cgColor
                 drawView.layer.addSublayer(layer)
-               
+                self.touchLayers.append(layer)
+            }
+            
+            if debug {
+                print(translationFromCenter)
+                print(pixelTranslation)
             }
         }
         
         if gestureRecognizer.state == .ended {
             // send message to remote user that touches have ended
             if self.streamIsEnabled == 0 {
+                // transmit any left over points
+                if self.dataPointsArray.count > 0 {
+                    sendTouchPoints() // send touch data to remote user
+                    clearSubLayers() // remove touches drawn to the screen
+                }
                 self.agoraKit.sendStreamMessage(self.dataStreamId, data: "touch-end".data(using: String.Encoding.ascii)!)
             }
             // clear list of points
@@ -170,6 +169,23 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             }
         }
         
+    }
+    
+    func sendTouchPoints() {
+        let pointsAsString: String = self.dataPointsArray.description
+        self.agoraKit.sendStreamMessage(self.dataStreamId, data: pointsAsString.data(using: String.Encoding.ascii)!)
+        self.dataPointsArray = []
+    }
+    
+    func clearSubLayers() {
+        DispatchQueue.main.async {
+            // loop through data-points and remove them from the view
+            for layer in self.touchLayers {
+                layer.isHidden = true
+                layer.removeFromSuperlayer()
+            }
+            self.touchLayers = []
+        }
     }
     
     // MARK: UI

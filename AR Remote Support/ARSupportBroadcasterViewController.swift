@@ -30,6 +30,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     var dataStreamId: Int! = 27
     var streamIsEnabled: Int32 = -1
     var remotePoints: [CGPoint] = []
+    var drawingNodes: [DynamicGeometry] = []
     
     var activeTouchRoot: SCNNode!
     
@@ -251,14 +252,17 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
      // MARK: Session delegate
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // if we have points - draw one point per frame
+        guard let currentDrawing = drawingNodes.last else {return}
         if self.remotePoints.count > 0, let remotePoint: CGPoint = self.remotePoints.first {
             self.remotePoints.remove(at: 0) // pop the first node every frame
             DispatchQueue.main.async {
-                guard let touchRootNode = self.activeTouchRoot else { return }
-                let sphereNode : SCNNode = SCNNode(geometry: SCNSphere(radius: 0.015))
-                sphereNode.position = SCNVector3(-1*Float(remotePoint.x/1000), -1*Float(remotePoint.y/1000), 0)
-                sphereNode.geometry?.firstMaterial?.diffuse.contents = self.lineColor
-                touchRootNode.addChildNode(sphereNode)  // add point to the active root
+//                guard let touchRootNode = self.activeTouchRoot else { return }
+//                let sphereNode : SCNNode = SCNNode(geometry: SCNSphere(radius: 0.015))
+//                sphereNode.position = SCNVector3(-1*Float(remotePoint.x/1000), -1*Float(remotePoint.y/1000), 0)
+//                sphereNode.geometry?.firstMaterial?.diffuse.contents = self.lineColor
+//                touchRootNode.addChildNode(sphereNode)  // add point to the active root
+                let vertice = SCNVector3(-1*Float(remotePoint.x/1000), -1*Float(remotePoint.y/1000), 0)
+                currentDrawing.addVertice(vertice)
             }
         }
     }
@@ -379,6 +383,10 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
                     touchRootNode.constraints = [constraint] // apply LookAtConstraint
                     
                     self.activeTouchRoot = touchRootNode
+                    
+                    let drawingNode = DynamicGeometry(color: self.lineColor, lineWidth: 0.1)
+                    touchRootNode.addChildNode(drawingNode)
+                    self.drawingNodes.append(drawingNode)
                 }
             case "touch-end":
                 // touch-starts

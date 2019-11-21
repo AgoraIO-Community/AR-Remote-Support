@@ -236,7 +236,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         //  back button
         let backBtn = UIButton()
         backBtn.frame = CGRect(x: self.view.frame.maxX-55, y: self.view.frame.minY+20, width: 30, height: 30)
-        backBtn.layer.cornerRadius = 10
+//        backBtn.layer.cornerRadius = 10
         if let imageExitBtn = UIImage(named: "exit") {
             backBtn.setImage(imageExitBtn, for: .normal)
         } else {
@@ -273,6 +273,17 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             self.view.insertSubview(colorBtn, at: 3)
             self.colorButtons.append(colorBtn)
         }
+        
+        // add undo button
+        let undoBtn = UIButton()
+        undoBtn.frame = CGRect(x: colorSelectionBtn.frame.maxX+25, y: colorSelectionBtn.frame.minY+5, width: 30, height: 30)
+        if let imageUndoBtn = UIImage(named: "undo") {
+            undoBtn.setImage(imageUndoBtn, for: .normal)
+        } else {
+            undoBtn.setTitle("undo", for: .normal)
+        }
+        undoBtn.addTarget(self, action: #selector(sendUndoMsg), for: .touchUpInside)
+        self.view.insertSubview(undoBtn, at: 3)
         
     }
     
@@ -342,6 +353,12 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             if debug {
                 print("color: \(colorComponents)")
             }
+        }
+    }
+    
+    @IBAction func sendUndoMsg() {
+        if self.streamIsEnabled == 0 {
+            self.agoraKit.sendStreamMessage(self.dataStreamId, data: "undo".data(using: String.Encoding.ascii)!)
         }
     }
     

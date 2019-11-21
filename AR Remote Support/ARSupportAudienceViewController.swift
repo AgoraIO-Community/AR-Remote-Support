@@ -13,13 +13,16 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
 
     var touchStart: CGPoint!
     var touchPoints: [CGPoint]! // used for debugging (touches on the screen)
-    let lineColor: CGColor = UIColor.gray.cgColor
+    var lineColor: UIColor = UIColor.gray
     let bgColor: UIColor = .white
     
     var drawingView: UIView!
     var localVideoView: UIView!
     var remoteVideoView: UIView!
     var micBtn: UIButton!
+    var colorSelectionBtn: UIButton!
+    var colorButtons: [UIButton] = []
+    let uiColors: [UIColor] = [UIColor.gray, UIColor.blue, UIColor.red, UIColor.green]
     
     var sessionIsActive = false
     var remoteUser: UInt?
@@ -96,7 +99,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
                 // TODO: Add variable to track sub-layers
                 let layer = CAShapeLayer()
                 layer.path = UIBezierPath(roundedRect: CGRect(x:  position.x, y: position.y, width: 25, height: 25), cornerRadius: 50).cgPath
-                layer.fillColor = self.lineColor
+                layer.fillColor = self.lineColor.cgColor
                 guard let drawView = self.drawingView else { return }
                 drawView.layer.addSublayer(layer)
             }
@@ -143,7 +146,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
                 // simple draw user touches
                 let layer = CAShapeLayer()
                 layer.path = UIBezierPath(roundedRect: CGRect(x:  pixelTranslation.x, y: pixelTranslation.y, width: 25, height: 25), cornerRadius: 50).cgPath
-                layer.fillColor = self.lineColor
+                layer.fillColor = self.lineColor.cgColor
                 guard let drawView = self.drawingView else { return }
                 drawView.layer.addSublayer(layer)
                
@@ -174,7 +177,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         self.view.insertSubview(remoteView, at: 0)
         self.remoteVideoView = remoteView
         
-        // view that the finger drawings will appear on
+        // ui view that the finger drawings will appear on
         let drawingView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
         self.view.insertSubview(drawingView, at: 1)
         self.drawingView = drawingView
@@ -203,7 +206,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         
         //  back button
         let backBtn = UIButton()
-        backBtn.frame = CGRect(x: self.view.frame.maxX-55, y: self.view.frame.minY + 20, width: 30, height: 30)
+        backBtn.frame = CGRect(x: self.view.frame.maxX-55, y: self.view.frame.minY+20, width: 30, height: 30)
         backBtn.layer.cornerRadius = 10
         if let imageExitBtn = UIImage(named: "exit") {
             backBtn.setImage(imageExitBtn, for: .normal)
@@ -212,6 +215,35 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         }
         backBtn.addTarget(self, action: #selector(popView), for: .touchUpInside)
         self.view.insertSubview(backBtn, at: 3)
+        
+        // color palette button
+        let colorSelectionBtn = UIButton(type: .custom)
+        colorSelectionBtn.frame = CGRect(x: self.view.frame.minX+20, y: self.view.frame.maxY-60, width: 40, height: 40)
+        if let colorSelectionBtnImage = UIImage(named: "color") {
+            let tinableImage = colorSelectionBtnImage.withRenderingMode(.alwaysTemplate)
+            colorSelectionBtn.setImage(tinableImage, for: .normal)
+            colorSelectionBtn.tintColor = self.lineColor
+        } else {
+           colorSelectionBtn.setTitle("color", for: .normal)
+        }
+        colorSelectionBtn.addTarget(self, action: #selector(toggleColorSelection), for: .touchUpInside)
+        self.view.insertSubview(colorSelectionBtn, at: 4)
+        self.colorSelectionBtn = colorSelectionBtn
+        
+        // set up color buttons
+        for (index, color) in uiColors.enumerated() {
+            let colorBtn = UIButton(type: .custom)
+            colorBtn.frame = CGRect(x: colorSelectionBtn.frame.midX-12.5, y: colorSelectionBtn.frame.minY-CGFloat(35+(index*35)), width: 25, height: 25)
+            colorBtn.layer.cornerRadius = 0.5 * colorBtn.bounds.size.width
+            colorBtn.clipsToBounds = true
+            colorBtn.backgroundColor = color
+            colorBtn.addTarget(self, action: #selector(setColor), for: .touchDown)
+            colorBtn.alpha = 0
+            colorBtn.isHidden = true
+            colorBtn.isUserInteractionEnabled = false
+            self.view.insertSubview(colorBtn, at: 3)
+            self.colorButtons.append(colorBtn)
+        }
         
     }
     
@@ -238,6 +270,34 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
                 print("enable mic")
             }
         }
+    }
+    
+    @IBAction func toggleColorSelection() {
+        guard let colorSelectionBtn = self.colorSelectionBtn else { return }
+        var isHidden = false
+        var alpha: CGFloat = 1
+        
+        if colorSelectionBtn.alpha == 1 {
+            colorSelectionBtn.alpha = 0.75
+        } else {
+            colorSelectionBtn.alpha = 1
+            alpha = 0
+            isHidden = true
+        }
+        
+        for button in self.colorButtons {
+            button.alpha = alpha
+            button.isHidden = isHidden
+            button.isUserInteractionEnabled = !isHidden
+        }
+
+    }
+    
+    @IBAction func setColor(_ sender: UIButton) {
+        guard let colorSelectionBtn = self.colorSelectionBtn else { return }
+        colorSelectionBtn.tintColor = sender.backgroundColor
+        self.lineColor = colorSelectionBtn.tintColor
+        toggleColorSelection()
     }
     
     // MARK: Agora Implementation

@@ -141,6 +141,13 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         self.view.insertSubview(remoteView, at: 1)
         self.remoteVideoView = remoteView
         
+        // add branded logo to remote view
+        guard let agoraLogo = UIImage(named: "agora-logo") else { return }
+        let remoteViewBagroundImage = UIImageView(image: agoraLogo)
+        remoteViewBagroundImage.frame = CGRect(x: (remoteViewScale/2)-37, y: (remoteViewScale/2)-45, width: 78, height: 84)
+        remoteViewBagroundImage.alpha = 0.25
+        remoteView.insertSubview(remoteViewBagroundImage, at: 1)
+        
         // mic button
         let micBtn = UIButton()
         micBtn.frame = CGRect(x: self.view.frame.midX-37.5, y: self.view.frame.maxY-100, width: 75, height: 75)

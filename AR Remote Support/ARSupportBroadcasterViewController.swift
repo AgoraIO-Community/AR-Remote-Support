@@ -251,8 +251,8 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
      // MARK: Session delegate
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // if we have points - draw one point per frame
-        if self.remotePoints.count > 0, let remotePoint: CGPoint = self.remotePoints.first {
-            self.remotePoints.remove(at: 0) // pop the first node every frame
+        if self.remotePoints.count > 0 {
+            let remotePoint: CGPoint = self.remotePoints.removeFirst() // pop the first node every frame
             DispatchQueue.main.async {
                 guard let touchRootNode = self.touchRoots.last else { return }
                 let sphereNode : SCNNode = SCNNode(geometry: SCNSphere(radius: 0.015))

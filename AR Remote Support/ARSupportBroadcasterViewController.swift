@@ -53,7 +53,6 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         self.agoraKit.enableVideo()
         self.agoraKit.setVideoSource(self.arVideoSource)
         self.agoraKit.enableExternalAudioSource(withSampleRate: 44100, channelsPerFrame: 1)
-        
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -88,11 +87,11 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         // setup ARViewRecorder
         self.arvkRenderer = RecordAR(ARSceneKit: self.sceneView)
         self.arvkRenderer?.renderAR = self // Set the renderer's delegate
-        // Configure the renderer to perform additional image & video processing 👁
+        // Configure the renderer to always render the scene
         self.arvkRenderer?.onlyRenderWhileRecording = false
         // Configure ARKit content mode. Default is .auto
         self.arvkRenderer?.contentMode = .aspectFit
-        //record or photo add environment light rendering, Default is false
+        // add environment light during rendering
         self.arvkRenderer?.enableAdjustEnvironmentLighting = true
         // Set the UIViewController orientations
         self.arvkRenderer?.inputViewOrientations = [.portrait]

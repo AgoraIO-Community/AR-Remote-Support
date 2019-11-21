@@ -109,7 +109,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     }
     
     @IBAction func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
-        if self.sessionIsActive && gestureRecognizer.state == .began {
+        if self.sessionIsActive && gestureRecognizer.state == .began && self.streamIsEnabled == 0 {
             // send message to remote user that touches have started
             self.agoraKit.sendStreamMessage(self.dataStreamId, data: "touch-start".data(using: String.Encoding.ascii)!)
         }
@@ -158,7 +158,9 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         
         if gestureRecognizer.state == .ended {
             // send message to remote user that touches have ended
-            self.agoraKit.sendStreamMessage(self.dataStreamId, data: "touch-start".data(using: String.Encoding.ascii)!)
+            if self.streamIsEnabled == 0 {
+                self.agoraKit.sendStreamMessage(self.dataStreamId, data: "touch-end".data(using: String.Encoding.ascii)!)
+            }
             // clear list of points
             if let touchPointsList = self.touchPoints {
                 self.touchStart = nil // clear starting point
@@ -309,6 +311,14 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         colorSelectionBtn.tintColor = sender.backgroundColor
         self.lineColor = colorSelectionBtn.tintColor
         toggleColorSelection()
+        // send data message with color components
+        if self.streamIsEnabled == 0 {
+            guard let colorComponents = sender.backgroundColor?.cgColor.components else { return }
+            self.agoraKit.sendStreamMessage(self.dataStreamId, data: "color: \(colorComponents)".data(using: String.Encoding.ascii)!)
+            if debug {
+                print("color: \(colorComponents)")
+            }
+        }
     }
     
     // MARK: Agora Implementation

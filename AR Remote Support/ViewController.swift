@@ -45,6 +45,14 @@ class ViewController: UIViewController, UITextFieldDelegate {
     
     // MARK: Create UI
     func createUI() {
+        
+        // add branded logo to remote view
+        guard let agoraLogo = UIImage(named: "ar-support-icon") else { return }
+        let splashLogo = UIImageView(image: agoraLogo)
+        splashLogo.frame = CGRect(x: self.view.center.x-100, y: self.view.center.y-275, width: 200, height: 200)
+//        splashLogo.alpha = 0.25
+        self.view.insertSubview(splashLogo, at: 1)
+        
         // text input field
         let textField = UITextField()
         textField.frame = CGRect(x: self.view.center.x-150, y: self.view.center.y-40, width: 300, height: 40)

@@ -13,30 +13,28 @@ import AgoraRtcEngineKit
 
 class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, RenderARDelegate, AgoraRtcEngineDelegate {
     
-    var sceneView : ARSCNView!
-    var scnLights : [SCNNode] = []
+    var sceneView : ARSCNView!                          // AR SceneView
     
-    var micBtn: UIButton!
-    var remoteVideoView: UIView!
-    var lineColor: UIColor = UIColor.systemBlue
+    var micBtn: UIButton!                               // button to mute/un-mute the microphone
+    var remoteVideoView: UIView!                        // video stream from remote user
+    var lineColor: UIColor = UIColor.systemBlue         // color to use when drawing
     
     // Agora
-    var agoraKit: AgoraRtcEngineKit!
-    var channelName: String!
-    private let arVideoSource: ARVideoSource = ARVideoSource()
+    var agoraKit: AgoraRtcEngineKit!                    // Agora.io Video Engine reference
+    var channelName: String!                            // name of the channel to join
+    let arVideoSource: ARVideoSource = ARVideoSource()  // for passing the AR camera as the stream
     
-    var sessionIsActive = false
-    var remoteUser: UInt?
-    var dataStreamId: Int! = 27
-    var streamIsEnabled: Int32 = -1
-    var remotePoints: [CGPoint] = []
+    var sessionIsActive = false                         // keep track if the video session is active or not
+    var remoteUser: UInt?                               // remote user id
+    var dataStreamId: Int! = 27                         // id for data stream
+    var streamIsEnabled: Int32 = -1                     // acts as a flag to keep track if the data stream is enabled
     
-    var touchRoots: [SCNNode] = []
+    var remotePoints: [CGPoint] = []                    // list of touches received from the remote user
+    var touchRoots: [SCNNode] = []                      // list of root nodes for each set of touches drawn - for undo purposes
     
-    // ARVideoKit Renderer - used as an off-screen renderer
-    var arvkRenderer: RecordAR!
+    var arvkRenderer: RecordAR!                         // ARVideoKit Renderer - used as an off-screen renderer
     
-    let debug : Bool = true
+    let debug : Bool = true                             // toggle the debug logs
     
     // MARK: VC Events
     override func loadView() {
@@ -108,7 +106,6 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         super.viewDidAppear(animated)
         let light = self.createLight(withPosition: SCNVector3(x: 0,y: 5,z: 0), andEulerRotation: SCNVector3(-Float.pi / 2, 0, 0))
         self.sceneView.scene.rootNode.addChildNode(light)
-        self.scnLights.append(light)
     }
     
     // MARK: Hide status bar

@@ -11,31 +11,33 @@ import AgoraRtcEngineKit
 
 class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDelegate, AgoraRtcEngineDelegate {
 
-    var touchStart: CGPoint!
-    var touchPoints: [CGPoint]! // used for debugging (touches on the screen)
+    var touchStart: CGPoint!            // keep track of the initial touch point of each gesture
+    var touchPoints: [CGPoint]!         // for drawing touches to the screen
+    
+    //  list of colors that user can choose from
     let uiColors: [UIColor] = [UIColor.systemBlue, UIColor.systemGray, UIColor.systemGreen, UIColor.systemYellow, UIColor.systemRed]
-    var lineColor: UIColor!
-    let bgColor: UIColor = .white
+    var lineColor: UIColor!             // active color to use when drawing
+    let bgColor: UIColor = .white       // set the view bg color
     
-    var drawingView: UIView!
-    var localVideoView: UIView!
-    var remoteVideoView: UIView!
-    var micBtn: UIButton!
-    var colorSelectionBtn: UIButton!
-    var colorButtons: [UIButton] = []
+    var drawingView: UIView!            // view to draw all the local touches
+    var localVideoView: UIView!         // video stream of local camera
+    var remoteVideoView: UIView!        // video stream from remote user
+    var micBtn: UIButton!               // button to mute/un-mute the microphone
+    var colorSelectionBtn: UIButton!    // button to handle display or hiding the colors avialble to the user
+    var colorButtons: [UIButton] = []   // keep track of the buttons for each color
     
-    var sessionIsActive = false
-    var remoteUser: UInt?
-    var dataStreamId: Int! = 27
-    var streamIsEnabled: Int32 = -1
+    var sessionIsActive = false         // keep track if the session is active or not
+    var remoteUser: UInt?               // remote user id
+    var dataStreamId: Int! = 27         // id for data stream
+    var streamIsEnabled: Int32 = -1     // acts as a flag to keep track if the data stream is enabled
     
-    var dataPointsArray: [CGPoint] = []
+    var dataPointsArray: [CGPoint] = [] // batch list of touches to be sent to remote user
     
-    let debug: Bool = false
+    let debug: Bool = false             // toggle the logs
     
     // Agora
-    var agoraKit: AgoraRtcEngineKit!
-    var channelName: String!
+    var agoraKit: AgoraRtcEngineKit!    // Agora.io Video Engine reference
+    var channelName: String!            // name of the channel to join
     
     // MARK: VC Events
     override func loadView() {

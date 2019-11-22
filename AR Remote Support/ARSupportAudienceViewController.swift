@@ -11,33 +11,34 @@ import AgoraRtcEngineKit
 
 class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDelegate, AgoraRtcEngineDelegate {
 
-    var touchStart: CGPoint!            // keep track of the initial touch point of each gesture
-    var touchPoints: [CGPoint]!         // for drawing touches to the screen
+    var touchStart: CGPoint!                // keep track of the initial touch point of each gesture
+    var touchPoints: [CGPoint]!             // for drawing touches to the screen
     
     //  list of colors that user can choose from
     let uiColors: [UIColor] = [UIColor.systemBlue, UIColor.systemGray, UIColor.systemGreen, UIColor.systemYellow, UIColor.systemRed]
-    var lineColor: UIColor!             // active color to use when drawing
-    let bgColor: UIColor = .white       // set the view bg color
     
-    var drawingView: UIView!            // view to draw all the local touches
-    var localVideoView: UIView!         // video stream of local camera
-    var remoteVideoView: UIView!        // video stream from remote user
-    var micBtn: UIButton!               // button to mute/un-mute the microphone
-    var colorSelectionBtn: UIButton!    // button to handle display or hiding the colors avialble to the user
-    var colorButtons: [UIButton] = []   // keep track of the buttons for each color
+    var lineColor: UIColor!                 // active color to use when drawing
+    let bgColor: UIColor = .white           // set the view bg color
     
-    var sessionIsActive = false         // keep track if the session is active or not
-    var remoteUser: UInt?               // remote user id
-    var dataStreamId: Int! = 27         // id for data stream
-    var streamIsEnabled: Int32 = -1     // acts as a flag to keep track if the data stream is enabled
-    
-    var dataPointsArray: [CGPoint] = [] // batch list of touches to be sent to remote user
-    
-    let debug: Bool = false             // toggle the logs
+    var drawingView: UIView!                // view to draw all the local touches
+    var localVideoView: UIView!             // video stream of local camera
+    var remoteVideoView: UIView!            // video stream from remote user
+    var micBtn: UIButton!                   // button to mute/un-mute the microphone
+    var colorSelectionBtn: UIButton!        // button to handle display or hiding the colors avialble to the user
+    var colorButtons: [UIButton] = []       // keep track of the buttons for each color
     
     // Agora
-    var agoraKit: AgoraRtcEngineKit!    // Agora.io Video Engine reference
-    var channelName: String!            // name of the channel to join
+    var agoraKit: AgoraRtcEngineKit!        // Agora.io Video Engine reference
+    var channelName: String!                // name of the channel to join
+     
+    var sessionIsActive = false             // keep track if the video session is active or not
+    var remoteUser: UInt?                   // remote user id
+    var dataStreamId: Int! = 27             // id for data stream
+    var streamIsEnabled: Int32 = -1         // acts as a flag to keep track if the data stream is enabled
+    
+    var dataPointsArray: [CGPoint] = []     // batch list of touches to be sent to remote user
+    
+    let debug: Bool = false                 // toggle the debug logs
     
     // MARK: VC Events
     override func loadView() {

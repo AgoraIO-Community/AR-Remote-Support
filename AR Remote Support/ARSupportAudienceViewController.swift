@@ -47,10 +47,10 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         setupGestures()
         self.view.isUserInteractionEnabled = false
         
-        // Agora setup
-        guard let appID = getValue(withKey: "AppID", within: "keys") else { return }
-        self.agoraKit = AgoraRtcEngineKit.sharedEngine(withAppId: appID, delegate: self)
-        self.agoraKit.setChannelProfile(.communication)
+        // Add Agora setup
+        guard let appID = getValue(withKey: "AppID", within: "keys") else { return }  // get the AppID from keys.plist
+        self.agoraKit = AgoraRtcEngineKit.sharedEngine(withAppId: appID, delegate: self) // - init engine
+        self.agoraKit.setChannelProfile(.communication) // - set channel profile
     }
 
     override func viewDidLoad() {
@@ -61,7 +61,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         self.view.isUserInteractionEnabled = true
         
         // Agora - join the channel
-        setupLocalVideo()
+        setupLocalVideo() //  - set video configuration
         joinChannel()
     }
     
@@ -76,6 +76,9 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
+        if self.sessionIsActive {
+            leaveChannel();
+        }
     }
     
     // MARK: Hide status bar
@@ -172,7 +175,6 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
                 }
             }
         }
-        
     }
     
     func sendTouchPoints() {
@@ -293,7 +295,6 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     // MARK: Button Events
     @IBAction func popView() {
         leaveChannel()
-        self.sessionIsActive = false
         self.dismiss(animated: true, completion: nil)
     }
     
@@ -375,7 +376,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         // Set video configuration
         let videoConfig = AgoraVideoEncoderConfiguration(size: AgoraVideoDimension360x360, frameRate: .fps15, bitrate: AgoraVideoBitrateStandard, orientationMode: .fixedPortrait)
         self.agoraKit.setVideoEncoderConfiguration(videoConfig)
-        // set up local video view
+        // Set up local video view
         let videoCanvas = AgoraRtcVideoCanvas()
         videoCanvas.uid = 0
         videoCanvas.view = localVideoView
@@ -389,20 +390,22 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     
     func joinChannel() {
         // Set audio route to speaker
-        agoraKit.setDefaultAudioRouteToSpeakerphone(true)
+        self.agoraKit.setDefaultAudioRouteToSpeakerphone(true)
+        // get the token - returns nil if no value is set
         let token = getValue(withKey: "token", within: "keys")
+        // Join the channel
         self.agoraKit.joinChannel(byToken: token, channelId: self.channelName, info: nil, uid: 0) { (channel, uid, elapsed) in
-            if self.debug {
-                print("Successfully joined: \(channel), with \(uid): \(elapsed) secongs ago")
-            }
+          if self.debug {
+              print("Successfully joined: \(channel), with \(uid): \(elapsed) secongs ago")
+          }
         }
-        UIApplication.shared.isIdleTimerDisabled = true
+        UIApplication.shared.isIdleTimerDisabled = true     // Disable idle timmer
     }
     
     func leaveChannel() {
-        // leave channel and end chat
-        self.agoraKit.leaveChannel(nil)
-        UIApplication.shared.isIdleTimerDisabled = false
+        self.agoraKit.leaveChannel(nil)                     // leave channel and end chat
+        self.sessionIsActive = false                        // session is no longer active
+        UIApplication.shared.isIdleTimerDisabled = false    // Enable idle timer
     }
     
     // MARK: Agora Delegate

@@ -43,14 +43,15 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         self.view.backgroundColor = UIColor.black
         
         // Agora setup
-        guard let appID = getValue(withKey: "AppID", within: "keys") else { return }
-        self.agoraKit = AgoraRtcEngineKit.sharedEngine(withAppId: appID, delegate: self)
-        self.agoraKit.setChannelProfile(.communication)
+        guard let appID = getValue(withKey: "AppID", within: "keys") else { return } // get the AppID from keys.plist
+        let agoraKit = AgoraRtcEngineKit.sharedEngine(withAppId: appID, delegate: self) // - init engine
+        agoraKit.setChannelProfile(.communication) // - set channel profile
         let videoConfig = AgoraVideoEncoderConfiguration(size: AgoraVideoDimension1280x720, frameRate: .fps60, bitrate: AgoraVideoBitrateStandard, orientationMode: .fixedPortrait)
-        self.agoraKit.setVideoEncoderConfiguration(videoConfig)
-        self.agoraKit.enableVideo()
-        self.agoraKit.setVideoSource(self.arVideoSource)
-        self.agoraKit.enableExternalAudioSource(withSampleRate: 44100, channelsPerFrame: 1)
+        agoraKit.setVideoEncoderConfiguration(videoConfig) // - set video encoding configuration (dimensions, frame-rate, bitrate, orientation
+        agoraKit.enableVideo() // - enable video
+        agoraKit.setVideoSource(self.arVideoSource) // - set the video source to the custom AR source
+        agoraKit.enableExternalAudioSource(withSampleRate: 44100, channelsPerFrame: 1) // - enable external audio souce (since video and audio are coming from seperate sources)
+        self.agoraKit = agoraKit // set a reference to the Agora engine
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -198,13 +199,15 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     func joinChannel() {
         // Set audio route to speaker
         self.agoraKit.setDefaultAudioRouteToSpeakerphone(true)
+        // get the token - returns nil if no value is set
         let token = getValue(withKey: "token", within: "keys")
+        // Join the channel
         self.agoraKit.joinChannel(byToken: token, channelId: self.channelName, info: nil, uid: 0) { (channel, uid, elapsed) in
-            if self.debug {
-                print("Successfully joined: \(channel), with \(uid): \(elapsed) secongs ago")
-            }
+          if self.debug {
+              print("Successfully joined: \(channel), with \(uid): \(elapsed) secongs ago")
+          }
         }
-        UIApplication.shared.isIdleTimerDisabled = true
+        UIApplication.shared.isIdleTimerDisabled = true     // Disable idle timmer
     }
     
     func leaveChannel() {

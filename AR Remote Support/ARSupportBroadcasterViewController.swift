@@ -13,30 +13,28 @@ import AgoraRtcEngineKit
 
 class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, RenderARDelegate, AgoraRtcEngineDelegate {
     
-    var sceneView : ARSCNView!
-    var scnLights : [SCNNode] = []
+    var sceneView : ARSCNView!                          // AR SceneView
     
-    var micBtn: UIButton!
-    var remoteVideoView: UIView!
-    var lineColor: UIColor = UIColor.systemBlue
+    var micBtn: UIButton!                               // button to mute/un-mute the microphone
+    var remoteVideoView: UIView!                        // video stream from remote user
+    var lineColor: UIColor = UIColor.systemBlue         // color to use when drawing
     
     // Agora
-    var agoraKit: AgoraRtcEngineKit!
-    var channelName: String!
-    private let arVideoSource: ARVideoSource = ARVideoSource()
+    var agoraKit: AgoraRtcEngineKit!                    // Agora.io Video Engine reference
+    var channelName: String!                            // name of the channel to join
+    let arVideoSource: ARVideoSource = ARVideoSource()  // for passing the AR camera as the stream
     
-    var sessionIsActive = false
-    var remoteUser: UInt?
-    var dataStreamId: Int! = 27
-    var streamIsEnabled: Int32 = -1
-    var remotePoints: [CGPoint] = []
+    var sessionIsActive = false                         // keep track if the video session is active or not
+    var remoteUser: UInt?                               // remote user id
+    var dataStreamId: Int! = 27                         // id for data stream
+    var streamIsEnabled: Int32 = -1                     // acts as a flag to keep track if the data stream is enabled
     
-    var touchRoots: [SCNNode] = []
+    var remotePoints: [CGPoint] = []                    // list of touches received from the remote user
+    var touchRoots: [SCNNode] = []                      // list of root nodes for each set of touches drawn - for undo purposes
     
-    // ARVideoKit Renderer - used as an off-screen renderer
-    var arvkRenderer: RecordAR!
+    var arvkRenderer: RecordAR!                         // ARVideoKit Renderer - used as an off-screen renderer
     
-    let debug : Bool = true
+    let debug : Bool = true                             // toggle the debug logs
     
     // MARK: VC Events
     override func loadView() {
@@ -45,14 +43,15 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         self.view.backgroundColor = UIColor.black
         
         // Agora setup
-        guard let appID = getValue(withKey: "AppID", within: "keys") else { return }
-        self.agoraKit = AgoraRtcEngineKit.sharedEngine(withAppId: appID, delegate: self)
-        self.agoraKit.setChannelProfile(.communication)
+        guard let appID = getValue(withKey: "AppID", within: "keys") else { return } // get the AppID from keys.plist
+        let agoraKit = AgoraRtcEngineKit.sharedEngine(withAppId: appID, delegate: self) // - init engine
+        agoraKit.setChannelProfile(.communication) // - set channel profile
         let videoConfig = AgoraVideoEncoderConfiguration(size: AgoraVideoDimension1280x720, frameRate: .fps60, bitrate: AgoraVideoBitrateStandard, orientationMode: .fixedPortrait)
-        self.agoraKit.setVideoEncoderConfiguration(videoConfig)
-        self.agoraKit.enableVideo()
-        self.agoraKit.setVideoSource(self.arVideoSource)
-        self.agoraKit.enableExternalAudioSource(withSampleRate: 44100, channelsPerFrame: 1)
+        agoraKit.setVideoEncoderConfiguration(videoConfig) // - set video encoding configuration (dimensions, frame-rate, bitrate, orientation
+        agoraKit.enableVideo() // - enable video
+        agoraKit.setVideoSource(self.arVideoSource) // - set the video source to the custom AR source
+        agoraKit.enableExternalAudioSource(withSampleRate: 44100, channelsPerFrame: 1) // - enable external audio souce (since video and audio are coming from seperate sources)
+        self.agoraKit = agoraKit // set a reference to the Agora engine
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -108,7 +107,6 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         super.viewDidAppear(animated)
         let light = self.createLight(withPosition: SCNVector3(x: 0,y: 5,z: 0), andEulerRotation: SCNVector3(-Float.pi / 2, 0, 0))
         self.sceneView.scene.rootNode.addChildNode(light)
-        self.scnLights.append(light)
     }
     
     // MARK: Hide status bar
@@ -201,13 +199,15 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     func joinChannel() {
         // Set audio route to speaker
         self.agoraKit.setDefaultAudioRouteToSpeakerphone(true)
+        // get the token - returns nil if no value is set
         let token = getValue(withKey: "token", within: "keys")
+        // Join the channel
         self.agoraKit.joinChannel(byToken: token, channelId: self.channelName, info: nil, uid: 0) { (channel, uid, elapsed) in
-            if self.debug {
-                print("Successfully joined: \(channel), with \(uid): \(elapsed) secongs ago")
-            }
+          if self.debug {
+              print("Successfully joined: \(channel), with \(uid): \(elapsed) secongs ago")
+          }
         }
-        UIApplication.shared.isIdleTimerDisabled = true
+        UIApplication.shared.isIdleTimerDisabled = true     // Disable idle timmer
     }
     
     func leaveChannel() {

@@ -7,7 +7,6 @@
 //
 
 import SceneKit
-
 import ARKit
 
 public extension SCNVector3 {

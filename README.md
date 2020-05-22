@@ -2,8 +2,8 @@
 This is a POC app for how to build a remote support app (similar to Vuforia Chalk) using ARKit and Agora.io's Video SDK.
 
 ## Installation
-1. Clone the reposetory
-2. Open reposetory folder in terminal window 
+1. Clone the repository
+2. Open repository folder in terminal window 
 3. Run `pod install` to install all dependacies
 4. Open `Keys.plist` and input your `AppID`, avaible from [https://console.agora.io](https://console.agora.io)
 5. Plug in iOS devices.

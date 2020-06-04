@@ -50,7 +50,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         agoraKit.setVideoEncoderConfiguration(videoConfig) // - set video encoding configuration (dimensions, frame-rate, bitrate, orientation
         agoraKit.enableVideo() // - enable video
         agoraKit.setVideoSource(self.arVideoSource) // - set the video source to the custom AR source
-        agoraKit.enableExternalAudioSource(withSampleRate: 44100, channelsPerFrame: 1) // - enable external audio souce (since video and audio are coming from seperate sources)
+//        agoraKit.enableExternalAudioSource(withSampleRate: 44100, channelsPerFrame: 1) // - enable external audio souce (since video and audio are coming from seperate sources)
         self.agoraKit = agoraKit // set a reference to the Agora engine
     }
 
@@ -59,7 +59,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         // Configure ARKit Session
         let configuration = ARWorldTrackingConfiguration()
 //        configuration.planeDetection = [.horizontal, .vertical]
-        configuration.providesAudioData = true
+//        configuration.providesAudioData = true
         configuration.isLightEstimationEnabled = false
 
         self.sceneView.session.run(configuration)

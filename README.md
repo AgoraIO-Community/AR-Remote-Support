@@ -5,9 +5,10 @@ This is a POC app for how to build a remote support app (similar to Vuforia Chal
 1. Clone the repository
 2. Open repository folder in terminal window 
 3. Run `pod install` to install all dependencies
-4. Open `Keys.plist` and input your `AppID`, available from [https://console.agora.io](https://console.agora.io)
-5. Plug in iOS devices.
-6. Build and Run app on iOS devices.
+4. Open the ` .xcworkspace` file in Xcode
+5. Open `Keys.plist` and input your `AppID`, available from [https://console.agora.io](https://console.agora.io)
+6. Plug in iOS devices.
+7. Build and Run app on iOS devices.
 
 ## Device Requirements
 This app works with any iOS device that supports ARKit 

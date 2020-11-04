@@ -21,6 +21,6 @@ To properly run this demo, you will need 2 physical iOS devices. You can not run
 The AR Remote Video Support app is meant to be used by two users who are in two seperate physical locations. One user will input a channel name and CREATE the channel. This will launch a back facing AR enable camera. 
 The second user will input the same channel name as the first user and JOIN the channel. Once both users are in the channel, the user that "JOINED" the channel has the ability to draw on their screen, and the touch input is sent to the other user and displayed in Augmented Reality. 
 
-## Dependancies
+## Dependencies
 - Agora.io Video SDK: https://www.agora.io
 - ARVideoKit: https://github.com/AFathi/ARVideoKit

@@ -96,10 +96,21 @@ class ViewController: UIViewController, UITextFieldDelegate {
                 arSupportVC.modalPresentationStyle = .fullScreen
                 self.present(arSupportVC, animated: true, completion: nil)
             } else {
-               // TODO: add visible msg to user
-               print("unable to join a broadcast without an empty channelName")
+                print("unable to join a broadcast without an empty channelName")
+                self.invalidChannelAlert()
             }
         }
+    }
+
+    func invalidChannelAlert() {
+        let alert = UIAlertController(
+            title: "Invlid Channel",
+            message: "Please add a channel name.",
+            preferredStyle: .alert
+        )
+        alert.addAction(UIAlertAction(title: NSLocalizedString(
+            "OK", comment: "Default action"), style: .default, handler: {_ in }))
+        self.present(alert, animated: true, completion: nil)
     }
     
     @IBAction func createSession() {
@@ -110,8 +121,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
                 arBroadcastVC.modalPresentationStyle = .fullScreen
                 self.present(arBroadcastVC, animated: true, completion: nil)
             } else {
-               // TODO: add visible msg to user
-               print("unable to launch a broadcast without an empty channelName")
+                print("unable to launch a broadcast without an empty channelName")
+                self.invalidChannelAlert()
             }
         }
     }

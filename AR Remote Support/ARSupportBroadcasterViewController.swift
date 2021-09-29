@@ -9,7 +9,7 @@
 import UIKit
 import ARKit
 import ARVideoKit
-import AgoraRtcEngineKit
+import AgoraRtcKit
 
 class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, RenderARDelegate, AgoraRtcEngineDelegate {
     

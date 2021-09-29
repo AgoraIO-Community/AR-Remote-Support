@@ -7,9 +7,13 @@
 //
 
 import UIKit
-import AgoraRtcEngineKit
+import AgoraRtcKit
 
 class ARVideoSource: NSObject, AgoraVideoSourceProtocol {
+    func captureType() -> AgoraVideoCaptureType { .camera}
+
+    func contentHint() -> AgoraVideoContentHint { .motion }
+
     var consumer: AgoraVideoFrameConsumer?
     
     func shouldInitialize() -> Bool { return true }

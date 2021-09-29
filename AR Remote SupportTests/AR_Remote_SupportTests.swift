@@ -7,9 +7,9 @@
 //
 
 import XCTest
-@testable import Agora_Remote_Support
+@testable import AR_Remote_Support
 
-class Agora_Remote_SupportTests: XCTestCase {
+class AR_Remote_SupportTests: XCTestCase {
 
     override func setUp() {
         // Put setup code here. This method is called before the invocation of each test method in the class.

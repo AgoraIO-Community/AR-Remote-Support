@@ -2,6 +2,6 @@
 <Workspace
    version = "1.0">
    <FileRef
-      location = "self:/Users/hermesfrangoudis/Agora/projects/AR/AgoraRemoteSupportAR/AR Remote Support.xcodeproj">
+      location = "self:">
    </FileRef>
 </Workspace>

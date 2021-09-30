@@ -9,7 +9,6 @@
 /* Begin PBXBuildFile section */
 		0358E05B2370ADE70041F021 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0358E05A2370ADE70041F021 /* Assets.xcassets */; };
 		0358E05D2370B3170041F021 /* GetValueFromFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0358E05C2370B3170041F021 /* GetValueFromFile.swift */; };
-		0358E05F2370C2FE0041F021 /* keys.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0358E05E2370C2FE0041F021 /* keys.plist */; };
 		0379DF4D2369F67900B20008 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379DF4C2369F67900B20008 /* AppDelegate.swift */; };
 		0379DF542369F67900B20008 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0379DF522369F67900B20008 /* Main.storyboard */; };
 		0379DF592369F67B00B20008 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0379DF572369F67B00B20008 /* LaunchScreen.storyboard */; };
@@ -22,6 +21,8 @@
 		F3E387162704588B0044B4FB /* AR_Remote_SupportUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E387152704588B0044B4FB /* AR_Remote_SupportUITests.swift */; };
 		F3E3871C27045A2A0044B4FB /* ARVideoKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3E3871B27045A2A0044B4FB /* ARVideoKit */; };
 		F3E3871F27045DFE0044B4FB /* AgoraUIKit_iOS in Frameworks */ = {isa = PBXBuildFile; productRef = F3E3871E27045DFE0044B4FB /* AgoraUIKit_iOS */; };
+		F3E387242705B4C20044B4FB /* ARSupportBroadcasterViewController+RTCDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E387232705B4C20044B4FB /* ARSupportBroadcasterViewController+RTCDelegate.swift */; };
+		F3E387262705CC570044B4FB /* AppKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E387252705CC570044B4FB /* AppKeys.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -44,7 +45,6 @@
 /* Begin PBXFileReference section */
 		0358E05A2370ADE70041F021 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		0358E05C2370B3170041F021 /* GetValueFromFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetValueFromFile.swift; sourceTree = "<group>"; };
-		0358E05E2370C2FE0041F021 /* keys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = keys.plist; sourceTree = "<group>"; };
 		0379DF492369F67900B20008 /* AR Remote Support.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AR Remote Support.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0379DF4C2369F67900B20008 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0379DF532369F67900B20008 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -55,12 +55,14 @@
 		0379DF6A2369F67B00B20008 /* AR Remote SupportUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AR Remote SupportUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0379DF702369F67B00B20008 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		039ABE0A236A021E008A374F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		039ABE48236A03F8008A374F /* ARSupportBroadcasterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARSupportBroadcasterViewController.swift; sourceTree = "<group>"; };
+		039ABE48236A03F8008A374F /* ARSupportBroadcasterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARSupportBroadcasterViewController.swift; sourceTree = "<group>"; wrapsLines = 0; };
 		039ABE4C236A045A008A374F /* ARSupportAudienceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSupportAudienceViewController.swift; sourceTree = "<group>"; };
 		03E1EB9823765DEC0058F088 /* ARVideoSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARVideoSource.swift; sourceTree = "<group>"; };
 		03E1EB9A237663D30058F088 /* SCNVector3+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SCNVector3+Extensions.swift"; sourceTree = "<group>"; };
 		F3E38713270458400044B4FB /* AR_Remote_SupportTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AR_Remote_SupportTests.swift; sourceTree = "<group>"; };
 		F3E387152704588B0044B4FB /* AR_Remote_SupportUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AR_Remote_SupportUITests.swift; sourceTree = "<group>"; };
+		F3E387232705B4C20044B4FB /* ARSupportBroadcasterViewController+RTCDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ARSupportBroadcasterViewController+RTCDelegate.swift"; sourceTree = "<group>"; };
+		F3E387252705CC570044B4FB /* AppKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppKeys.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -119,9 +121,10 @@
 				0379DF572369F67B00B20008 /* LaunchScreen.storyboard */,
 				0379DF5A2369F67B00B20008 /* Info.plist */,
 				039ABE48236A03F8008A374F /* ARSupportBroadcasterViewController.swift */,
+				F3E387232705B4C20044B4FB /* ARSupportBroadcasterViewController+RTCDelegate.swift */,
+				F3E387252705CC570044B4FB /* AppKeys.swift */,
 				039ABE4C236A045A008A374F /* ARSupportAudienceViewController.swift */,
 				039ABE0A236A021E008A374F /* ViewController.swift */,
-				0358E05E2370C2FE0041F021 /* keys.plist */,
 				0358E05C2370B3170041F021 /* GetValueFromFile.swift */,
 				03E1EB9823765DEC0058F088 /* ARVideoSource.swift */,
 				03E1EB9A237663D30058F088 /* SCNVector3+Extensions.swift */,
@@ -259,7 +262,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0358E05F2370C2FE0041F021 /* keys.plist in Resources */,
 				0379DF592369F67B00B20008 /* LaunchScreen.storyboard in Resources */,
 				0358E05B2370ADE70041F021 /* Assets.xcassets in Resources */,
 				0379DF542369F67900B20008 /* Main.storyboard in Resources */,
@@ -293,7 +295,9 @@
 				03E1EB9923765DEC0058F088 /* ARVideoSource.swift in Sources */,
 				0379DF4D2369F67900B20008 /* AppDelegate.swift in Sources */,
 				0358E05D2370B3170041F021 /* GetValueFromFile.swift in Sources */,
+				F3E387262705CC570044B4FB /* AppKeys.swift in Sources */,
 				03E1EB9B237663D30058F088 /* SCNVector3+Extensions.swift in Sources */,
+				F3E387242705B4C20044B4FB /* ARSupportBroadcasterViewController+RTCDelegate.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -469,7 +473,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "AR Remote Support/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -488,7 +492,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "AR Remote Support/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",

@@ -38,7 +38,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     var sessionIsActive = false             // keep track if the video session is active or not
     var remoteUser: UInt?                   // remote user id
     var dataStreamId: Int! = 27             // id for data stream
-    var streamIsEnabled: Int32 = 0         // acts as a flag to keep track if the data stream is enabled
+    var streamIsEnabled: Int32 = -1         // acts as a flag to keep track if the data stream is enabled
     
     var dataPointsArray: [CGPoint] = []     // batch list of touches to be sent to remote user
     
@@ -62,7 +62,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         )
 
         self.agoraView = AgoraVideoViewer(
-            connectionData: AgoraConnectionData(appId: appID), agoraSettings: agSettings
+            connectionData: AgoraConnectionData(appId: appID, idLogic: .random), agoraSettings: agSettings
         )
     }
 
@@ -125,12 +125,12 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     @IBAction func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
         if self.sessionIsActive && gestureRecognizer.state == .began && self.streamIsEnabled == 0 {
             // send message to remote user that touches have started
-            self.agoraView.rtmController?.sendRaw(message: "touch-start", channel: self.channelName, callback: { messageStatus in
-                if messageStatus != .errorOk {
-                    print("message could not send: \(messageStatus.rawValue)")
-                }
-            })
-//            self.agoraKit.sendStreamMessage(self.dataStreamId, data: "touch-start".data(using: String.Encoding.ascii)!)
+//            self.agoraView.rtmController?.sendRaw(message: "touch-start", channel: self.channelName, callback: { messageStatus in
+//                if messageStatus != .errorOk {
+//                    print("message could not send: \(messageStatus.rawValue)")
+//                }
+//            })
+            self.agoraKit.sendStreamMessage(self.dataStreamId, data: "touch-start".data(using: String.Encoding.ascii)!)
         }
         
         if self.sessionIsActive && (gestureRecognizer.state == .began || gestureRecognizer.state == .changed) {
@@ -182,12 +182,12 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
                     sendTouchPoints() // send touch data to remote user
                     clearSubLayers() // remove touches drawn to the screen
                 }
-                self.agoraView.rtmController?.sendRaw(message: "touch-end", channel: self.channelName, callback: { messageStatus in
-                    if messageStatus != .errorOk {
-                        print("message could not send: \(messageStatus.rawValue)")
-                    }
-                })
-//                self.agoraKit.sendStreamMessage(self.dataStreamId, data: "touch-end".data(using: String.Encoding.ascii)!)
+//                self.agoraView.rtmController?.sendRaw(message: "touch-end", channel: self.channelName, callback: { messageStatus in
+//                    if messageStatus != .errorOk {
+//                        print("message could not send: \(messageStatus.rawValue)")
+//                    }
+//                })
+                self.agoraKit.sendStreamMessage(self.dataStreamId, data: "touch-end".data(using: String.Encoding.ascii)!)
             }
             // clear list of points
             if let touchPointsList = self.touchPoints {
@@ -201,12 +201,12 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     
     func sendTouchPoints() {
         let pointsAsString: String = self.dataPointsArray.description
-        self.agoraView.rtmController?.sendRaw(message: pointsAsString, channel: self.channelName, callback: { messageStatus in
-            if messageStatus != .errorOk {
-                print("message could not send: \(messageStatus.rawValue)")
-            }
-        })
-//        self.agoraKit.sendStreamMessage(self.dataStreamId, data: pointsAsString.data(using: String.Encoding.ascii)!)
+//        self.agoraView.rtmController?.sendRaw(message: pointsAsString, channel: self.channelName, callback: { messageStatus in
+//            if messageStatus != .errorOk {
+//                print("message could not send: \(messageStatus.rawValue)")
+//            }
+//        })
+        self.agoraKit.sendStreamMessage(self.dataStreamId, data: pointsAsString.data(using: String.Encoding.ascii)!)
         self.dataPointsArray = []
     }
     
@@ -370,12 +370,12 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         // send data message with color components
         if self.streamIsEnabled == 0 {
             guard let colorComponents = sender.backgroundColor?.cgColor.components else { return }
-            self.agoraView.rtmController?.sendRaw(message: "color: \(colorComponents)", channel: self.channelName, callback: { messageStatus in
-                if messageStatus != .errorOk {
-                    print("message could not send: \(messageStatus.rawValue)")
-                }
-            })
-//            self.agoraKit.sendStreamMessage(self.dataStreamId, data: "color: \(colorComponents)".data(using: String.Encoding.ascii)!)
+//            self.agoraView.rtmController?.sendRaw(message: "color: \(colorComponents)", channel: self.channelName, callback: { messageStatus in
+//                if messageStatus != .errorOk {
+//                    print("message could not send: \(messageStatus.rawValue)")
+//                }
+//            })
+            self.agoraKit.sendStreamMessage(self.dataStreamId, data: "color: \(colorComponents)".data(using: String.Encoding.ascii)!)
             if debug {
                 print("color: \(colorComponents)")
             }
@@ -384,12 +384,12 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     
     @IBAction func sendUndoMsg() {
         if self.streamIsEnabled == 0 {
-            self.agoraView.rtmController?.sendRaw(message: "undo", channel: self.channelName, callback: { messageStatus in
-                if messageStatus != .errorOk {
-                    print("message could not send: \(messageStatus.rawValue)")
-                }
-            })
-//            self.agoraKit.sendStreamMessage(self.dataStreamId, data: "undo".data(using: String.Encoding.ascii)!)
+//            self.agoraView.rtmController?.sendRaw(message: "undo", channel: self.channelName, callback: { messageStatus in
+//                if messageStatus != .errorOk {
+//                    print("message could not send: \(messageStatus.rawValue)")
+//                }
+//            })
+            self.agoraKit.sendStreamMessage(self.dataStreamId, data: "undo".data(using: String.Encoding.ascii)!)
         }
     }
     
@@ -421,8 +421,14 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         self.agoraView.join(channel: self.channelName, with: token, as: .broadcaster)
         UIApplication.shared.isIdleTimerDisabled = true     // Disable idle timmer
     }
-    
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.leaveChannel()
+    }
+
     func leaveChannel() {
+        self.agoraView.rtmController?.rtmKit.logout()
         self.agoraView.exit()                                  // leave channel and end chat
         self.sessionIsActive = false                        // session is no longer active
         UIApplication.shared.isIdleTimerDisabled = false    // Enable idle timer
@@ -439,7 +445,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             self.sessionIsActive = true
             
             // create the data stream
-//            self.streamIsEnabled = self.agoraKit.createDataStream(&self.dataStreamId, reliable: true, ordered: true)
+            self.streamIsEnabled = self.agoraKit.createDataStream(&self.dataStreamId, reliable: true, ordered: true)
 //            if self.debug {
 //                print("Data Stream initiated - STATUS: \(self.streamIsEnabled)")
 //            }
@@ -463,7 +469,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         if self.debug {
             print("local user did join channel with uid:\(uid)")
         }
-        self.setupLocalVideo(with: uid) //  - set video configuration
+//        self.setupLocalVideo(with: uid) //  - set video configuration
     }
     
     func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinedOfUid uid: UInt, elapsed: Int) {

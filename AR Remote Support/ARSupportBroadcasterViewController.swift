@@ -11,6 +11,7 @@ import ARKit
 import ARVideoKit
 import AgoraRtcKit
 import AgoraUIKit_iOS
+import AgoraRtmKit
 
 class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, AgoraRtcEngineDelegate {
     
@@ -30,8 +31,8 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     
     var sessionIsActive = false                         // keep track if the video session is active or not
     var remoteUser: UInt?                               // remote user id
-//    var dataStreamId: Int! = 27                         // id for data stream
-    var streamIsEnabled: Int32 = 0                     // acts as a flag to keep track if the data stream is enabled
+    var dataStreamId: Int! = 27                         // id for data stream
+    var streamIsEnabled: Int32 = -1                     // acts as a flag to keep track if the data stream is enabled
     
     var remotePoints: [CGPoint] = []                    // list of touches received from the remote user
     var touchRoots: [SCNNode] = []                      // list of root nodes for each set of touches drawn - for undo purposes
@@ -58,6 +59,11 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         self.sceneView.removeFromSuperview()
         self.sceneView = nil
     }
+
+    override func viewDidDisappear(_ animated: Bool) {
+        super.viewDidDisappear(animated)
+        self.leaveChannel()
+    }
     
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -65,12 +71,12 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         self.view.backgroundColor = UIColor.black
 
         // Agora setup
-        let connectionData = AgoraConnectionData(appId: AppKeys.appId, appToken: AppKeys.token)
+        let connectionData = AgoraConnectionData(appId: AppKeys.appId, appToken: AppKeys.token, idLogic: .random)
         var agSettings = AgoraSettings()
         agSettings.videoSource = self.arVideoSource
         agSettings.showSelf = false
         agSettings.enabledButtons = [.cameraButton, .micButton]
-//        agSettings.rtcDelegate = self
+        agSettings.rtcDelegate = self
 //        agSettings.rtmChannelDelegate = self
         self.agoraView = AgoraVideoViewer(connectionData: connectionData, style: .collection, agoraSettings: agSettings)
         self.agoraView.fills(view: self.view)
@@ -82,7 +88,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         self.setupARView()
         // set render delegate
 //        self.sceneView.delegate = self
-//        self.sceneView.session.delegate = self
+        self.sceneView.session.delegate = self
     }
     func setupARView() {
         self.sceneView = ARSCNView()
@@ -167,6 +173,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     
     func leaveChannel() {
         // leave channel and end chat
+        self.agoraView.rtmController?.rtmKit.logout()
         self.agoraView.exit()
 //        self.agoraKit.leaveChannel(nil)
         UIApplication.shared.isIdleTimerDisabled = false
@@ -175,16 +182,16 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
      // MARK: Session delegate
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // if we have points - draw one point per frame
-//        if self.remotePoints.count > 0 {
-//            let remotePoint: CGPoint = self.remotePoints.removeFirst() // pop the first node every frame
-//            DispatchQueue.main.async {
-//                guard let touchRootNode = self.touchRoots.last else { return }
-//                let sphereNode : SCNNode = SCNNode(geometry: SCNSphere(radius: 0.015))
-//                sphereNode.position = SCNVector3(-1*Float(remotePoint.x/1000), -1*Float(remotePoint.y/1000), 0)
-//                sphereNode.geometry?.firstMaterial?.diffuse.contents = self.lineColor
-//                touchRootNode.addChildNode(sphereNode)  // add point to the active root
-//            }
-//        }
+        if self.remotePoints.count > 0 {
+            let remotePoint: CGPoint = self.remotePoints.removeFirst() // pop the first node every frame
+            DispatchQueue.main.async {
+                guard let touchRootNode = self.touchRoots.last else { return }
+                let sphereNode : SCNNode = SCNNode(geometry: SCNSphere(radius: 0.015))
+                sphereNode.position = SCNVector3(-1*Float(remotePoint.x/1000), -1*Float(remotePoint.y/1000), 0)
+                sphereNode.geometry?.firstMaterial?.diffuse.contents = self.lineColor
+                touchRootNode.addChildNode(sphereNode)  // add point to the active root
+            }
+        }
     }
     
     func session(_ session: ARSession, didOutputAudioSampleBuffer audioSampleBuffer: CMSampleBuffer) {

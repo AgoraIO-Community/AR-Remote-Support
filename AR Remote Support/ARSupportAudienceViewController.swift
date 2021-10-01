@@ -47,10 +47,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     // MARK: VC Events
     override func loadView() {
         super.loadView()
-        createUI()
-        setupGestures()
-        self.view.isUserInteractionEnabled = false
-        
+
         // Add Agora setup
         let appID = AppKeys.appId // getValue(withKey: "AppID", within: "keys") else { return }  // get the AppID from keys.plist
         var agSettings = AgoraSettings()
@@ -60,10 +57,14 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             size: AgoraVideoDimension360x360, frameRate: .fps15,
             bitrate: AgoraVideoBitrateStandard, orientationMode: .fixedPortrait
         )
+        agSettings.rtmEnabled = false
 
         self.agoraView = AgoraVideoViewer(
             connectionData: AgoraConnectionData(appId: appID, idLogic: .random), agoraSettings: agSettings
         )
+        createUI()
+        setupGestures()
+        self.view.isUserInteractionEnabled = false
     }
 
     override func viewDidLoad() {
@@ -72,7 +73,6 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         self.lineColor = self.uiColors.first
         self.view.backgroundColor = self.bgColor
         self.view.isUserInteractionEnabled = true
-        self.agoraView.fills(view: self.view)
         // Agora - join the channel
         joinChannel()
     }
@@ -224,37 +224,15 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     // MARK: UI
     func createUI() {
         
-        // add remote video view
-        let remoteView = UIView()
-        remoteView.frame = CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
-        remoteView.backgroundColor = UIColor.lightGray
-        self.view.insertSubview(remoteView, at: 0)
-        self.remoteVideoView = remoteView
-        
-        // add branded logo to remote view
-        guard let agoraLogo = UIImage(named: "agora-logo") else { return }
-        let remoteViewBagroundImage = UIImageView(image: agoraLogo)
-        remoteViewBagroundImage.frame = CGRect(x: remoteView.frame.midX-56.5, y: remoteView.frame.midY-100, width: 117, height: 126)
-        remoteViewBagroundImage.alpha = 0.25
-        remoteView.insertSubview(remoteViewBagroundImage, at: 1)
+        self.agoraView.fills(view: self.view)
+        self.view.insertSubview(self.agoraView, at: 0)
+
         
         // ui view that the finger drawings will appear on
         let drawingView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
-        self.view.insertSubview(drawingView, at: 1)
+        self.view.insertSubview(drawingView, at: 4)
         self.drawingView = drawingView
 
-        // mute button
-        let micBtn = UIButton()
-        micBtn.frame = CGRect(x: self.view.frame.midX-37.5, y: self.view.frame.maxY-100, width: 75, height: 75)
-        if let imageMicBtn = UIImage(named: "mic") {
-            micBtn.setImage(imageMicBtn, for: .normal)
-        } else {
-            micBtn.setTitle("mute", for: .normal)
-        }
-        micBtn.addTarget(self, action: #selector(toggleMic), for: .touchDown)
-        self.view.insertSubview(micBtn, at: 3)
-        self.micBtn = micBtn
-        
         //  back button
         let backBtn = UIButton()
         backBtn.frame = CGRect(x: self.view.frame.maxX-55, y: self.view.frame.minY+20, width: 30, height: 30)

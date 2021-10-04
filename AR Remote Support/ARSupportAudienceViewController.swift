@@ -36,6 +36,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     var channelName: String!                // name of the channel to join
      
     var sessionIsActive = false             // keep track if the video session is active or not
+    var remoteFeedSize: CGSize?
     var remoteUser: UInt?                   // remote user id
     var dataStreamId: Int! = 27             // id for data stream
     var streamIsEnabled: Int32 = -1         // acts as a flag to keep track if the data stream is enabled
@@ -57,6 +58,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             size: AgoraVideoDimension360x360, frameRate: .fps15,
             bitrate: AgoraVideoBitrateStandard, orientationMode: .fixedPortrait
         )
+        agSettings.enabledButtons = []
         agSettings.rtmEnabled = false
 
         self.agoraView = AgoraVideoViewer(
@@ -224,8 +226,12 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     // MARK: UI
     func createUI() {
         
-        self.agoraView.fills(view: self.view)
         self.view.insertSubview(self.agoraView, at: 0)
+        self.agoraView.translatesAutoresizingMaskIntoConstraints = false
+        self.agoraView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
+        self.agoraView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
+        self.agoraView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
+        self.agoraView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
 
         
         // ui view that the finger drawings will appear on
@@ -424,6 +430,11 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             
             // create the data stream
             self.streamIsEnabled = self.agoraKit.createDataStream(&self.dataStreamId, reliable: true, ordered: true)
+            self.remoteFeedSize = size
+            let feedWidth = self.view.frame.height * size.width / size.height
+            self.agoraKit.sendStreamMessage(
+                self.dataStreamId, data: "frame-size:[\(feedWidth), \(self.view.frame.height)]".data(using: .ascii)!
+            )
 //            if self.debug {
 //                print("Data Stream initiated - STATUS: \(self.streamIsEnabled)")
 //            }

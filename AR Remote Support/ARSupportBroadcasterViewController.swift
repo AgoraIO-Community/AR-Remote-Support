@@ -12,6 +12,7 @@ import ARVideoKit
 import AgoraRtcKit
 import AgoraUIKit_iOS
 import AgoraRtmKit
+import SCNLine
 
 class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, AgoraRtcEngineDelegate {
     
@@ -35,12 +36,15 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     var streamIsEnabled: Int32 = -1                     // acts as a flag to keep track if the data stream is enabled
     
     var remotePoints: [CGPoint] = []                    // list of touches received from the remote user
-    var touchRoots: [SCNNode] = []                      // list of root nodes for each set of touches drawn - for undo purposes
+    var drawableFrame: CGRect?
+    var drawableMult: CGFloat = 1
+    var touchRoots: [SCNLineNode] = []                      // list of root nodes for each set of touches drawn - for undo purposes
     
     var arvkRenderer: RecordAR!                         // ARVideoKit Renderer - used as an off-screen renderer
     
     let debug : Bool = true                             // toggle the debug logs
     
+    var cameraFrameNode = SCNNode(geometry: SCNFloor())
     // MARK: VC Events
     override func loadView() {
         super.loadView()
@@ -118,7 +122,10 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
 //            self.sceneView.debugOptions = [ARSCNDebugOptions.showWorldOrigin, ARSCNDebugOptions.showFeaturePoints]
 //            self.sceneView.showsStatistics = true
         }
-        
+        cameraFrameNode.isHidden = true
+        self.sceneView.pointOfView?.addChildNode(cameraFrameNode)
+        cameraFrameNode.position.z = -1
+        cameraFrameNode.eulerAngles.x = -.pi / 2
     }
     
     override func viewDidAppear(_ animated: Bool) {
@@ -186,10 +193,13 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
             let remotePoint: CGPoint = self.remotePoints.removeFirst() // pop the first node every frame
             DispatchQueue.main.async {
                 guard let touchRootNode = self.touchRoots.last else { return }
-                let sphereNode : SCNNode = SCNNode(geometry: SCNSphere(radius: 0.015))
-                sphereNode.position = SCNVector3(-1*Float(remotePoint.x/1000), -1*Float(remotePoint.y/1000), 0)
-                sphereNode.geometry?.firstMaterial?.diffuse.contents = self.lineColor
-                touchRootNode.addChildNode(sphereNode)  // add point to the active root
+                let htFloor = self.sceneView.hitTest(.init(
+                    x: (remotePoint.x * self.drawableMult) + self.view.frame.width / 2,
+                    y: (remotePoint.y * self.drawableMult) + self.view.frame.height / 2
+                ), options: [.ignoreHiddenNodes: false])
+                guard let touchedPoint = htFloor.first?.worldCoordinates else { return }
+
+                touchRootNode.add(point: touchedPoint)
             }
         }
     }

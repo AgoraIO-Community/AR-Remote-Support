@@ -239,6 +239,18 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         self.view.insertSubview(drawingView, at: 4)
         self.drawingView = drawingView
 
+        // mic button
+        let micBtn = UIButton()
+        micBtn.frame = CGRect(x: self.view.frame.midX-37.5, y: self.view.frame.maxY-100, width: 75, height: 75)
+        if let imageMicBtn = UIImage(named: "mic") {
+            micBtn.setImage(imageMicBtn, for: .normal)
+        } else {
+            micBtn.setTitle("mute", for: .normal)
+        }
+        micBtn.addTarget(self, action: #selector(toggleMic), for: .touchDown)
+        self.view.insertSubview(micBtn, at: 2)
+        self.micBtn = micBtn
+
         //  back button
         let backBtn = UIButton()
         backBtn.frame = CGRect(x: self.view.frame.maxX-55, y: self.view.frame.minY+20, width: 30, height: 30)
@@ -305,12 +317,13 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         if self.micBtn.imageView?.image == activeMicImg {
             self.micBtn.setImage(disabledMicImg, for: .normal)
             self.agoraKit.muteLocalAudioStream(true)
+            self.agoraView.setMic(to: false)
             if debug {
                 print("disable active mic")
             }
         } else {
             self.micBtn.setImage(activeMicImg, for: .normal)
-            self.agoraKit.muteLocalAudioStream(false)
+            self.agoraView.setMic(to: true)
             if debug {
                 print("enable mic")
             }

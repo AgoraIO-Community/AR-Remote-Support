@@ -59,7 +59,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             bitrate: AgoraVideoBitrateStandard, orientationMode: .fixedPortrait
         )
         agSettings.enabledButtons = []
-        agSettings.rtmEnabled = false
+        agSettings.rtmEnabled = ViewController.usingRTM
 
         self.agoraView = AgoraVideoViewer(
             connectionData: AgoraConnectionData(appId: appID, idLogic: .random), agoraSettings: agSettings
@@ -127,12 +127,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     @IBAction func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
         if self.sessionIsActive && gestureRecognizer.state == .began && self.streamIsEnabled == 0 {
             // send message to remote user that touches have started
-//            self.agoraView.rtmController?.sendRaw(message: "touch-start", channel: self.channelName, callback: { messageStatus in
-//                if messageStatus != .errorOk {
-//                    print("message could not send: \(messageStatus.rawValue)")
-//                }
-//            })
-            self.agoraKit.sendStreamMessage(self.dataStreamId, data: "touch-start".data(using: String.Encoding.ascii)!)
+            self.sendMessage("touch-start")
         }
         
         if self.sessionIsActive && (gestureRecognizer.state == .began || gestureRecognizer.state == .changed) {
@@ -184,12 +179,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
                     sendTouchPoints() // send touch data to remote user
                     clearSubLayers() // remove touches drawn to the screen
                 }
-//                self.agoraView.rtmController?.sendRaw(message: "touch-end", channel: self.channelName, callback: { messageStatus in
-//                    if messageStatus != .errorOk {
-//                        print("message could not send: \(messageStatus.rawValue)")
-//                    }
-//                })
-                self.agoraKit.sendStreamMessage(self.dataStreamId, data: "touch-end".data(using: String.Encoding.ascii)!)
+                self.sendMessage("touch-end")
             }
             // clear list of points
             if let touchPointsList = self.touchPoints {
@@ -200,15 +190,22 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             }
         }
     }
+
+    func sendMessage(_ message: String) {
+        if ViewController.usingRTM {
+            self.agoraView.rtmController?.sendRaw(message: message, channel: self.channelName, callback: { messageStatus in
+                if messageStatus != .errorOk {
+                    print("message could not send: \(messageStatus.rawValue)")
+                }
+            })
+        } else {
+            self.agoraKit.sendStreamMessage(self.dataStreamId, data: message.data(using: String.Encoding.ascii)!)
+        }
+    }
     
     func sendTouchPoints() {
         let pointsAsString: String = self.dataPointsArray.description
-//        self.agoraView.rtmController?.sendRaw(message: pointsAsString, channel: self.channelName, callback: { messageStatus in
-//            if messageStatus != .errorOk {
-//                print("message could not send: \(messageStatus.rawValue)")
-//            }
-//        })
-        self.agoraKit.sendStreamMessage(self.dataStreamId, data: pointsAsString.data(using: String.Encoding.ascii)!)
+        self.sendMessage(pointsAsString)
         self.dataPointsArray = []
     }
     
@@ -225,84 +222,13 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     
     // MARK: UI
     func createUI() {
-        
         self.view.insertSubview(self.agoraView, at: 0)
         self.agoraView.translatesAutoresizingMaskIntoConstraints = false
         self.agoraView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
         self.agoraView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
         self.agoraView.rightAnchor.constraint(equalTo: self.view.rightAnchor).isActive = true
         self.agoraView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
-
-        
-        // ui view that the finger drawings will appear on
-        let drawingView = UIView(frame: CGRect(x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height))
-        self.view.insertSubview(drawingView, at: 4)
-        self.drawingView = drawingView
-
-        // mic button
-        let micBtn = UIButton()
-        micBtn.frame = CGRect(x: self.view.frame.midX-37.5, y: self.view.frame.maxY-100, width: 75, height: 75)
-        if let imageMicBtn = UIImage(named: "mic") {
-            micBtn.setImage(imageMicBtn, for: .normal)
-        } else {
-            micBtn.setTitle("mute", for: .normal)
-        }
-        micBtn.addTarget(self, action: #selector(toggleMic), for: .touchDown)
-        self.view.insertSubview(micBtn, at: 2)
-        self.micBtn = micBtn
-
-        //  back button
-        let backBtn = UIButton()
-        backBtn.frame = CGRect(x: self.view.frame.maxX-55, y: self.view.frame.minY+20, width: 30, height: 30)
-//        backBtn.layer.cornerRadius = 10
-        if let imageExitBtn = UIImage(named: "exit") {
-            backBtn.setImage(imageExitBtn, for: .normal)
-        } else {
-            backBtn.setTitle("x", for: .normal)
-        }
-        backBtn.addTarget(self, action: #selector(popView), for: .touchUpInside)
-        self.view.insertSubview(backBtn, at: 3)
-        
-        // color palette button
-        let colorSelectionBtn = UIButton(type: .custom)
-        colorSelectionBtn.frame = CGRect(x: self.view.frame.minX+20, y: self.view.frame.maxY-60, width: 40, height: 40)
-        if let colorSelectionBtnImage = UIImage(named: "color") {
-            let tinableImage = colorSelectionBtnImage.withRenderingMode(.alwaysTemplate)
-            colorSelectionBtn.setImage(tinableImage, for: .normal)
-            colorSelectionBtn.tintColor = self.uiColors.first
-        } else {
-           colorSelectionBtn.setTitle("color", for: .normal)
-        }
-        colorSelectionBtn.addTarget(self, action: #selector(toggleColorSelection), for: .touchUpInside)
-        self.view.insertSubview(colorSelectionBtn, at: 4)
-        self.colorSelectionBtn = colorSelectionBtn
-        
-        // set up color buttons
-        for (index, color) in uiColors.enumerated() {
-            let colorBtn = UIButton(type: .custom)
-            colorBtn.frame = CGRect(x: colorSelectionBtn.frame.midX-13.25, y: colorSelectionBtn.frame.minY-CGFloat(35+(index*35)), width: 27.5, height: 27.5)
-            colorBtn.layer.cornerRadius = 0.5 * colorBtn.bounds.size.width
-            colorBtn.clipsToBounds = true
-            colorBtn.backgroundColor = color
-            colorBtn.addTarget(self, action: #selector(setColor), for: .touchDown)
-            colorBtn.alpha = 0
-            colorBtn.isHidden = true
-            colorBtn.isUserInteractionEnabled = false
-            self.view.insertSubview(colorBtn, at: 3)
-            self.colorButtons.append(colorBtn)
-        }
-        
-        // add undo button
-        let undoBtn = UIButton()
-        undoBtn.frame = CGRect(x: colorSelectionBtn.frame.maxX+25, y: colorSelectionBtn.frame.minY+5, width: 30, height: 30)
-        if let imageUndoBtn = UIImage(named: "undo") {
-            undoBtn.setImage(imageUndoBtn, for: .normal)
-        } else {
-            undoBtn.setTitle("undo", for: .normal)
-        }
-        undoBtn.addTarget(self, action: #selector(sendUndoMsg), for: .touchUpInside)
-        self.view.insertSubview(undoBtn, at: 3)
-        
+        self.addButtonsAndGestureViews()
     }
     
     // MARK: Button Events
@@ -311,104 +237,8 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         self.dismiss(animated: true, completion: nil)
     }
     
-    @IBAction func toggleMic() {
-        guard let activeMicImg = UIImage(named: "mic") else { return }
-        guard let disabledMicImg = UIImage(named: "mute") else { return }
-        if self.micBtn.imageView?.image == activeMicImg {
-            self.micBtn.setImage(disabledMicImg, for: .normal)
-            self.agoraKit.muteLocalAudioStream(true)
-            self.agoraView.setMic(to: false)
-            if debug {
-                print("disable active mic")
-            }
-        } else {
-            self.micBtn.setImage(activeMicImg, for: .normal)
-            self.agoraView.setMic(to: true)
-            if debug {
-                print("enable mic")
-            }
-        }
-    }
-    
-    @IBAction func toggleColorSelection() {
-        guard let colorSelectionBtn = self.colorSelectionBtn else { return }
-        var isHidden = false
-        var alpha: CGFloat = 1
-        
-        if colorSelectionBtn.alpha == 1 {
-            colorSelectionBtn.alpha = 0.65
-        } else {
-            colorSelectionBtn.alpha = 1
-            alpha = 0
-            isHidden = true
-        }
-        
-        for button in self.colorButtons {
-            // highlihgt the selected color
-            button.alpha = alpha
-            button.isHidden = isHidden
-            button.isUserInteractionEnabled = !isHidden
-            // use CGColor in comparison: BackgroundColor and TintColor do not init the same for the same UIColor.
-            if button.backgroundColor?.cgColor == colorSelectionBtn.tintColor.cgColor {
-                button.layer.borderColor = UIColor.white.cgColor
-                button.layer.borderWidth = 2
-            } else {
-                button.layer.borderWidth = 0
-            }
-        }
-
-    }
-    
-    @IBAction func setColor(_ sender: UIButton) {
-        guard let colorSelectionBtn = self.colorSelectionBtn else { return }
-        colorSelectionBtn.tintColor = sender.backgroundColor
-        self.lineColor = colorSelectionBtn.tintColor
-        toggleColorSelection()
-        // send data message with color components
-        if self.streamIsEnabled == 0 {
-            guard let colorComponents = sender.backgroundColor?.cgColor.components else { return }
-//            self.agoraView.rtmController?.sendRaw(message: "color: \(colorComponents)", channel: self.channelName, callback: { messageStatus in
-//                if messageStatus != .errorOk {
-//                    print("message could not send: \(messageStatus.rawValue)")
-//                }
-//            })
-            self.agoraKit.sendStreamMessage(self.dataStreamId, data: "color: \(colorComponents)".data(using: String.Encoding.ascii)!)
-            if debug {
-                print("color: \(colorComponents)")
-            }
-        }
-    }
-    
-    @IBAction func sendUndoMsg() {
-        if self.streamIsEnabled == 0 {
-//            self.agoraView.rtmController?.sendRaw(message: "undo", channel: self.channelName, callback: { messageStatus in
-//                if messageStatus != .errorOk {
-//                    print("message could not send: \(messageStatus.rawValue)")
-//                }
-//            })
-            self.agoraKit.sendStreamMessage(self.dataStreamId, data: "undo".data(using: String.Encoding.ascii)!)
-        }
-    }
-    
     // MARK: Agora Implementation
-    func setupLocalVideo(with uid: UInt) {
-        guard let localViewRef = self.agoraView.userVideoLookup[uid] else {
-            return
-        }
-        if self.localVideoView == nil {
-            let localViewScale = self.view.frame.width * 0.33
-            localViewRef.frame = CGRect(x: self.view.frame.maxX - (localViewScale+17.5), y: self.view.frame.maxY - (localViewScale+25), width: localViewScale, height: localViewScale)
-            localViewRef.layer.cornerRadius = 25
-            localViewRef.layer.masksToBounds = true
-            localViewRef.backgroundColor = UIColor.darkGray
-            self.view.insertSubview(localViewRef, at: 2)
-            self.localVideoView = localViewRef
-        }
 
-        guard let videoView = localViewRef.subviews.first else { return }
-        videoView.layer.cornerRadius = 25
-    }
-    
     func joinChannel() {
         // Set audio route to speaker
         self.agoraKit.setDefaultAudioRouteToSpeakerphone(true)
@@ -430,88 +260,4 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         self.sessionIsActive = false                        // session is no longer active
         UIApplication.shared.isIdleTimerDisabled = false    // Enable idle timer
     }
-    
-    // MARK: Agora Delegate
-    func rtcEngine(_ engine: AgoraRtcEngineKit, firstRemoteVideoDecodedOfUid uid:UInt, size:CGSize, elapsed:Int) {
-         // first remote video frame
-        if self.debug {
-            print("firstRemoteVideoDecoded for Uid: \(uid)")
-        }
-        // limit sessions to two users
-        if self.remoteUser == uid {
-            self.sessionIsActive = true
-            
-            // create the data stream
-            self.streamIsEnabled = self.agoraKit.createDataStream(&self.dataStreamId, reliable: true, ordered: true)
-            self.remoteFeedSize = size
-            let feedWidth = self.view.frame.height * size.width / size.height
-            self.agoraKit.sendStreamMessage(
-                self.dataStreamId, data: "frame-size:[\(feedWidth), \(self.view.frame.height)]".data(using: .ascii)!
-            )
-//            if self.debug {
-//                print("Data Stream initiated - STATUS: \(self.streamIsEnabled)")
-//            }
-        }
-
-    }
-    
-    func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurError errorCode: AgoraErrorCode) {
-        if self.debug {
-            print("error: \(errorCode.rawValue)")
-        }
-    }
-    
-    func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurWarning warningCode: AgoraWarningCode) {
-        if self.debug {
-            print("222 warning: \(warningCode.rawValue)")
-        }
-    }
-    
-    func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinChannel channel: String, withUid uid: UInt, elapsed: Int) {
-        if self.debug {
-            print("local user did join channel with uid:\(uid)")
-        }
-//        self.setupLocalVideo(with: uid) //  - set video configuration
-    }
-    
-    func rtcEngine(_ engine: AgoraRtcEngineKit, didJoinedOfUid uid: UInt, elapsed: Int) {
-        if self.debug {
-            print("remote user did joined of uid: \(uid)")
-        }
-        if self.remoteUser == nil {
-            self.remoteUser = uid // keep track of the remote user
-            if self.debug {
-                print("remote host added")
-            }
-        }
-    }
-    
-    func rtcEngine(_ engine: AgoraRtcEngineKit, didOfflineOfUid uid: UInt, reason: AgoraUserOfflineReason) {
-        if self.debug {
-            print("remote user did offline of uid: \(uid)")
-        }
-        if uid == self.remoteUser {
-            self.remoteUser = nil
-        }
-    }
-    
-    func rtcEngine(_ engine: AgoraRtcEngineKit, didAudioMuted muted: Bool, byUid uid: UInt) {
-        // add logic to show icon that remote stream is muted
-    }
-    
-    func rtcEngine(_ engine: AgoraRtcEngineKit, receiveStreamMessageFromUid uid: UInt, streamId: Int, data: Data) {
-        // successfully received message from user
-        if self.debug {
-            print("STREAMID: \(streamId)\n - DATA: \(data)")
-        }
-    }
-    
-        
-    func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurStreamMessageErrorFromUid uid: UInt, streamId: Int, error: Int, missed: Int, cached: Int) {
-        // message failed to send(
-        if self.debug {
-            print("STREAMID: \(streamId)\n - ERROR: \(error)")
-        }
-    }
-
 }

@@ -9,27 +9,42 @@
 import UIKit
 import AgoraRtcKit
 
-class ARVideoSource: NSObject, AgoraVideoSourceProtocol {
-    func captureType() -> AgoraVideoCaptureType { .camera}
+public class ARVideoSource: NSObject, AgoraVideoSourceProtocol {
+    public func captureType() -> AgoraVideoCaptureType { .camera }
 
-    func contentHint() -> AgoraVideoContentHint { .motion }
+    public func contentHint() -> AgoraVideoContentHint { .none }
 
-    var consumer: AgoraVideoFrameConsumer?
-    
-    func shouldInitialize() -> Bool { return true }
-    
-    func shouldStart() { }
-    
-    func shouldStop() { }
-    
-    func shouldDispose() { }
-    
-    func bufferType() -> AgoraVideoBufferType {
+    public var consumer: AgoraVideoFrameConsumer?
+    public var rotation: AgoraVideoRotation = .rotationNone
+
+    public func shouldInitialize() -> Bool { return true }
+
+    public func shouldStart() { }
+
+    public func shouldStop() { }
+
+    public func shouldDispose() { }
+
+    public func bufferType() -> AgoraVideoBufferType {
         return .pixelBuffer
     }
-    
+
     func sendBuffer(_ buffer: CVPixelBuffer, timestamp: TimeInterval) {
         let time = CMTime(seconds: timestamp, preferredTimescale: 1000)
-        consumer?.consumePixelBuffer(buffer, withTimestamp: time, rotation: .rotationNone)
+        let currentOrientation = UIDevice.current.orientation
+        var pbRotation: AgoraVideoRotation
+        switch currentOrientation {
+        case .portrait:
+            pbRotation = .rotationNone
+        case .portraitUpsideDown:
+            pbRotation = .rotation180
+        case .landscapeLeft:
+            pbRotation = .rotation270
+        case .landscapeRight:
+            pbRotation = .rotation90
+        default:
+            pbRotation = .rotationNone
+        }
+        consumer?.consumePixelBuffer(buffer, withTimestamp: time, rotation: pbRotation)
     }
 }

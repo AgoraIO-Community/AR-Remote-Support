@@ -8,8 +8,6 @@
 
 /* Begin PBXBuildFile section */
 		0358E05B2370ADE70041F021 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 0358E05A2370ADE70041F021 /* Assets.xcassets */; };
-		0358E05D2370B3170041F021 /* GetValueFromFile.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0358E05C2370B3170041F021 /* GetValueFromFile.swift */; };
-		0358E05F2370C2FE0041F021 /* keys.plist in Resources */ = {isa = PBXBuildFile; fileRef = 0358E05E2370C2FE0041F021 /* keys.plist */; };
 		0379DF4D2369F67900B20008 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = 0379DF4C2369F67900B20008 /* AppDelegate.swift */; };
 		0379DF542369F67900B20008 /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0379DF522369F67900B20008 /* Main.storyboard */; };
 		0379DF592369F67B00B20008 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 0379DF572369F67B00B20008 /* LaunchScreen.storyboard */; };
@@ -18,10 +16,15 @@
 		039ABE4D236A045A008A374F /* ARSupportAudienceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ABE4C236A045A008A374F /* ARSupportAudienceViewController.swift */; };
 		03E1EB9923765DEC0058F088 /* ARVideoSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E1EB9823765DEC0058F088 /* ARVideoSource.swift */; };
 		03E1EB9B237663D30058F088 /* SCNVector3+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E1EB9A237663D30058F088 /* SCNVector3+Extensions.swift */; };
+		F35A1D0F270B32080004F286 /* SCNLine in Frameworks */ = {isa = PBXBuildFile; productRef = F35A1D0E270B32080004F286 /* SCNLine */; };
 		F3E38714270458400044B4FB /* AR_Remote_SupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E38713270458400044B4FB /* AR_Remote_SupportTests.swift */; };
 		F3E387162704588B0044B4FB /* AR_Remote_SupportUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E387152704588B0044B4FB /* AR_Remote_SupportUITests.swift */; };
-		F3E3871927045A1C0044B4FB /* AgoraRtcKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3E3871827045A1C0044B4FB /* AgoraRtcKit */; };
 		F3E3871C27045A2A0044B4FB /* ARVideoKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3E3871B27045A2A0044B4FB /* ARVideoKit */; };
+		F3E3871F27045DFE0044B4FB /* AgoraUIKit_iOS in Frameworks */ = {isa = PBXBuildFile; productRef = F3E3871E27045DFE0044B4FB /* AgoraUIKit_iOS */; };
+		F3E387242705B4C20044B4FB /* ARSupportBroadcasterViewController+RTCDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E387232705B4C20044B4FB /* ARSupportBroadcasterViewController+RTCDelegate.swift */; };
+		F3E387262705CC570044B4FB /* AppKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E387252705CC570044B4FB /* AppKeys.swift */; };
+		F3ECE11C270C8E8000C315EC /* ARSupportAudienceViewController+Buttons.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3ECE11B270C8E8000C315EC /* ARSupportAudienceViewController+Buttons.swift */; };
+		F3ECE11E270C8F0200C315EC /* ARSupportAudienceViewController+AgoraDelegates.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3ECE11D270C8F0200C315EC /* ARSupportAudienceViewController+AgoraDelegates.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -43,8 +46,6 @@
 
 /* Begin PBXFileReference section */
 		0358E05A2370ADE70041F021 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
-		0358E05C2370B3170041F021 /* GetValueFromFile.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = GetValueFromFile.swift; sourceTree = "<group>"; };
-		0358E05E2370C2FE0041F021 /* keys.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = keys.plist; sourceTree = "<group>"; };
 		0379DF492369F67900B20008 /* AR Remote Support.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "AR Remote Support.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0379DF4C2369F67900B20008 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
 		0379DF532369F67900B20008 /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/Main.storyboard; sourceTree = "<group>"; };
@@ -55,12 +56,16 @@
 		0379DF6A2369F67B00B20008 /* AR Remote SupportUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "AR Remote SupportUITests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		0379DF702369F67B00B20008 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		039ABE0A236A021E008A374F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
-		039ABE48236A03F8008A374F /* ARSupportBroadcasterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARSupportBroadcasterViewController.swift; sourceTree = "<group>"; };
+		039ABE48236A03F8008A374F /* ARSupportBroadcasterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARSupportBroadcasterViewController.swift; sourceTree = "<group>"; wrapsLines = 0; };
 		039ABE4C236A045A008A374F /* ARSupportAudienceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSupportAudienceViewController.swift; sourceTree = "<group>"; };
 		03E1EB9823765DEC0058F088 /* ARVideoSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARVideoSource.swift; sourceTree = "<group>"; };
 		03E1EB9A237663D30058F088 /* SCNVector3+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SCNVector3+Extensions.swift"; sourceTree = "<group>"; };
 		F3E38713270458400044B4FB /* AR_Remote_SupportTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AR_Remote_SupportTests.swift; sourceTree = "<group>"; };
 		F3E387152704588B0044B4FB /* AR_Remote_SupportUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AR_Remote_SupportUITests.swift; sourceTree = "<group>"; };
+		F3E387232705B4C20044B4FB /* ARSupportBroadcasterViewController+RTCDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ARSupportBroadcasterViewController+RTCDelegate.swift"; sourceTree = "<group>"; };
+		F3E387252705CC570044B4FB /* AppKeys.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppKeys.swift; sourceTree = "<group>"; };
+		F3ECE11B270C8E8000C315EC /* ARSupportAudienceViewController+Buttons.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ARSupportAudienceViewController+Buttons.swift"; sourceTree = "<group>"; };
+		F3ECE11D270C8F0200C315EC /* ARSupportAudienceViewController+AgoraDelegates.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "ARSupportAudienceViewController+AgoraDelegates.swift"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -68,8 +73,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F35A1D0F270B32080004F286 /* SCNLine in Frameworks */,
+				F3E3871F27045DFE0044B4FB /* AgoraUIKit_iOS in Frameworks */,
 				F3E3871C27045A2A0044B4FB /* ARVideoKit in Frameworks */,
-				F3E3871927045A1C0044B4FB /* AgoraRtcKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,10 +125,12 @@
 				0379DF572369F67B00B20008 /* LaunchScreen.storyboard */,
 				0379DF5A2369F67B00B20008 /* Info.plist */,
 				039ABE48236A03F8008A374F /* ARSupportBroadcasterViewController.swift */,
+				F3E387232705B4C20044B4FB /* ARSupportBroadcasterViewController+RTCDelegate.swift */,
+				F3E387252705CC570044B4FB /* AppKeys.swift */,
 				039ABE4C236A045A008A374F /* ARSupportAudienceViewController.swift */,
+				F3ECE11D270C8F0200C315EC /* ARSupportAudienceViewController+AgoraDelegates.swift */,
+				F3ECE11B270C8E8000C315EC /* ARSupportAudienceViewController+Buttons.swift */,
 				039ABE0A236A021E008A374F /* ViewController.swift */,
-				0358E05E2370C2FE0041F021 /* keys.plist */,
-				0358E05C2370B3170041F021 /* GetValueFromFile.swift */,
 				03E1EB9823765DEC0058F088 /* ARVideoSource.swift */,
 				03E1EB9A237663D30058F088 /* SCNVector3+Extensions.swift */,
 			);
@@ -157,6 +165,7 @@
 				0379DF452369F67900B20008 /* Sources */,
 				0379DF462369F67900B20008 /* Frameworks */,
 				0379DF472369F67900B20008 /* Resources */,
+				F3ECE11F270EE8EC00C315EC /* ShellScript */,
 			);
 			buildRules = (
 			);
@@ -164,8 +173,9 @@
 			);
 			name = "AR Remote Support";
 			packageProductDependencies = (
-				F3E3871827045A1C0044B4FB /* AgoraRtcKit */,
 				F3E3871B27045A2A0044B4FB /* ARVideoKit */,
+				F3E3871E27045DFE0044B4FB /* AgoraUIKit_iOS */,
+				F35A1D0E270B32080004F286 /* SCNLine */,
 			);
 			productName = "AR Remote Support";
 			productReference = 0379DF492369F67900B20008 /* AR Remote Support.app */;
@@ -240,8 +250,9 @@
 			);
 			mainGroup = 0379DF402369F67900B20008;
 			packageReferences = (
-				F3E3871727045A1C0044B4FB /* XCRemoteSwiftPackageReference "AgoraRtcEngine_iOS" */,
 				F3E3871A27045A2A0044B4FB /* XCRemoteSwiftPackageReference "ARVideoKit" */,
+				F3E3871D27045DFE0044B4FB /* XCRemoteSwiftPackageReference "iOS-UIKit" */,
+				F35A1D0D270B32080004F286 /* XCRemoteSwiftPackageReference "SceneKit-SCNLine" */,
 			);
 			productRefGroup = 0379DF4A2369F67900B20008 /* Products */;
 			projectDirPath = "";
@@ -259,7 +270,6 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				0358E05F2370C2FE0041F021 /* keys.plist in Resources */,
 				0379DF592369F67B00B20008 /* LaunchScreen.storyboard in Resources */,
 				0358E05B2370ADE70041F021 /* Assets.xcassets in Resources */,
 				0379DF542369F67900B20008 /* Main.storyboard in Resources */,
@@ -282,6 +292,26 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		F3ECE11F270EE8EC00C315EC /* ShellScript */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# Type a script or drag a script file from your workspace to insert its path.\nif which swiftlint >/dev/null; then\n  swiftlint --strict\nelse\n  echo \"warning: SwiftLint not installed, download from https://github.com/realm/SwiftLint\"\nfi\n";
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		0379DF452369F67900B20008 /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
@@ -290,10 +320,13 @@
 				039ABE4A236A03F8008A374F /* ARSupportBroadcasterViewController.swift in Sources */,
 				039ABE0B236A021E008A374F /* ViewController.swift in Sources */,
 				039ABE4D236A045A008A374F /* ARSupportAudienceViewController.swift in Sources */,
+				F3ECE11E270C8F0200C315EC /* ARSupportAudienceViewController+AgoraDelegates.swift in Sources */,
 				03E1EB9923765DEC0058F088 /* ARVideoSource.swift in Sources */,
 				0379DF4D2369F67900B20008 /* AppDelegate.swift in Sources */,
-				0358E05D2370B3170041F021 /* GetValueFromFile.swift in Sources */,
+				F3E387262705CC570044B4FB /* AppKeys.swift in Sources */,
 				03E1EB9B237663D30058F088 /* SCNVector3+Extensions.swift in Sources */,
+				F3E387242705B4C20044B4FB /* ARSupportBroadcasterViewController+RTCDelegate.swift in Sources */,
+				F3ECE11C270C8E8000C315EC /* ARSupportAudienceViewController+Buttons.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -469,7 +502,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "AR Remote Support/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -488,7 +521,7 @@
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = "";
 				INFOPLIST_FILE = "AR Remote Support/Info.plist";
-				IPHONEOS_DEPLOYMENT_TARGET = 12.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
 					"$(inherited)",
 					"@executable_path/Frameworks",
@@ -626,12 +659,12 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
-		F3E3871727045A1C0044B4FB /* XCRemoteSwiftPackageReference "AgoraRtcEngine_iOS" */ = {
+		F35A1D0D270B32080004F286 /* XCRemoteSwiftPackageReference "SceneKit-SCNLine" */ = {
 			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/AgoraIO/AgoraRtcEngine_iOS";
+			repositoryURL = "https://github.com/maxxfrazer/SceneKit-SCNLine.git";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 3.0.0;
+				minimumVersion = 1.0.0;
 			};
 		};
 		F3E3871A27045A2A0044B4FB /* XCRemoteSwiftPackageReference "ARVideoKit" */ = {
@@ -642,18 +675,31 @@
 				kind = branch;
 			};
 		};
+		F3E3871D27045DFE0044B4FB /* XCRemoteSwiftPackageReference "iOS-UIKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AgoraIO-Community/iOS-UIKit";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 1.0.0;
+			};
+		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
-		F3E3871827045A1C0044B4FB /* AgoraRtcKit */ = {
+		F35A1D0E270B32080004F286 /* SCNLine */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F3E3871727045A1C0044B4FB /* XCRemoteSwiftPackageReference "AgoraRtcEngine_iOS" */;
-			productName = AgoraRtcKit;
+			package = F35A1D0D270B32080004F286 /* XCRemoteSwiftPackageReference "SceneKit-SCNLine" */;
+			productName = SCNLine;
 		};
 		F3E3871B27045A2A0044B4FB /* ARVideoKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F3E3871A27045A2A0044B4FB /* XCRemoteSwiftPackageReference "ARVideoKit" */;
 			productName = ARVideoKit;
+		};
+		F3E3871E27045DFE0044B4FB /* AgoraUIKit_iOS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F3E3871D27045DFE0044B4FB /* XCRemoteSwiftPackageReference "iOS-UIKit" */;
+			productName = AgoraUIKit_iOS;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

@@ -1,0 +1,10 @@
+line_length: 
+  ignores_comments: true
+identifier_name:
+  excluded:
+    - x
+    - y
+excluded:
+  - AR Remote SupportTests
+  - AR Remote SupportUITests
+  - AR Remote Support/SCNVector3+Extensions.swift

@@ -11,7 +11,7 @@ import AgoraRtcKit
 
 extension ARSupportAudienceViewController {
     // MARK: Agora Delegate
-    func rtcEngine(_ engine: AgoraRtcEngineKit, firstRemoteVideoDecodedOfUid uid:UInt, size:CGSize, elapsed:Int) {
+    func rtcEngine(_ engine: AgoraRtcEngineKit, firstRemoteVideoDecodedOfUid uid: UInt, size: CGSize, elapsed: Int) {
          // first remote video frame
         if self.debug {
             print("firstRemoteVideoDecoded for Uid: \(uid)")
@@ -83,13 +83,15 @@ extension ARSupportAudienceViewController {
         }
     }
 
-
-    func rtcEngine(_ engine: AgoraRtcEngineKit, didOccurStreamMessageErrorFromUid uid: UInt, streamId: Int, error: Int, missed: Int, cached: Int) {
+    // swiftlint:disable:next function_parameter_count
+    func rtcEngine(
+        _ engine: AgoraRtcEngineKit, didOccurStreamMessageErrorFromUid uid: UInt, streamId: Int,
+        error: Int, missed: Int, cached: Int
+    ) {
         // message failed to send(
         if self.debug {
             print("STREAMID: \(streamId)\n - ERROR: \(error)")
         }
     }
-
 
 }

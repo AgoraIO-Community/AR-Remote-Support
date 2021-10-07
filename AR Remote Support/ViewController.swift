@@ -14,8 +14,8 @@ class ViewController: UIViewController, UITextFieldDelegate {
     var channelInput: UITextField!
     var joinButton: UIButton!
     var createButton: UIButton!
-    let debug : Bool = false
-    
+    let debug: Bool = false
+
     // MARK: VC Events
     override func loadView() {
         super.loadView()
@@ -25,35 +25,35 @@ class ViewController: UIViewController, UITextFieldDelegate {
         super.viewDidLoad()
         createUI()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
     }
-    
+
     // dismiss the keyboard when user touches the view
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
         super.touchesBegan(touches, with: event)
         self.view.endEditing(true)
     }
-    
+
     // MARK: Create UI
     func createUI() {
-        
+
         // add branded logo to remote view
         guard let agoraLogo = UIImage(named: "ar-support-icon") else { return }
         let splashLogo = UIImageView(image: agoraLogo)
         splashLogo.frame = CGRect(x: self.view.center.x-100, y: self.view.center.y-275, width: 200, height: 200)
 //        splashLogo.alpha = 0.25
         self.view.insertSubview(splashLogo, at: 1)
-        
+
         // text input field
         let textField = UITextField()
         textField.frame = CGRect(x: self.view.center.x-150, y: self.view.center.y-40, width: 300, height: 40)
@@ -63,7 +63,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         textField.autocorrectionType = UITextAutocorrectionType.no
         textField.keyboardType = UIKeyboardType.default
         textField.returnKeyType = UIReturnKeyType.done
-        textField.clearButtonMode = UITextField.ViewMode.whileEditing;
+        textField.clearButtonMode = UITextField.ViewMode.whileEditing
         textField.contentVerticalAlignment = UIControl.ContentVerticalAlignment.center
         textField.delegate = self
         self.view.addSubview(textField)
@@ -77,7 +77,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         createBtn.setTitle("Create", for: .normal)
         createBtn.addTarget(self, action: #selector(createSession), for: .touchUpInside)
         self.view.addSubview(createBtn)
-        
+
         // add the join button
         let joinBtn = UIButton()
         joinBtn.frame = CGRect(x: createBtn.frame.minX-125, y: createBtn.frame.minY, width: 100, height: 50)
@@ -87,7 +87,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
         joinBtn.addTarget(self, action: #selector(joinRemoteSession), for: .touchUpInside)
         self.view.addSubview(joinBtn)
     }
-    
+
     // MARK: Button Actions
     @IBAction func joinRemoteSession() {
         let arSupportVC = ARSupportAudienceViewController()
@@ -113,7 +113,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
             "OK", comment: "Default action"), style: .default, handler: {_ in }))
         self.present(alert, animated: true, completion: nil)
     }
-    
+
     @IBAction func createSession() {
         let arBroadcastVC = ARSupportBroadcasterViewController()
         if let channelName = self.channelInput.text {
@@ -127,7 +127,7 @@ class ViewController: UIViewController, UITextFieldDelegate {
             }
         }
     }
-    
+
     // MARK: Textfield Delegates
     func textFieldDidBeginEditing(_ textField: UITextField) {
         if debug {
@@ -145,35 +145,38 @@ class ViewController: UIViewController, UITextFieldDelegate {
         if debug {
             print("TextField should begin editing method called")
         }
-        return true;
+        return true
     }
 
     func textFieldShouldClear(_ textField: UITextField) -> Bool {
         if debug {
             print("TextField should clear method called")
         }
-        return true;
+        return true
     }
 
     func textFieldShouldEndEditing(_ textField: UITextField) -> Bool {
         if debug {
             print("TextField should snd editing method called")
         }
-        return true;
+        return true
     }
 
-    func textField(_ textField: UITextField, shouldChangeCharactersIn range: NSRange, replacementString string: String) -> Bool {
+    func textField(
+        _ textField: UITextField, shouldChangeCharactersIn range: NSRange,
+        replacementString string: String
+    ) -> Bool {
         if debug {
             print("While entering the characters this method gets called")
         }
-        return true;
+        return true
     }
 
     func textFieldShouldReturn(_ textField: UITextField) -> Bool {
         if debug {
             print("TextField should return method called")
         }
-        textField.resignFirstResponder();
-        return true;
+        textField.resignFirstResponder()
+        return true
     }
 }

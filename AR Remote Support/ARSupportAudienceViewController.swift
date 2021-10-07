@@ -14,43 +14,43 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
 
     var touchStart: CGPoint!                // keep track of the initial touch point of each gesture
     var touchPoints: [CGPoint]!             // for drawing touches to the screen
-    
+
     //  list of colors that user can choose from
-    let uiColors: [UIColor] = [UIColor.systemBlue, UIColor.systemGray, UIColor.systemGreen, UIColor.systemYellow, UIColor.systemRed]
-    
+    let uiColors: [UIColor] = [.systemBlue, .systemGray, .systemGreen, .systemYellow, .systemRed]
+
     var lineColor: UIColor!                 // active color to use when drawing
     let bgColor: UIColor = .white           // set the view bg color
-    
+
     var drawingView: UIView!                // view to draw all the local touches
     var localVideoView: UIView!             // video stream of local camera
     var remoteVideoView: UIView!            // video stream from remote user
     var micBtn: UIButton!                   // button to mute/un-mute the microphone
     var colorSelectionBtn: UIButton!        // button to handle display or hiding the colors avialble to the user
     var colorButtons: [UIButton] = []       // keep track of the buttons for each color
-    
+
     // Agora
     var agoraView: AgoraVideoViewer!
     var agoraKit: AgoraRtcEngineKit! {      // Agora.io Video Engine reference
         self.agoraView.agkit
     }
     var channelName: String!                // name of the channel to join
-     
+
     var sessionIsActive = false             // keep track if the video session is active or not
     var remoteFeedSize: CGSize?
     var remoteUser: UInt?                   // remote user id
     var dataStreamId: Int! = 27             // id for data stream
     var streamIsEnabled: Int32 = -1         // acts as a flag to keep track if the data stream is enabled
-    
+
     var dataPointsArray: [CGPoint] = []     // batch list of touches to be sent to remote user
-    
+
     let debug: Bool = false                 // toggle the debug logs
-    
+
     // MARK: VC Events
     override func loadView() {
         super.loadView()
 
         // Add Agora setup
-        let appID = AppKeys.appId // getValue(withKey: "AppID", within: "keys") else { return }  // get the AppID from keys.plist
+        let appID = AppKeys.appId
         var agSettings = AgoraSettings()
         agSettings.rtcDelegate = self
         agSettings.showSelf = false
@@ -78,28 +78,28 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         // Agora - join the channel
         joinChannel()
     }
-    
+
     override func viewWillAppear(_ animated: Bool) {
         super.viewWillAppear(animated)
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // do something when the view has appeared
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if self.sessionIsActive {
-            leaveChannel();
+            leaveChannel()
         }
     }
-    
+
     // MARK: Hide status bar
     override var prefersStatusBarHidden: Bool {
         return true
     }
-    
+
     // MARK: Gestures
     func setupGestures() {
         // pan gesture
@@ -107,7 +107,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         panGesture.delegate = self
         self.view.addGestureRecognizer(panGesture)
     }
-    
+
     // MARK: Touch Capture
     override func touchesBegan(_ touches: Set<UITouch>, with event: UIEvent?) {
        // get the initial touch event
@@ -123,92 +123,112 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             toggleColorSelection() // make sure to hide the color menu
         }
     }
-    
+
     @IBAction func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
         if self.sessionIsActive && gestureRecognizer.state == .began && self.streamIsEnabled == 0 {
             // send message to remote user that touches have started
             self.sendMessage("touch-start")
         }
-        
+
         if self.sessionIsActive && (gestureRecognizer.state == .began || gestureRecognizer.state == .changed) {
             let translation = gestureRecognizer.translation(in: self.view)
             // calculate touch movement relative to the superview
             guard let touchStart = self.touchStart else { return } // ignore accidental finger drags
             let pixelTranslation = CGPoint(x: touchStart.x + translation.x, y: touchStart.y + translation.y)
-            
+
             // normalize the touch point to use view center as the reference point
-            let translationFromCenter = CGPoint(x: pixelTranslation.x - (0.5 * self.view.frame.width), y: pixelTranslation.y - (0.5 * self.view.frame.height))
-            
+            let translationFromCenter = CGPoint(
+                x: pixelTranslation.x - (0.5 * self.view.frame.width),
+                y: pixelTranslation.y - (0.5 * self.view.frame.height)
+            )
+
             self.touchPoints.append(pixelTranslation)
-            
+
             if self.streamIsEnabled == 0 {
                 // send data to remote user
-                let pointToSend = CGPoint(x: translationFromCenter.x, y: translationFromCenter.y)
-                self.dataPointsArray.append(pointToSend)
-                if self.dataPointsArray.count == 10 {
-                    sendTouchPoints() // send touch data to remote user
-                    clearSubLayers() // remove touches drawn to the screen
-                }
-
-                if debug {
-                    print("streaming data: \(pointToSend)\n - STRING: \(self.dataPointsArray)\n - DATA: \(self.dataPointsArray.description.data(using: String.Encoding.ascii)!)")
-                }
+                let point = CGPoint(x: translationFromCenter.x, y: translationFromCenter.y)
+                self.sendTouchData(touchPoint: point)
             }
-            
+
             DispatchQueue.main.async {
                 // draw user touches to the DrawView
                 guard let drawView = self.drawingView else { return }
                 guard let lineColor: UIColor = self.lineColor else { return }
                 let layer = CAShapeLayer()
-                layer.path = UIBezierPath(roundedRect: CGRect(x:  pixelTranslation.x, y: pixelTranslation.y, width: 25, height: 25), cornerRadius: 50).cgPath
+                layer.path = UIBezierPath(
+                    roundedRect: CGRect(x: pixelTranslation.x, y: pixelTranslation.y, width: 25, height: 25),
+                    cornerRadius: 50
+                ).cgPath
                 layer.fillColor = lineColor.cgColor
                 drawView.layer.addSublayer(layer)
             }
-            
+
             if debug {
                 print(translationFromCenter)
                 print(pixelTranslation)
             }
         }
-        
+
         if gestureRecognizer.state == .ended {
             // send message to remote user that touches have ended
-            if self.streamIsEnabled == 0 {
-                // transmit any left over points
-                if self.dataPointsArray.count > 0 {
-                    sendTouchPoints() // send touch data to remote user
-                    clearSubLayers() // remove touches drawn to the screen
-                }
-                self.sendMessage("touch-end")
+            self.sendTouchEnded()
+        }
+    }
+    func sendTouchEnded() {
+        if self.streamIsEnabled == 0 {
+            // transmit any left over points
+            if self.dataPointsArray.count > 0 {
+                sendTouchPoints() // send touch data to remote user
+                clearSubLayers() // remove touches drawn to the screen
             }
-            // clear list of points
-            if let touchPointsList = self.touchPoints {
-                self.touchStart = nil // clear starting point
-                if debug {
-                    print(touchPointsList)
-                }
+            self.sendMessage("touch-end")
+        }
+        // clear list of points
+        if let touchPointsList = self.touchPoints {
+            self.touchStart = nil // clear starting point
+            if debug {
+                print(touchPointsList)
             }
         }
     }
 
+    func sendTouchData(touchPoint: CGPoint) {
+        self.dataPointsArray.append(touchPoint)
+        if self.dataPointsArray.count == 10 {
+            sendTouchPoints() // send touch data to remote user
+            clearSubLayers() // remove touches drawn to the screen
+        }
+
+        if debug {
+            print("""
+                streaming data: \(touchPoint)
+                - STRING: \(self.dataPointsArray)
+                - DATA: \(self.dataPointsArray.description.data(using: String.Encoding.ascii)!)
+            """)
+        }
+
+    }
+
     func sendMessage(_ message: String) {
         if ViewController.usingRTM {
-            self.agoraView.rtmController?.sendRaw(message: message, channel: self.channelName, callback: { messageStatus in
+            self.agoraView.rtmController?.sendRaw(
+                message: message, channel: self.channelName
+            ) { messageStatus in
                 if messageStatus != .errorOk {
                     print("message could not send: \(messageStatus.rawValue)")
                 }
-            })
+            }
         } else {
             self.agoraKit.sendStreamMessage(self.dataStreamId, data: message.data(using: String.Encoding.ascii)!)
         }
     }
-    
+
     func sendTouchPoints() {
         let pointsAsString: String = self.dataPointsArray.description
         self.sendMessage(pointsAsString)
         self.dataPointsArray = []
     }
-    
+
     func clearSubLayers() {
         DispatchQueue.main.async {
             // loop through layers drawn from touches and remove them from the view
@@ -219,7 +239,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             }
         }
     }
-    
+
     // MARK: UI
     func createUI() {
         self.view.insertSubview(self.agoraView, at: 0)
@@ -230,13 +250,13 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         self.agoraView.bottomAnchor.constraint(equalTo: self.view.bottomAnchor).isActive = true
         self.addButtonsAndGestureViews()
     }
-    
+
     // MARK: Button Events
     @IBAction func popView() {
         leaveChannel()
         self.dismiss(animated: true, completion: nil)
     }
-    
+
     // MARK: Agora Implementation
 
     func joinChannel() {

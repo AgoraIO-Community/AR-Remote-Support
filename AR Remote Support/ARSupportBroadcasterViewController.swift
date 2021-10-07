@@ -14,36 +14,36 @@ import AgoraUIKit_iOS
 import AgoraRtmKit
 import SCNLine
 
-class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate, AgoraRtcEngineDelegate {
-    
-    var sceneView : ARSCNView!                          // AR SceneView
-    
+class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, ARSessionDelegate {
+
+    var sceneView: ARSCNView!                          // AR SceneView
+
     var micBtn: UIButton!                               // button to mute/un-mute the microphone
 //    var remoteVideoView: UIView!                        // video stream from remote user
     var lineColor: UIColor = UIColor.systemBlue         // color to use when drawing
-    
+
     // Agora
     var agoraView: AgoraVideoViewer!
     var agoraKit: AgoraRtcEngineKit! {                  // Agora.io Video Engine reference
         self.agoraView.agkit
     }
-    var channelName: String!                            // name of the channel to join
-    let arVideoSource: ARVideoSource = ARVideoSource()  // for passing the AR camera as the stream
-    
-    var sessionIsActive = false                         // keep track if the video session is active or not
-    var remoteUser: UInt?                               // remote user id
-    var dataStreamId: Int! = 27                         // id for data stream
-    var streamIsEnabled: Int32 = -1                     // acts as a flag to keep track if the data stream is enabled
-    
-    var remotePoints: [CGPoint] = []                    // list of touches received from the remote user
+    var channelName: String!                           // name of the channel to join
+    let arVideoSource: ARVideoSource = ARVideoSource() // for passing the AR camera as the stream
+
+    var sessionIsActive = false                        // keep track if the video session is active or not
+    var remoteUser: UInt?                              // remote user id
+    var dataStreamId: Int! = 27                        // id for data stream
+    var streamIsEnabled: Int32 = -1                    // acts as a flag to keep track if the data stream is enabled
+
+    var remotePoints: [CGPoint] = []                   // list of touches received from the remote user
     var drawableFrame: CGRect?
     var drawableMult: CGFloat = 1
-    var touchRoots: [SCNLineNode] = []                      // list of root nodes for each set of touches drawn - for undo purposes
-    
-    var arvkRenderer: RecordAR!                         // ARVideoKit Renderer - used as an off-screen renderer
-    
-    let debug : Bool = true                             // toggle the debug logs
-    
+    var touchRoots: [SCNLineNode] = []                 // list of root nodes for each set of touches drawn - for undo
+
+    var arvkRenderer: RecordAR!                        // ARVideoKit Renderer - used as an off-screen renderer
+
+    let debug: Bool = true                             // toggle the debug logs
+
     var cameraFrameNode = SCNNode(geometry: SCNFloor())
     // MARK: VC Events
     override func loadView() {
@@ -53,7 +53,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     override func viewWillAppear(_ animated: Bool) {
         super .viewWillAppear(animated)
     }
-    
+
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         // stop the ARVideoKit renderer
@@ -68,7 +68,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         super.viewDidDisappear(animated)
         self.leaveChannel()
     }
-    
+
     override func viewDidLoad() {
         super.viewDidLoad()
 
@@ -127,7 +127,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         cameraFrameNode.position.z = -1
         cameraFrameNode.eulerAngles.x = -.pi / 2
     }
-    
+
     override func viewDidAppear(_ animated: Bool) {
         super.viewDidAppear(animated)
         // Configure ARKit Session
@@ -139,12 +139,12 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         self.sceneView.session.run(configuration)
         self.arvkRenderer?.prepare(configuration)
     }
-    
+
     // MARK: Hide status bar
     override var prefersStatusBarHidden: Bool {
         return true
     }
-    
+
     // MARK: UI
     func createUI() {
         //  back button
@@ -159,7 +159,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         backBtn.addTarget(self, action: #selector(popView), for: .touchUpInside)
         self.view.insertSubview(backBtn, at: 2)
     }
-    
+
     // MARK: Button Events
     @IBAction func popView() {
         leaveChannel()
@@ -177,7 +177,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
 
         UIApplication.shared.isIdleTimerDisabled = true     // Disable idle timmer
     }
-    
+
     func leaveChannel() {
         // leave channel and end chat
         self.agoraView.rtmController?.rtmKit.logout()
@@ -185,7 +185,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
 //        self.agoraKit.leaveChannel(nil)
         UIApplication.shared.isIdleTimerDisabled = false
     }
-    
+
      // MARK: Session delegate
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // if we have points - draw one point per frame
@@ -203,16 +203,15 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
             }
         }
     }
-    
+
     func session(_ session: ARSession, didOutputAudioSampleBuffer audioSampleBuffer: CMSampleBuffer) {
 //        self.agoraKit.pushExternalAudioFrameSampleBuffer(audioSampleBuffer)
     }
-    
 
     // MARK: Lights
     func createLight(withPosition position: SCNVector3, andEulerRotation rotation: SCNVector3) -> SCNNode {
         // Create a directional light node with shadow
-        let directionalNode : SCNNode = SCNNode()
+        let directionalNode: SCNNode = SCNNode()
         directionalNode.light = SCNLight()
         directionalNode.light?.type = SCNLight.LightType.directional
         directionalNode.light?.color = UIColor.white
@@ -225,7 +224,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         directionalNode.light?.shadowColor = UIColor.black.withAlphaComponent(0.5)
         directionalNode.position = position
         directionalNode.eulerAngles = rotation
-        
+
         return directionalNode
     }
 
@@ -237,6 +236,3 @@ extension ARSupportBroadcasterViewController: RenderARDelegate {
         self.arVideoSource.sendBuffer(buffer, timestamp: time.seconds)
     }
 }
-
-
-

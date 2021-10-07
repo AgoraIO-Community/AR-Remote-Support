@@ -173,7 +173,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         let token = AppKeys.token // getValue(withKey: "token", within: "keys")
         // get the token - returns nil if no value is set
         // Join the channel
-        self.agoraView.join(channel: self.channelName, as: .broadcaster)
+        self.agoraView.join(channel: self.channelName, with: token, as: .broadcaster)
 
         UIApplication.shared.isIdleTimerDisabled = true     // Disable idle timmer
     }

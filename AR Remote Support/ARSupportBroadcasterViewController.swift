@@ -28,7 +28,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         self.agoraView.agkit
     }
     var channelName: String!                           // name of the channel to join
-    let arVideoSource: ARVideoSource = ARVideoSource() // for passing the AR camera as the stream
+//    let arVideoSource: ARVideoSource = ARVideoSource() // for passing the AR camera as the stream
 
     var sessionIsActive = false                        // keep track if the video session is active or not
     var remoteUser: UInt?                              // remote user id
@@ -77,7 +77,9 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         // Agora setup
         let connectionData = AgoraConnectionData(appId: AppKeys.appId, appToken: AppKeys.token, idLogic: .random)
         var agSettings = AgoraSettings()
-        agSettings.videoSource = self.arVideoSource
+        agSettings.externalVideoSettings = AgoraSettings.ExternalVideoSettings(
+            enabled: true, texture: true, encoded: false
+        )
         agSettings.showSelf = false
         agSettings.enabledButtons = [.cameraButton, .micButton]
         agSettings.rtcDelegate = self
@@ -233,6 +235,10 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
 extension ARSupportBroadcasterViewController: RenderARDelegate {
     // MARK: ARVidoeKit Renderer
     open func frame(didRender buffer: CVPixelBuffer, with time: CMTime, using rawBuffer: CVPixelBuffer) {
-        self.arVideoSource.sendBuffer(buffer, timestamp: time.seconds)
+        let videoFrame = AgoraVideoFrame()
+        videoFrame.format = 12
+        videoFrame.textureBuf = buffer
+        videoFrame.time = time
+        self.agoraKit.pushExternalVideoFrame(videoFrame)
     }
 }

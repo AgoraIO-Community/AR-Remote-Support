@@ -54,10 +54,6 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         var agSettings = AgoraSettings()
         agSettings.rtcDelegate = self
         agSettings.showSelf = false
-        agSettings.videoConfiguration = AgoraVideoEncoderConfiguration(
-            size: AgoraVideoDimension360x360, frameRate: .fps15,
-            bitrate: AgoraVideoBitrateStandard, orientationMode: .fixedPortrait
-        )
         agSettings.enabledButtons = []
         agSettings.rtmEnabled = ViewController.usingRTM
 

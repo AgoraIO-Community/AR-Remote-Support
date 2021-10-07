@@ -680,7 +680,7 @@
 			repositoryURL = "https://github.com/AgoraIO-Community/iOS-UIKit";
 			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				minimumVersion = "4.0.0-preview";
 			};
 		};
 /* End XCRemoteSwiftPackageReference section */

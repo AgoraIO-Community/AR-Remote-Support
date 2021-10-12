@@ -16,10 +16,12 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     var touchPoints: [CGPoint]!             // for drawing touches to the screen
 
     //  list of colors that user can choose from
-    let uiColors: [UIColor] = [.systemBlue, .systemGray, .systemGreen, .systemYellow, .systemRed]
+    let uiColors: [UIColor] = [
+        .systemBlue, .systemGray, .systemGreen, .systemYellow, .systemRed
+    ]
 
     var lineColor: UIColor!                 // active color to use when drawing
-    let bgColor: UIColor = .white           // set the view bg color
+    let bgColor: UIColor = .systemBackground// set the view bg color
 
     var drawingView: UIView!                // view to draw all the local touches
     var localVideoView: UIView!             // video stream of local camera
@@ -58,7 +60,8 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         agSettings.rtmEnabled = ViewController.usingRTM
 
         self.agoraView = AgoraVideoViewer(
-            connectionData: AgoraConnectionData(appId: appID, idLogic: .random), agoraSettings: agSettings
+            connectionData: AgoraConnectionData(appId: appID),
+            agoraSettings: agSettings
         )
         createUI()
         setupGestures()
@@ -75,15 +78,6 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         joinChannel()
     }
 
-    override func viewWillAppear(_ animated: Bool) {
-        super.viewWillAppear(animated)
-    }
-
-    override func viewDidAppear(_ animated: Bool) {
-        super.viewDidAppear(animated)
-        // do something when the view has appeared
-    }
-
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
         if self.sessionIsActive {
@@ -92,9 +86,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     }
 
     // MARK: Hide status bar
-    override var prefersStatusBarHidden: Bool {
-        return true
-    }
+    override var prefersStatusBarHidden: Bool { true }
 
     // MARK: Gestures
     func setupGestures() {
@@ -238,7 +230,20 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
 
     // MARK: UI
     func createUI() {
-        self.view.insertSubview(self.agoraView, at: 0)
+        // add branded logo to remote view
+        guard let agoraLogo = UIImage(named: "agora-logo") else { return }
+        let remoteViewBagroundImage = UIImageView(image: agoraLogo)
+        self.view.insertSubview(remoteViewBagroundImage, at: 0)
+        remoteViewBagroundImage.translatesAutoresizingMaskIntoConstraints = false
+        remoteViewBagroundImage.contentMode = .scaleAspectFit
+        [remoteViewBagroundImage.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
+         remoteViewBagroundImage.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
+         remoteViewBagroundImage.widthAnchor.constraint(equalTo: self.view.widthAnchor, multiplier: 0.7),
+         remoteViewBagroundImage.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.7)
+        ].forEach { $0.isActive = true }
+        remoteViewBagroundImage.alpha = 0.25
+
+        self.view.insertSubview(self.agoraView, at: 1)
         self.agoraView.translatesAutoresizingMaskIntoConstraints = false
         self.agoraView.topAnchor.constraint(equalTo: self.view.topAnchor).isActive = true
         self.agoraView.leftAnchor.constraint(equalTo: self.view.leftAnchor).isActive = true
@@ -258,8 +263,8 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     func joinChannel() {
         // Set audio route to speaker
         self.agoraKit.setDefaultAudioRouteToSpeakerphone(true)
-        // get the token - returns nil if no value is set
-        let token = AppKeys.token // getValue(withKey: "token", within: "keys")
+        // get the token
+        let token = AppKeys.token
         // Join the channel
         self.agoraView.join(channel: self.channelName, with: token, as: .broadcaster)
         UIApplication.shared.isIdleTimerDisabled = true     // Disable idle timmer

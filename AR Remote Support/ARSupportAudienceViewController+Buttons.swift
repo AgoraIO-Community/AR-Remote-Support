@@ -18,7 +18,7 @@ extension ARSupportAudienceViewController {
             micBtn.setTitle("mute", for: .normal)
         }
         micBtn.addTarget(self, action: #selector(toggleMic), for: .touchDown)
-        self.view.insertSubview(micBtn, at: 2)
+        self.view.insertSubview(micBtn, at: 4)
         self.micBtn = micBtn
     }
 
@@ -39,7 +39,7 @@ extension ARSupportAudienceViewController {
         let drawingView = UIView(frame: CGRect(
             x: 0, y: 0, width: self.view.frame.width, height: self.view.frame.height)
         )
-        self.view.insertSubview(drawingView, at: 4)
+        self.view.insertSubview(drawingView, at: 2)
         self.drawingView = drawingView
 
         // mic button
@@ -59,7 +59,7 @@ extension ARSupportAudienceViewController {
            colorSelectionBtn.setTitle("color", for: .normal)
         }
         colorSelectionBtn.addTarget(self, action: #selector(toggleColorSelection), for: .touchUpInside)
-        self.view.insertSubview(colorSelectionBtn, at: 4)
+        self.view.insertSubview(colorSelectionBtn, at: 5)
         self.colorSelectionBtn = colorSelectionBtn
 
         // set up color buttons
@@ -78,7 +78,7 @@ extension ARSupportAudienceViewController {
             colorBtn.alpha = 0
             colorBtn.isHidden = true
             colorBtn.isUserInteractionEnabled = false
-            self.view.insertSubview(colorBtn, at: 3)
+            self.view.insertSubview(colorBtn, at: 5)
             self.colorButtons.append(colorBtn)
         }
 

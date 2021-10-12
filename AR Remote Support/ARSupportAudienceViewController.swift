@@ -238,8 +238,8 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         remoteViewBagroundImage.contentMode = .scaleAspectFit
         [remoteViewBagroundImage.centerXAnchor.constraint(equalTo: self.view.centerXAnchor),
          remoteViewBagroundImage.centerYAnchor.constraint(equalTo: self.view.centerYAnchor),
-         remoteViewBagroundImage.widthAnchor.constraint(equalTo: self.view.widthAnchor, multiplier: 0.7),
-         remoteViewBagroundImage.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.7)
+         remoteViewBagroundImage.widthAnchor.constraint(equalTo: self.view.widthAnchor, multiplier: 0.6),
+         remoteViewBagroundImage.heightAnchor.constraint(equalTo: self.view.heightAnchor, multiplier: 0.6)
         ].forEach { $0.isActive = true }
         remoteViewBagroundImage.alpha = 0.25
 

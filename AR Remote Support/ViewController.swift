@@ -10,7 +10,6 @@ import UIKit
 
 class ViewController: UIViewController, UITextFieldDelegate {
 
-    static let usingRTM = false
     var channelInput: UITextField!
     var joinButton: UIButton!
     var createButton: UIButton!

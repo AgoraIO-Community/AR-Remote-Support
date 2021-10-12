@@ -41,7 +41,12 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     var remoteFeedSize: CGSize?
     var remoteUser: UInt?                   // remote user id
     var dataStreamId: Int! = 27             // id for data stream
-    var streamIsEnabled: Int32 = -1         // acts as a flag to keep track if the data stream is enabled
+    var rtmIsConnected: Bool {              // acts as a flag to keep track if RTM is connected
+        switch self.agoraView.rtmStatus {
+        case .connected: return true
+        default: return false
+        }
+    }
 
     var dataPointsArray: [CGPoint] = []     // batch list of touches to be sent to remote user
 
@@ -54,23 +59,24 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         // Add Agora setup
         let appID = AppKeys.appId
         var agSettings = AgoraSettings()
+        // Set Agora RTC delegate
         agSettings.rtcDelegate = self
+        // Do not show own camera feed
         agSettings.showSelf = false
+        // Hide all builtin buttons, we will use our own button
         agSettings.enabledButtons = []
-        agSettings.rtmEnabled = ViewController.usingRTM
 
         self.agoraView = AgoraVideoViewer(
             connectionData: AgoraConnectionData(appId: appID),
             agoraSettings: agSettings
         )
-        createUI()
-        setupGestures()
-        self.view.isUserInteractionEnabled = false
     }
 
     override func viewDidLoad() {
         super.viewDidLoad()
-        // Do any additional setup after loading the view.
+        createUI()
+        setupGestures()
+
         self.lineColor = self.uiColors.first
         self.view.backgroundColor = self.bgColor
         self.view.isUserInteractionEnabled = true
@@ -113,7 +119,11 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     }
 
     @IBAction func handlePan(_ gestureRecognizer: UIPanGestureRecognizer) {
-        if self.sessionIsActive && gestureRecognizer.state == .began && self.streamIsEnabled == 0 {
+        guard self.rtmIsConnected else {
+            print("RTM is not connected")
+            return
+        }
+        if self.sessionIsActive && gestureRecognizer.state == .began {
             // send message to remote user that touches have started
             self.sendMessage("touch-start")
         }
@@ -132,11 +142,9 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
 
             self.touchPoints.append(pixelTranslation)
 
-            if self.streamIsEnabled == 0 {
-                // send data to remote user
-                let point = CGPoint(x: translationFromCenter.x, y: translationFromCenter.y)
-                self.sendTouchData(touchPoint: point)
-            }
+            // send data to remote user
+            let point = CGPoint(x: translationFromCenter.x, y: translationFromCenter.y)
+            self.sendTouchData(touchPoint: point)
 
             DispatchQueue.main.async {
                 // draw user touches to the DrawView
@@ -163,7 +171,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         }
     }
     func sendTouchEnded() {
-        if self.streamIsEnabled == 0 {
+        if self.rtmIsConnected {
             // transmit any left over points
             if self.dataPointsArray.count > 0 {
                 sendTouchPoints() // send touch data to remote user
@@ -198,7 +206,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     }
 
     func sendMessage(_ message: String) {
-        if ViewController.usingRTM {
+        if self.rtmIsConnected {
             self.agoraView.rtmController?.sendRaw(
                 message: message, channel: self.channelName
             ) { messageStatus in
@@ -207,7 +215,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
                 }
             }
         } else {
-            self.agoraKit.sendStreamMessage(self.dataStreamId, data: message.data(using: String.Encoding.ascii)!)
+            print("Could not send RTM Message: not connected")
         }
     }
 
@@ -277,8 +285,11 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
 
     func leaveChannel() {
         self.agoraView.rtmController?.rtmKit.logout()
-        self.agoraView.exit()                                  // leave channel and end chat
-        self.sessionIsActive = false                        // session is no longer active
-        UIApplication.shared.isIdleTimerDisabled = false    // Enable idle timer
+        // leave channel and end chat
+        self.agoraView.exit()
+        // session is no longer active
+        self.sessionIsActive = false
+        // Enable idle timer
+        UIApplication.shared.isIdleTimerDisabled = false
     }
 }

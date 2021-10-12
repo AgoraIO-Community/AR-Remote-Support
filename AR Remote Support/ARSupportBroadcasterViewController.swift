@@ -33,10 +33,14 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     var sessionIsActive = false                        // keep track if the video session is active or not
     var remoteUser: UInt?                              // remote user id
     var dataStreamId: Int! = 27                        // id for data stream
-    var streamIsEnabled: Int32 = -1                    // acts as a flag to keep track if the data stream is enabled
+    var rtmIsConnected: Bool {                         // acts as a flag to keep track if RTM is connected
+        switch self.agoraView.rtmStatus {
+        case .connected: return true
+        default: return false
+        }
+    }
 
     var remotePoints: [CGPoint] = []                   // list of touches received from the remote user
-    var drawableFrame: CGRect?
     var drawableMult: CGFloat = 1
     var touchRoots: [SCNLineNode] = []                 // list of root nodes for each set of touches drawn - for undo
 
@@ -48,6 +52,18 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     // MARK: VC Events
     override func loadView() {
         super.loadView()
+
+        // Agora setup
+        let connectionData = AgoraConnectionData(appId: AppKeys.appId, appToken: AppKeys.token, idLogic: .random)
+        var agSettings = AgoraSettings()
+        agSettings.externalVideoSettings = AgoraSettings.ExternalVideoSettings(
+            enabled: true, texture: true, encoded: false
+        )
+        agSettings.showSelf = false
+        agSettings.enabledButtons = [.cameraButton, .micButton]
+        agSettings.rtcDelegate = self
+//        agSettings.rtmChannelDelegate = self
+        self.agoraView = AgoraVideoViewer(connectionData: connectionData, style: .collection, agoraSettings: agSettings)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -74,17 +90,6 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
 
         self.view.backgroundColor = UIColor.black
 
-        // Agora setup
-        let connectionData = AgoraConnectionData(appId: AppKeys.appId, appToken: AppKeys.token, idLogic: .random)
-        var agSettings = AgoraSettings()
-        agSettings.externalVideoSettings = AgoraSettings.ExternalVideoSettings(
-            enabled: true, texture: true, encoded: false
-        )
-        agSettings.showSelf = false
-        agSettings.enabledButtons = [.cameraButton, .micButton]
-        agSettings.rtcDelegate = self
-//        agSettings.rtmChannelDelegate = self
-        self.agoraView = AgoraVideoViewer(connectionData: connectionData, style: .collection, agoraSettings: agSettings)
         self.agoraView.fills(view: self.view)
 
         self.joinChannel() // Agora - join the channel
@@ -188,7 +193,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         UIApplication.shared.isIdleTimerDisabled = false
     }
 
-     // MARK: Session delegate
+    // MARK: Session delegate
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
         // if we have points - draw one point per frame
         if self.remotePoints.count > 0 {

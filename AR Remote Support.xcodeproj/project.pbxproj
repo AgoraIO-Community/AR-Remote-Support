@@ -14,7 +14,6 @@
 		039ABE0B236A021E008A374F /* ViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ABE0A236A021E008A374F /* ViewController.swift */; };
 		039ABE4A236A03F8008A374F /* ARSupportBroadcasterViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ABE48236A03F8008A374F /* ARSupportBroadcasterViewController.swift */; };
 		039ABE4D236A045A008A374F /* ARSupportAudienceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ABE4C236A045A008A374F /* ARSupportAudienceViewController.swift */; };
-		03E1EB9923765DEC0058F088 /* ARVideoSource.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E1EB9823765DEC0058F088 /* ARVideoSource.swift */; };
 		03E1EB9B237663D30058F088 /* SCNVector3+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E1EB9A237663D30058F088 /* SCNVector3+Extensions.swift */; };
 		F35A1D0F270B32080004F286 /* SCNLine in Frameworks */ = {isa = PBXBuildFile; productRef = F35A1D0E270B32080004F286 /* SCNLine */; };
 		F3E38714270458400044B4FB /* AR_Remote_SupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E38713270458400044B4FB /* AR_Remote_SupportTests.swift */; };
@@ -58,7 +57,6 @@
 		039ABE0A236A021E008A374F /* ViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ViewController.swift; sourceTree = "<group>"; };
 		039ABE48236A03F8008A374F /* ARSupportBroadcasterViewController.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = ARSupportBroadcasterViewController.swift; sourceTree = "<group>"; wrapsLines = 0; };
 		039ABE4C236A045A008A374F /* ARSupportAudienceViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARSupportAudienceViewController.swift; sourceTree = "<group>"; };
-		03E1EB9823765DEC0058F088 /* ARVideoSource.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ARVideoSource.swift; sourceTree = "<group>"; };
 		03E1EB9A237663D30058F088 /* SCNVector3+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "SCNVector3+Extensions.swift"; sourceTree = "<group>"; };
 		F3E38713270458400044B4FB /* AR_Remote_SupportTests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AR_Remote_SupportTests.swift; sourceTree = "<group>"; };
 		F3E387152704588B0044B4FB /* AR_Remote_SupportUITests.swift */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.swift; path = AR_Remote_SupportUITests.swift; sourceTree = "<group>"; };
@@ -131,7 +129,6 @@
 				F3ECE11D270C8F0200C315EC /* ARSupportAudienceViewController+AgoraDelegates.swift */,
 				F3ECE11B270C8E8000C315EC /* ARSupportAudienceViewController+Buttons.swift */,
 				039ABE0A236A021E008A374F /* ViewController.swift */,
-				03E1EB9823765DEC0058F088 /* ARVideoSource.swift */,
 				03E1EB9A237663D30058F088 /* SCNVector3+Extensions.swift */,
 			);
 			path = "AR Remote Support";
@@ -321,7 +318,6 @@
 				039ABE0B236A021E008A374F /* ViewController.swift in Sources */,
 				039ABE4D236A045A008A374F /* ARSupportAudienceViewController.swift in Sources */,
 				F3ECE11E270C8F0200C315EC /* ARSupportAudienceViewController+AgoraDelegates.swift in Sources */,
-				03E1EB9923765DEC0058F088 /* ARVideoSource.swift in Sources */,
 				0379DF4D2369F67900B20008 /* AppDelegate.swift in Sources */,
 				F3E387262705CC570044B4FB /* AppKeys.swift in Sources */,
 				03E1EB9B237663D30058F088 /* SCNVector3+Extensions.swift in Sources */,

@@ -40,7 +40,6 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     var sessionIsActive = false             // keep track if the video session is active or not
     var remoteFeedSize: CGSize?
     var remoteUser: UInt?                   // remote user id
-    var dataStreamId: Int! = 27             // id for data stream
     var rtmIsConnected: Bool {              // acts as a flag to keep track if RTM is connected
         switch self.agoraView.rtmStatus {
         case .connected: return true
@@ -132,12 +131,13 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
             let translation = gestureRecognizer.translation(in: self.view)
             // calculate touch movement relative to the superview
             guard let touchStart = self.touchStart else { return } // ignore accidental finger drags
+            let mainViewSpace = self.agoraView.backgroundVideoHolder
             let pixelTranslation = CGPoint(x: touchStart.x + translation.x, y: touchStart.y + translation.y)
 
             // normalize the touch point to use view center as the reference point
             let translationFromCenter = CGPoint(
-                x: pixelTranslation.x - (0.5 * self.view.frame.width),
-                y: pixelTranslation.y - (0.5 * self.view.frame.height)
+                x: pixelTranslation.x - (0.5 * mainViewSpace.frame.width),
+                y: pixelTranslation.y - mainViewSpace.frame.minY - (0.5 * mainViewSpace.frame.height)
             )
 
             self.touchPoints.append(pixelTranslation)
@@ -284,6 +284,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     }
 
     func leaveChannel() {
+        // leave rtm channel and log out
         self.agoraView.rtmController?.rtmKit.logout()
         // leave channel and end chat
         self.agoraView.exit()

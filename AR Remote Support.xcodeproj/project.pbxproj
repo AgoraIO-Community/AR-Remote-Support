@@ -16,10 +16,11 @@
 		039ABE4D236A045A008A374F /* ARSupportAudienceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ABE4C236A045A008A374F /* ARSupportAudienceViewController.swift */; };
 		03E1EB9B237663D30058F088 /* SCNVector3+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E1EB9A237663D30058F088 /* SCNVector3+Extensions.swift */; };
 		F35A1D0F270B32080004F286 /* SCNLine in Frameworks */ = {isa = PBXBuildFile; productRef = F35A1D0E270B32080004F286 /* SCNLine */; };
+		F3A2675E272C4E9400FACCBB /* AgoraRtmKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3A2675D272C4E9400FACCBB /* AgoraRtmKit */; };
+		F3A26761272C4EE500FACCBB /* AgoraUIKit_iOS in Frameworks */ = {isa = PBXBuildFile; productRef = F3A26760272C4EE500FACCBB /* AgoraUIKit_iOS */; };
 		F3E38714270458400044B4FB /* AR_Remote_SupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E38713270458400044B4FB /* AR_Remote_SupportTests.swift */; };
 		F3E387162704588B0044B4FB /* AR_Remote_SupportUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E387152704588B0044B4FB /* AR_Remote_SupportUITests.swift */; };
 		F3E3871C27045A2A0044B4FB /* ARVideoKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3E3871B27045A2A0044B4FB /* ARVideoKit */; };
-		F3E3871F27045DFE0044B4FB /* AgoraUIKit_iOS in Frameworks */ = {isa = PBXBuildFile; productRef = F3E3871E27045DFE0044B4FB /* AgoraUIKit_iOS */; };
 		F3E387242705B4C20044B4FB /* ARSupportBroadcasterViewController+RTCDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E387232705B4C20044B4FB /* ARSupportBroadcasterViewController+RTCDelegate.swift */; };
 		F3E387262705CC570044B4FB /* AppKeys.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E387252705CC570044B4FB /* AppKeys.swift */; };
 		F3ECE11C270C8E8000C315EC /* ARSupportAudienceViewController+Buttons.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3ECE11B270C8E8000C315EC /* ARSupportAudienceViewController+Buttons.swift */; };
@@ -71,8 +72,9 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F3A26761272C4EE500FACCBB /* AgoraUIKit_iOS in Frameworks */,
+				F3A2675E272C4E9400FACCBB /* AgoraRtmKit in Frameworks */,
 				F35A1D0F270B32080004F286 /* SCNLine in Frameworks */,
-				F3E3871F27045DFE0044B4FB /* AgoraUIKit_iOS in Frameworks */,
 				F3E3871C27045A2A0044B4FB /* ARVideoKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -171,8 +173,9 @@
 			name = "AR Remote Support";
 			packageProductDependencies = (
 				F3E3871B27045A2A0044B4FB /* ARVideoKit */,
-				F3E3871E27045DFE0044B4FB /* AgoraUIKit_iOS */,
 				F35A1D0E270B32080004F286 /* SCNLine */,
+				F3A2675D272C4E9400FACCBB /* AgoraRtmKit */,
+				F3A26760272C4EE500FACCBB /* AgoraUIKit_iOS */,
 			);
 			productName = "AR Remote Support";
 			productReference = 0379DF492369F67900B20008 /* AR Remote Support.app */;
@@ -248,8 +251,9 @@
 			mainGroup = 0379DF402369F67900B20008;
 			packageReferences = (
 				F3E3871A27045A2A0044B4FB /* XCRemoteSwiftPackageReference "ARVideoKit" */,
-				F3E3871D27045DFE0044B4FB /* XCRemoteSwiftPackageReference "iOS-UIKit" */,
 				F35A1D0D270B32080004F286 /* XCRemoteSwiftPackageReference "SceneKit-SCNLine" */,
+				F3A2675C272C4E9400FACCBB /* XCRemoteSwiftPackageReference "AgoraRTM_iOS" */,
+				F3A2675F272C4EE500FACCBB /* XCRemoteSwiftPackageReference "iOS-UIKit" */,
 			);
 			productRefGroup = 0379DF4A2369F67900B20008 /* Products */;
 			projectDirPath = "";
@@ -496,7 +500,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 278494H572;
 				INFOPLIST_FILE = "AR Remote Support/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -515,7 +519,7 @@
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_TEAM = "";
+				DEVELOPMENT_TEAM = 278494H572;
 				INFOPLIST_FILE = "AR Remote Support/Info.plist";
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -659,8 +663,24 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/maxxfrazer/SceneKit-SCNLine.git";
 			requirement = {
+				branch = "multi-add";
+				kind = branch;
+			};
+		};
+		F3A2675C272C4E9400FACCBB /* XCRemoteSwiftPackageReference "AgoraRTM_iOS" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AgoraIO/AgoraRTM_iOS";
+			requirement = {
+				kind = revision;
+				revision = 77a375d4ec7cd8ff7a80394ab8ceadd4b6a18fd9;
+			};
+		};
+		F3A2675F272C4EE500FACCBB /* XCRemoteSwiftPackageReference "iOS-UIKit" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/AgoraIO-Community/iOS-UIKit";
+			requirement = {
 				kind = upToNextMajorVersion;
-				minimumVersion = 1.0.0;
+				minimumVersion = "4.0.0-preview";
 			};
 		};
 		F3E3871A27045A2A0044B4FB /* XCRemoteSwiftPackageReference "ARVideoKit" */ = {
@@ -671,14 +691,6 @@
 				kind = branch;
 			};
 		};
-		F3E3871D27045DFE0044B4FB /* XCRemoteSwiftPackageReference "iOS-UIKit" */ = {
-			isa = XCRemoteSwiftPackageReference;
-			repositoryURL = "https://github.com/AgoraIO-Community/iOS-UIKit";
-			requirement = {
-				kind = upToNextMajorVersion;
-				minimumVersion = "4.0.0-preview";
-			};
-		};
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
@@ -687,15 +699,20 @@
 			package = F35A1D0D270B32080004F286 /* XCRemoteSwiftPackageReference "SceneKit-SCNLine" */;
 			productName = SCNLine;
 		};
+		F3A2675D272C4E9400FACCBB /* AgoraRtmKit */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F3A2675C272C4E9400FACCBB /* XCRemoteSwiftPackageReference "AgoraRTM_iOS" */;
+			productName = AgoraRtmKit;
+		};
+		F3A26760272C4EE500FACCBB /* AgoraUIKit_iOS */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = F3A2675F272C4EE500FACCBB /* XCRemoteSwiftPackageReference "iOS-UIKit" */;
+			productName = AgoraUIKit_iOS;
+		};
 		F3E3871B27045A2A0044B4FB /* ARVideoKit */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = F3E3871A27045A2A0044B4FB /* XCRemoteSwiftPackageReference "ARVideoKit" */;
 			productName = ARVideoKit;
-		};
-		F3E3871E27045DFE0044B4FB /* AgoraUIKit_iOS */ = {
-			isa = XCSwiftPackageProductDependency;
-			package = F3E3871D27045DFE0044B4FB /* XCRemoteSwiftPackageReference "iOS-UIKit" */;
-			productName = AgoraUIKit_iOS;
 		};
 /* End XCSwiftPackageProductDependency section */
 	};

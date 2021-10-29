@@ -49,8 +49,9 @@ extension ARSupportBroadcasterViewController: AgoraRtmChannelDelegate {
         _ channel: AgoraRtmChannel, messageReceived message: AgoraRtmMessage,
         from member: AgoraRtmMember
     ) {
-        if message.type == .text {
-            self.handleNewMessage(message.text)
+        if message.type == .raw, let rawMsg = message as? AgoraRtmRawMessage,
+           let decodedStr = try? JSONDecoder().decode(String.self, from: rawMsg.rawData) {
+            self.handleNewMessage(decodedStr)
         }
     }
 

@@ -9,6 +9,7 @@
 import Foundation
 
 struct AppKeys {
-    static let token: String? = <#Agora Token or nil#>
-    static let appId: String = <#Agora App ID#>
+    static var appId: String = <#Agora App ID#>
+    static var rtmToken: String? = <#Agora RTC Token or nil#>
+    static var rtmToken: String? = <#Agora RTM Token or nil#>
 }

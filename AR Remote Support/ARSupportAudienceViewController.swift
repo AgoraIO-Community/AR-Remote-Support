@@ -271,10 +271,8 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     func joinChannel() {
         // Set audio route to speaker
         self.agoraKit.setDefaultAudioRouteToSpeakerphone(true)
-        // get the token
-        let token = AppKeys.token
         // Join the channel
-        self.agoraView.join(channel: self.channelName, with: token, as: .broadcaster)
+        self.agoraView.join(channel: self.channelName, with: AppKeys.rtcToken, as: .broadcaster)
         UIApplication.shared.isIdleTimerDisabled = true     // Disable idle timmer
     }
 

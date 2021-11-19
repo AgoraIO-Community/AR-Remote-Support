@@ -55,7 +55,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         super.loadView()
 
         // Agora setup
-        let connectionData = AgoraConnectionData(appId: AppKeys.appId, appToken: AppKeys.token, idLogic: .random)
+        let connectionData = AgoraConnectionData(appId: AppKeys.appId, appToken: AppKeys.rtcToken, idLogic: .random)
         var agSettings = AgoraSettings()
         agSettings.externalVideoSettings = AgoraSettings.ExternalVideoSettings(
             enabled: true, texture: true, encoded: false
@@ -182,7 +182,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     func joinChannel() {
         // Set audio route to speaker
 
-        let token = AppKeys.token // getValue(withKey: "token", within: "keys")
+        let token = AppKeys.rtcToken // getValue(withKey: "token", within: "keys")
         // get the token - returns nil if no value is set
         // Join the channel
         self.agoraView.join(channel: self.channelName, with: token, as: .broadcaster)

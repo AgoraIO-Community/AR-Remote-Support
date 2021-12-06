@@ -106,7 +106,6 @@ extension ARSupportAudienceViewController {
         guard let disabledMicImg = UIImage(named: "mute") else { return }
         if self.micBtn.imageView?.image == activeMicImg {
             self.micBtn.setImage(disabledMicImg, for: .normal)
-            self.agoraKit.muteLocalAudioStream(true)
             self.agoraView.setMic(to: false)
             if debug {
                 print("disable active mic")
@@ -155,7 +154,7 @@ extension ARSupportAudienceViewController {
         self.lineColor = colorSelectionBtn.tintColor
         toggleColorSelection()
         // send data message with color components
-        if self.streamIsEnabled == 0 {
+        if self.rtmIsConnected {
             guard let colorComponents = sender.backgroundColor?.cgColor.components else { return }
             self.sendMessage("color: \(colorComponents)")
             if debug {
@@ -165,7 +164,7 @@ extension ARSupportAudienceViewController {
     }
 
     @IBAction func sendUndoMsg() {
-        if self.streamIsEnabled == 0 {
+        if self.rtmIsConnected {
             self.sendMessage("undo")
         }
     }

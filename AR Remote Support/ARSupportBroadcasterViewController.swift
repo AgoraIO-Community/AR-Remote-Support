@@ -32,22 +32,43 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
 
     var sessionIsActive = false                        // keep track if the video session is active or not
     var remoteUser: UInt?                              // remote user id
-    var dataStreamId: Int! = 27                        // id for data stream
-    var streamIsEnabled: Int32 = -1                    // acts as a flag to keep track if the data stream is enabled
+    var rtmIsConnected: Bool {                         // acts as a flag to keep track if RTM is connected
+        switch self.agoraView.rtmStatus {
+        case .connected: return true
+        default: return false
+        }
+    }
 
     var remotePoints: [CGPoint] = []                   // list of touches received from the remote user
-    var drawableFrame: CGRect?
     var drawableMult: CGFloat = 1
     var touchRoots: [SCNLineNode] = []                 // list of root nodes for each set of touches drawn - for undo
 
     var arvkRenderer: RecordAR!                        // ARVideoKit Renderer - used as an off-screen renderer
-
+    #if DEBUG
     let debug: Bool = true                             // toggle the debug logs
-
+    #else
+    let debug: Bool = false
+    #endif
     var cameraFrameNode = SCNNode(geometry: SCNFloor())
     // MARK: VC Events
     override func loadView() {
         super.loadView()
+
+        // Agora setup
+        let connectionData = AgoraConnectionData(appId: AppKeys.appId, appToken: AppKeys.rtcToken, idLogic: .random)
+        var agSettings = AgoraSettings()
+        agSettings.externalVideoSettings = AgoraSettings.ExternalVideoSettings(
+            enabled: true, texture: true, encoded: false
+        )
+        // Do not show own camera feed
+        agSettings.showSelf = false
+        // Only enable camera and microphone buttons
+        agSettings.enabledButtons = [.cameraButton, .micButton]
+        // Set Agora RTC delegate
+        agSettings.rtcDelegate = self
+        // Set Agora RTM delegate
+        agSettings.rtmChannelDelegate = self
+        self.agoraView = AgoraVideoViewer(connectionData: connectionData, style: .collection, agoraSettings: agSettings)
     }
 
     override func viewWillAppear(_ animated: Bool) {
@@ -74,17 +95,6 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
 
         self.view.backgroundColor = UIColor.black
 
-        // Agora setup
-        let connectionData = AgoraConnectionData(appId: AppKeys.appId, appToken: AppKeys.token, idLogic: .random)
-        var agSettings = AgoraSettings()
-        agSettings.externalVideoSettings = AgoraSettings.ExternalVideoSettings(
-            enabled: true, texture: true, encoded: false
-        )
-        agSettings.showSelf = false
-        agSettings.enabledButtons = [.cameraButton, .micButton]
-        agSettings.rtcDelegate = self
-//        agSettings.rtmChannelDelegate = self
-        self.agoraView = AgoraVideoViewer(connectionData: connectionData, style: .collection, agoraSettings: agSettings)
         self.agoraView.fills(view: self.view)
 
         self.joinChannel() // Agora - join the channel
@@ -172,7 +182,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     func joinChannel() {
         // Set audio route to speaker
 
-        let token = AppKeys.token // getValue(withKey: "token", within: "keys")
+        let token = AppKeys.rtcToken // getValue(withKey: "token", within: "keys")
         // get the token - returns nil if no value is set
         // Join the channel
         self.agoraView.join(channel: self.channelName, with: token, as: .broadcaster)
@@ -181,27 +191,38 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
     }
 
     func leaveChannel() {
-        // leave channel and end chat
+        // leave rtm channel and log out
         self.agoraView.rtmController?.rtmKit.logout()
+        // leave channel and end chat
         self.agoraView.exit()
-//        self.agoraKit.leaveChannel(nil)
+        // session is no longer active
+        self.sessionIsActive = false
+        // Enable idle timer
         UIApplication.shared.isIdleTimerDisabled = false
     }
 
-     // MARK: Session delegate
+    // MARK: Session delegate
     func session(_ session: ARSession, didUpdate frame: ARFrame) {
-        // if we have points - draw one point per frame
-        if self.remotePoints.count > 0 {
-            let remotePoint: CGPoint = self.remotePoints.removeFirst() // pop the first node every frame
-            DispatchQueue.main.async {
-                guard let touchRootNode = self.touchRoots.last else { return }
+        // if we have points - draw 3 points per frame
+        DispatchQueue.main.async {
+            guard let touchRootNode = self.touchRoots.last else { return }
+            var lastPoint = touchRootNode.points.last
+            var drawnPoints = 0
+            while self.remotePoints.count > 0, drawnPoints < 3 {
+                let remotePoint: CGPoint = self.remotePoints.removeFirst() // pop the first node every frame
+                print(self.drawableMult)
                 let htFloor = self.sceneView.hitTest(.init(
-                    x: (remotePoint.x * self.drawableMult) + self.view.frame.width / 2,
-                    y: (remotePoint.y * self.drawableMult) + self.view.frame.height / 2
+                    x: (remotePoint.x + self.view.frame.width / 2),
+                    y: (remotePoint.y + self.view.frame.height / 2)
                 ), options: [.ignoreHiddenNodes: false])
                 guard let touchedPoint = htFloor.first?.worldCoordinates else { return }
-
-                touchRootNode.add(point: touchedPoint)
+                if let lastPoint = lastPoint, touchedPoint.distance(to: lastPoint) < 0.001 {
+                    if self.debug { print("not adding point") }
+                } else {
+                    touchRootNode.add(point: touchedPoint)
+                    drawnPoints += 1
+                }
+                lastPoint = touchedPoint
             }
         }
     }

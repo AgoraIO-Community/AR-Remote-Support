@@ -21,13 +21,9 @@ extension ARSupportAudienceViewController {
             self.sessionIsActive = true
 
             // create the data stream
-            self.streamIsEnabled = self.agoraKit.createDataStream(&self.dataStreamId, reliable: true, ordered: true)
             self.remoteFeedSize = size
             let feedWidth = self.view.frame.height * size.width / size.height
             self.sendMessage("frame-size:[\(feedWidth), \(self.view.frame.height)]")
-            if self.debug {
-                print("Data Stream initiated - STATUS: \(self.streamIsEnabled)")
-            }
         }
 
     }

@@ -10,7 +10,7 @@ import UIKit
 import ARKit
 import ARVideoKit
 import AgoraRtcKit
-import AgoraUIKit_iOS
+import AgoraUIKit
 import AgoraRtmKit
 import SCNLine
 
@@ -55,7 +55,7 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         super.loadView()
 
         // Agora setup
-        let connectionData = AgoraConnectionData(appId: AppKeys.appId, appToken: AppKeys.rtcToken, idLogic: .random)
+        let connectionData = AgoraConnectionData(appId: AppKeys.appId, rtcToken: AppKeys.rtcToken, idLogic: .random)
         var agSettings = AgoraSettings()
         agSettings.externalVideoSettings = AgoraSettings.ExternalVideoSettings(
             enabled: true, texture: true, encoded: false

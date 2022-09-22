@@ -16,7 +16,7 @@
 		039ABE4D236A045A008A374F /* ARSupportAudienceViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 039ABE4C236A045A008A374F /* ARSupportAudienceViewController.swift */; };
 		03E1EB9B237663D30058F088 /* SCNVector3+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 03E1EB9A237663D30058F088 /* SCNVector3+Extensions.swift */; };
 		F35A1D0F270B32080004F286 /* SCNLine in Frameworks */ = {isa = PBXBuildFile; productRef = F35A1D0E270B32080004F286 /* SCNLine */; };
-		F3CE80CB28DC50D900152869 /* AgoraUIKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3CE80CA28DC50D900152869 /* AgoraUIKit */; };
+		F3B215CF28DC568B0000A0D1 /* AgoraUIKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3B215CE28DC568B0000A0D1 /* AgoraUIKit */; };
 		F3E38714270458400044B4FB /* AR_Remote_SupportTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E38713270458400044B4FB /* AR_Remote_SupportTests.swift */; };
 		F3E387162704588B0044B4FB /* AR_Remote_SupportUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = F3E387152704588B0044B4FB /* AR_Remote_SupportUITests.swift */; };
 		F3E3871C27045A2A0044B4FB /* ARVideoKit in Frameworks */ = {isa = PBXBuildFile; productRef = F3E3871B27045A2A0044B4FB /* ARVideoKit */; };
@@ -73,7 +73,7 @@
 			files = (
 				F35A1D0F270B32080004F286 /* SCNLine in Frameworks */,
 				F3E3871C27045A2A0044B4FB /* ARVideoKit in Frameworks */,
-				F3CE80CB28DC50D900152869 /* AgoraUIKit in Frameworks */,
+				F3B215CF28DC568B0000A0D1 /* AgoraUIKit in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -101,6 +101,7 @@
 				0379DF622369F67B00B20008 /* AR Remote SupportTests */,
 				0379DF6D2369F67B00B20008 /* AR Remote SupportUITests */,
 				0379DF4A2369F67900B20008 /* Products */,
+				F3B215CD28DC568B0000A0D1 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -152,6 +153,13 @@
 			path = "AR Remote SupportUITests";
 			sourceTree = "<group>";
 		};
+		F3B215CD28DC568B0000A0D1 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			name = Frameworks;
+			sourceTree = "<group>";
+		};
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
@@ -172,7 +180,7 @@
 			packageProductDependencies = (
 				F3E3871B27045A2A0044B4FB /* ARVideoKit */,
 				F35A1D0E270B32080004F286 /* SCNLine */,
-				F3CE80CA28DC50D900152869 /* AgoraUIKit */,
+				F3B215CE28DC568B0000A0D1 /* AgoraUIKit */,
 			);
 			productName = "AR Remote Support";
 			productReference = 0379DF492369F67900B20008 /* AR Remote Support.app */;
@@ -249,7 +257,7 @@
 			packageReferences = (
 				F3E3871A27045A2A0044B4FB /* XCRemoteSwiftPackageReference "ARVideoKit" */,
 				F35A1D0D270B32080004F286 /* XCRemoteSwiftPackageReference "SceneKit-SCNLine" */,
-				F3CE80C928DC50D900152869 /* XCRemoteSwiftPackageReference "VideoUIKit-iOS" */,
+				F3B215CC28DC55ED0000A0D1 /* XCRemoteSwiftPackageReference "VideoUIKit-iOS" */,
 			);
 			productRefGroup = 0379DF4A2369F67900B20008 /* Products */;
 			projectDirPath = "";
@@ -663,12 +671,12 @@
 				minimumVersion = 1.2.0;
 			};
 		};
-		F3CE80C928DC50D900152869 /* XCRemoteSwiftPackageReference "VideoUIKit-iOS" */ = {
+		F3B215CC28DC55ED0000A0D1 /* XCRemoteSwiftPackageReference "VideoUIKit-iOS" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AgoraIO-Community/VideoUIKit-iOS";
 			requirement = {
-				kind = exactVersion;
-				version = "4.0.1-beta.1";
+				branch = "4.0.1-beta.1";
+				kind = branch;
 			};
 		};
 		F3E3871A27045A2A0044B4FB /* XCRemoteSwiftPackageReference "ARVideoKit" */ = {
@@ -687,9 +695,9 @@
 			package = F35A1D0D270B32080004F286 /* XCRemoteSwiftPackageReference "SceneKit-SCNLine" */;
 			productName = SCNLine;
 		};
-		F3CE80CA28DC50D900152869 /* AgoraUIKit */ = {
+		F3B215CE28DC568B0000A0D1 /* AgoraUIKit */ = {
 			isa = XCSwiftPackageProductDependency;
-			package = F3CE80C928DC50D900152869 /* XCRemoteSwiftPackageReference "VideoUIKit-iOS" */;
+			package = F3B215CC28DC55ED0000A0D1 /* XCRemoteSwiftPackageReference "VideoUIKit-iOS" */;
 			productName = AgoraUIKit;
 		};
 		F3E3871B27045A2A0044B4FB /* ARVideoKit */ = {

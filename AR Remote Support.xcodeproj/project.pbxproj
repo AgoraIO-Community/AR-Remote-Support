@@ -675,8 +675,8 @@
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/AgoraIO-Community/VideoUIKit-iOS";
 			requirement = {
-				branch = "4.0.1-beta.1";
-				kind = branch;
+				kind = upToNextMajorVersion;
+				minimumVersion = 4.0.5;
 			};
 		};
 		F3E3871A27045A2A0044B4FB /* XCRemoteSwiftPackageReference "ARVideoKit" */ = {

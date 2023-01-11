@@ -260,6 +260,9 @@ extension ARSupportBroadcasterViewController: RenderARDelegate {
         videoFrame.format = 12
         videoFrame.textureBuf = buffer
         videoFrame.time = time
+        // Add rotation here if you want the app to work in landscape.
+        // For now this demo is portrait only.
+//        videoFrame.rotation = .init(90)
         self.agoraKit.pushExternalVideoFrame(videoFrame)
     }
 }

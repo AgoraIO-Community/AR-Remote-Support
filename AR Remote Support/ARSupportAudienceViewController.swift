@@ -66,8 +66,9 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         agSettings.enabledButtons = []
 
         self.agoraView = AgoraVideoViewer(
-            connectionData: AgoraConnectionData(appId: appID),
-            agoraSettings: agSettings
+            connectionData: AgoraConnectionData(
+                appId: appID, rtcToken: AppKeys.rtcToken, rtmToken: AppKeys.rtmToken
+            ), agoraSettings: agSettings
         )
     }
 

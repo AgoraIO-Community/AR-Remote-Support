@@ -55,7 +55,10 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         super.loadView()
 
         // Agora setup
-        let connectionData = AgoraConnectionData(appId: AppKeys.appId, rtcToken: AppKeys.rtcToken, idLogic: .random)
+        let connectionData = AgoraConnectionData(
+            appId: AppKeys.appId, rtcToken: AppKeys.rtcToken,
+            rtmToken: AppKeys.rtmToken, idLogic: .random
+        )
         var agSettings = AgoraSettings()
         agSettings.externalVideoSettings = AgoraSettings.ExternalVideoSettings(
             enabled: true, texture: true, encoded: false

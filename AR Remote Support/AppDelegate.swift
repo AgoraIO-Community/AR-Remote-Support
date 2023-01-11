@@ -28,7 +28,4 @@ class AppDelegate: UIResponder, UIApplicationDelegate {
     ) -> UIInterfaceOrientationMask {
         return ViewAR.orientation
     }
-    func applicationDidBecomeActive(_ application: UIApplication) {
-        SettingsBundleHelper.startupCheckSettings()
-    }
 }

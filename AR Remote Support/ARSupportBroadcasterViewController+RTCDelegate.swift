@@ -8,7 +8,7 @@
 
 import AgoraRtcKit
 import AgoraRtmKit
-import AgoraUIKit_iOS
+import AgoraUIKit
 import SceneKit
 import SCNLine
 
@@ -52,6 +52,8 @@ extension ARSupportBroadcasterViewController: AgoraRtmChannelDelegate {
         if message.type == .raw, let rawMsg = message as? AgoraRtmRawMessage,
            let decodedStr = try? JSONDecoder().decode(String.self, from: rawMsg.rawData) {
             self.handleNewMessage(decodedStr)
+        } else {
+            self.handleNewMessage(message.text)
         }
     }
 

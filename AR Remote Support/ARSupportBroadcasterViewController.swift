@@ -10,7 +10,7 @@ import UIKit
 import ARKit
 import ARVideoKit
 import AgoraRtcKit
-import AgoraUIKit_iOS
+import AgoraUIKit
 import AgoraRtmKit
 import SCNLine
 
@@ -55,7 +55,10 @@ class ARSupportBroadcasterViewController: UIViewController, ARSCNViewDelegate, A
         super.loadView()
 
         // Agora setup
-        let connectionData = AgoraConnectionData(appId: AppKeys.appId, appToken: AppKeys.rtcToken, idLogic: .random)
+        let connectionData = AgoraConnectionData(
+            appId: AppKeys.appId, rtcToken: AppKeys.rtcToken,
+            rtmToken: AppKeys.rtmToken, idLogic: .random
+        )
         var agSettings = AgoraSettings()
         agSettings.externalVideoSettings = AgoraSettings.ExternalVideoSettings(
             enabled: true, texture: true, encoded: false
@@ -260,6 +263,9 @@ extension ARSupportBroadcasterViewController: RenderARDelegate {
         videoFrame.format = 12
         videoFrame.textureBuf = buffer
         videoFrame.time = time
+        // Add rotation here if you want the app to work in landscape.
+        // For now this demo is portrait only.
+//        videoFrame.rotation = .init(90)
         self.agoraKit.pushExternalVideoFrame(videoFrame)
     }
 }

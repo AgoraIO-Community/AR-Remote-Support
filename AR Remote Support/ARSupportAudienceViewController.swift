@@ -8,7 +8,7 @@
 
 import UIKit
 import AgoraRtcKit
-import AgoraUIKit_iOS
+import AgoraUIKit
 
 class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDelegate, AgoraRtcEngineDelegate {
 
@@ -66,8 +66,9 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
         agSettings.enabledButtons = []
 
         self.agoraView = AgoraVideoViewer(
-            connectionData: AgoraConnectionData(appId: appID),
-            agoraSettings: agSettings
+            connectionData: AgoraConnectionData(
+                appId: appID, rtcToken: AppKeys.rtcToken, rtmToken: AppKeys.rtmToken
+            ), agoraSettings: agSettings
         )
     }
 
@@ -207,7 +208,7 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
 
     func sendMessage(_ message: String) {
         if self.rtmIsConnected {
-            self.agoraView.rtmController?.sendRaw(
+            self.agoraView.rtmController?.sendCodable(
                 message: message, channel: self.channelName
             ) { messageStatus in
                 if messageStatus != .errorOk {

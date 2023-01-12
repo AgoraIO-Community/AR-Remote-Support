@@ -11,7 +11,12 @@ import AgoraRtcKit
 
 extension ARSupportAudienceViewController {
     // MARK: Agora Delegate
+
+    // This method was deprecated, so I'm adding it to pass through to the new method in case an older SDK is used.
     func rtcEngine(_ engine: AgoraRtcEngineKit, firstRemoteVideoDecodedOfUid uid: UInt, size: CGSize, elapsed: Int) {
+        self.rtcEngine(engine, firstRemoteVideoFrameOfUid: uid, size: size, elapsed: elapsed)
+    }
+    func rtcEngine(_ engine: AgoraRtcEngineKit, firstRemoteVideoFrameOfUid uid: UInt, size: CGSize, elapsed: Int) {
          // first remote video frame
         if self.debug {
             print("firstRemoteVideoDecoded for Uid: \(uid)")

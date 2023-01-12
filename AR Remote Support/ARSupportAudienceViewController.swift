@@ -8,6 +8,7 @@
 
 import UIKit
 import AgoraRtcKit
+import AgoraRtmKit
 import AgoraUIKit
 
 class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDelegate, AgoraRtcEngineDelegate {
@@ -86,9 +87,9 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
 
     override func viewWillDisappear(_ animated: Bool) {
         super.viewWillDisappear(animated)
-        if self.sessionIsActive {
+//        if self.sessionIsActive {
             leaveChannel()
-        }
+//        }
     }
 
     // MARK: Hide status bar
@@ -207,10 +208,8 @@ class ARSupportAudienceViewController: UIViewController, UIGestureRecognizerDele
     }
 
     func sendMessage(_ message: String) {
-        if self.rtmIsConnected {
-            self.agoraView.rtmController?.sendCodable(
-                message: message, channel: self.channelName
-            ) { messageStatus in
+        if self.rtmIsConnected, let channel = self.agoraView.rtmController?.channels[self.channelName] {
+            channel.send(AgoraRtmMessage(text: message)) { messageStatus in
                 if messageStatus != .errorOk {
                     print("message could not send: \(messageStatus.rawValue)")
                 }
